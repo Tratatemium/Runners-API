@@ -43,7 +43,7 @@ const getRunByID = async (runID) => {
     throw err;
   }
 
-  const runs = await getCollection("runs");
+  const runs = getCollection("runs");
 
   const selectedRun = await runs.findOne({
     _id: ObjectId.createFromHexString(runID),
@@ -57,7 +57,7 @@ const getRunByID = async (runID) => {
 };
 
 const addNewRun = async (runJSON) => {
-  const runs = await getCollection("runs");
+  const runs = getCollection("runs");
 
   const result = await runs.insertOne(runJSON);
   if (!result.acknowledged) {
