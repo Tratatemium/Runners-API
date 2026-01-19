@@ -2,10 +2,15 @@
 /*  HELPER FUNCTIONS                                                                                 */
 /* ================================================================================================= */
 
-const isUUID = (str) => {
+const validateUUID = (ID, IDname = "ID") => {
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(str);
+  const isUUID = uuidRegex.test(ID);
+  if (!isUUID) {
+    const err = new Error(`${IDname} must be a valid UUID.`);
+    err.status = 400;
+    throw err;
+  }
 };
 
 const isCorrectISODate = (str) => {
@@ -15,6 +20,14 @@ const isCorrectISODate = (str) => {
 
   const date = new Date(str);
   return !isNaN(date.getTime());
+};
+
+const validateJsonContentType = (req) => {
+  if (!req.is("json")) {
+    const err = new Error("Content-Type must be json.");
+    err.status = 415;
+    throw err;
+  }
 };
 
 /* ================================================================================================= */
@@ -35,11 +48,7 @@ const validateRunFields = ({
     throw err;
   }
 
-  if (!isUUID(userId)) {
-    const err = new Error("userId must be a valid UUID.");
-    err.status = 400;
-    throw err;
-  }
+  validateUUID(userId, "userId");
 
   if (!isCorrectISODate(startTime)) {
     const err = new Error(
@@ -72,4 +81,74 @@ const validateRunFields = ({
   };
 };
 
-module.exports = { isUUID, isCorrectISODate, validateRunFields };
+const parseAndValidateRun = (req) => {
+  validateJsonContentType(req);
+
+  const { userId, startTime, durationSec, distanceMeters } = req.body;
+  const runData = validateRunFields({
+    userId,
+    startTime,
+    durationSec,
+    distanceMeters,
+  });
+  return runData;
+};
+
+/* ================================================================================================= */
+/*  USER DATA VALIDATION                                                                             */
+/* ================================================================================================= */
+
+const validateUserFields = ({
+  username,
+  password,
+  email,
+  firstName,
+  lastName,
+  dateOfBirth,
+  heightCm,
+  weightKg,
+}) => {
+  // To be implemented
+
+  const validatedUserData = {
+    username,
+    email,
+    firstName,
+    lastName,
+    dateOfBirth,
+    heightCm,
+    weightKg,
+  };
+
+  return { validatedUserData, plainTextPassword: password };
+};
+
+const parseAndValidateUser = (req) => {
+  validateJsonContentType(req);
+
+  const { username, password, email, profile } = req.body;
+  const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
+
+  const { userData, plainTextPassword } = validateUserFields({
+    username,
+    password,
+    email,
+    firstName,
+    lastName,
+    dateOfBirth,
+    heightCm,
+    weightKg,
+  });
+  return { userData, plainTextPassword };
+};
+
+/* ================================================================================================= */
+/*  EXPORTS                                                                                          */
+/* ================================================================================================= */
+
+module.exports = {
+  validateUUID,
+  isCorrectISODate,
+  parseAndValidateRun,
+  parseAndValidateUser,
+};

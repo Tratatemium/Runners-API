@@ -56,11 +56,11 @@ const getRunByID = async (runID) => {
   return selectedRun;
 };
 
-const addNewRun = async (runJSON) => {
+const addNewRun = async (newRun) => {
   const runs = getCollection("runs");
 
   const newRunID = randomUUID();
-  const runToInsert = { runID: newRunID, ...runJSON };
+  const runToInsert = { runID: newRunID, ...newRun };
 
   const result = await runs.insertOne(runToInsert);
   if (!result.acknowledged) {
@@ -72,6 +72,13 @@ const addNewRun = async (runJSON) => {
   return newRunID;
 };
 
+const addNewUser = async (newUser) => {
+  // To be implemented
+  const newUserID = randomUUID();
+  console.log("New user added to the database. ID:", newUserID);
+  return newUserID;
+};
+
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -80,4 +87,5 @@ module.exports = {
   connectDB,
   getRunByID,
   addNewRun,
+  addNewUser,
 };
