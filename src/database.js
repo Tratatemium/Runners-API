@@ -2,7 +2,7 @@
 /*  IMPORTS                                                                                          */
 /* ================================================================================================= */
 
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
 const { randomUUID } = require("crypto");
 
@@ -60,9 +60,9 @@ const addNewRun = async (runJSON) => {
   const runs = getCollection("runs");
 
   const newRunID = randomUUID();
-  runJSON.runID = newRunID;
+  const runToInsert = { runID: newRunID, ...runJSON };
 
-  const result = await runs.insertOne(runJSON);
+  const result = await runs.insertOne(runToInsert);
   if (!result.acknowledged) {
     const err = new Error("Failed to save new run.");
     err.status = 500;
