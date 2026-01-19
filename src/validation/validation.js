@@ -28,7 +28,7 @@ const validateJsonContentType = (req) => {
     err.status = 415;
     throw err;
   }
-}
+};
 
 /* ================================================================================================= */
 /*  RUN DATA VALIDATION                                                                              */
@@ -99,16 +99,15 @@ const parseAndValidateRun = (req) => {
 /* ================================================================================================= */
 
 const validateUserFields = ({
-    username,
-    password,
-    email,
-    firstName,
-    lastName,
-    dateOfBirth,
-    heightCm,
-    weightKg,
-  }) => {
-
+  username,
+  password,
+  email,
+  firstName,
+  lastName,
+  dateOfBirth,
+  heightCm,
+  weightKg,
+}) => {
   // To be implemented
 
   const validatedUserData = {
@@ -119,9 +118,9 @@ const validateUserFields = ({
     dateOfBirth,
     heightCm,
     weightKg,
-  }
+  };
 
-  return { validatedUserData, plainTextPassword: password }; 
+  return { validatedUserData, plainTextPassword: password };
 };
 
 const parseAndValidateUser = (req) => {

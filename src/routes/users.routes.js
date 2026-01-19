@@ -8,7 +8,7 @@ const { addNewUser } = require("../database.js");
 router.post("/new-user", async (req, res) => {
   const { userData, plainTextPassword } = parseAndValidateUser(req);
   const hashedPassword = await hashPassword(plainTextPassword);
-  const newUser = {...userData, password: hashedPassword };
+  const newUser = { ...userData, password: hashedPassword };
   const newUserID = await addNewUser(newUser);
   res.status(201).send(`New user ID: ${newUserID}`);
 });

@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { validateUUID, parseAndValidateRun} = require("../validation/validation.js");
+const {
+  validateUUID,
+  parseAndValidateRun,
+} = require("../validation/validation.js");
 const { getRunByID, addNewRun } = require("../database.js");
 
 /* GET RUN BY runID */
