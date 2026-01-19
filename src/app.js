@@ -21,8 +21,7 @@ app.use(express.json());
 /*  ROUTE IMPORTS                                                                                    */
 /* ================================================================================================= */
 
-const runsGetRoutes = require("./routes/runs.get.routes.js");
-const runsPostRoutes = require("./routes/runs.post.routes.js");
+const runsRoutes = require("./routes/runs.routes.js");
 const usersRoutes = require("./routes/users.routes.js");
 
 /* ================================================================================================= */
@@ -41,8 +40,7 @@ app.get("/server-runtime", (req, res) => {
 });
 
 // Runs routes
-app.use("/runs", runsGetRoutes);
-app.use("/runs", runsPostRoutes);
+app.use("/runs", runsRoutes);
 app.use("/users", usersRoutes);
 
 /* ================================================================================================= */
