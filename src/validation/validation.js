@@ -113,11 +113,13 @@ const validateUserFields = ({
   const validated = {
     username,
     email,
-    firstName,
-    lastName,
-    dateOfBirth,
-    heightCm,
-    weightKg,
+    profile: {
+      firstName,
+      lastName,
+      dateOfBirth,
+      heightCm,
+      weightKg,
+    }
   };
 
   return { userData: validated, plainTextPassword: password };

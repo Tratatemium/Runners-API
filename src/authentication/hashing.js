@@ -4,15 +4,14 @@ const saltRounds = 10;
 const algorithm = "bcrypt";
 
 const createPasswordHash = async (plainTextPassword) => {
-  const hash = await bcrypt.hash(plainTextPassword, saltRounds);
-  const hashedPassword = {
-    hash,
+  const passwordHash = await bcrypt.hash(plainTextPassword, saltRounds);
+  const passwordMetadata = {
     algorithm,
     updatedAt: new Date(),
     failedLoginAttempts: 0,
     lockUntil: null,
   };
-  return hashedPassword;
+  return { passwordHash, passwordMetadata };
 };
 
 module.exports = {
