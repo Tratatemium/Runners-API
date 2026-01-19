@@ -2,8 +2,9 @@
 /*  IMPORTS                                                                                          */
 /* ================================================================================================= */
 
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
+const { randomUUID } = require("crypto");
 
 /* ================================================================================================= */
 /*  CONFIGURATION                                                                                    */
@@ -42,18 +43,10 @@ const getCollection = (collectionName) => {
 /* ================================================================================================= */
 
 const getRunByID = async (runID) => {
-  if (!ObjectId.isValid(runID)) {
-    const err = new Error(
-      "Invalid run ID format provided. It must be ObjectID."
-    );
-    err.status = 400;
-    throw err;
-  }
-
   const runs = getCollection("runs");
 
   const selectedRun = await runs.findOne({
-    _id: ObjectId.createFromHexString(runID),
+    runID: runID,
   });
   if (!selectedRun) {
     const err = new Error(`No run with ID ${runID} found!`);
@@ -66,14 +59,17 @@ const getRunByID = async (runID) => {
 const addNewRun = async (runJSON) => {
   const runs = getCollection("runs");
 
-  const result = await runs.insertOne(runJSON);
+  const newRunID = randomUUID();
+  const runToInsert = { runID: newRunID, ...runJSON };
+
+  const result = await runs.insertOne(runToInsert);
   if (!result.acknowledged) {
     const err = new Error("Failed to save new run.");
     err.status = 500;
     throw err;
   }
-  console.log("New run added to the database. ID:", result.insertedId);
-  return result.insertedId;
+  console.log("New run added to the database. ID:", newRunID);
+  return newRunID;
 };
 
 /* ================================================================================================= */
