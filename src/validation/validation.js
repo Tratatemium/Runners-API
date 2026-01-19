@@ -110,17 +110,19 @@ const validateUserFields = ({
 }) => {
   // To be implemented
 
-  const validatedUserData = {
+  const validated = {
     username,
     email,
-    firstName,
-    lastName,
-    dateOfBirth,
-    heightCm,
-    weightKg,
+    profile: {
+      firstName,
+      lastName,
+      dateOfBirth,
+      heightCm,
+      weightKg,
+    }
   };
 
-  return { validatedUserData, plainTextPassword: password };
+  return { userData: validated, plainTextPassword: password };
 };
 
 const parseAndValidateUser = (req) => {
