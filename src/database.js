@@ -75,7 +75,7 @@ const addNewRun = async (newRun) => {
 const addNewUser = async (newUser) => {
   // To be implemented
   const newUserID = randomUUID();
-  console.log("New run added to the database. ID:", newUserID);
+  console.log("New user added to the database. ID:", newUserID);
   return newUserID;
 };
 
