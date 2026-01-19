@@ -1,5 +1,6 @@
 const hashPassword = async (plainTextPassword) => {
-    return { plainTextPassword }
+  // To be implemented
+  return { plainTextPassword };
 };
 
 module.exports = {

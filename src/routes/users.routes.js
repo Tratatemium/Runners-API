@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { parseAndValidateUser } = require("../validation/validation.js");
 const { hashPassword } = require("../authentication/hashing.js");
+const { addNewUser } = require("../database.js");
 
 router.post("/new-user", async (req, res) => {
   const { userData, plainTextPassword } = parseAndValidateUser(req);
