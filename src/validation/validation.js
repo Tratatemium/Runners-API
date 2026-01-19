@@ -2,10 +2,15 @@
 /*  HELPER FUNCTIONS                                                                                 */
 /* ================================================================================================= */
 
-const isUUID = (str) => {
+const validateUUID = (ID, IDname = "ID") => {
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(str);
+  const isUUID = uuidRegex.test(ID);
+  if (!isUUID) {
+    const err = new Error(`${IDname} must be a valid UUID.`);
+    err.status = 400;
+    throw err;
+  }
 };
 
 const isCorrectISODate = (str) => {
@@ -43,11 +48,7 @@ const validateRunFields = ({
     throw err;
   }
 
-  if (!isUUID(userId)) {
-    const err = new Error("userId must be a valid UUID.");
-    err.status = 400;
-    throw err;
-  }
+  validateUUID(userId, "userId");
 
   if (!isCorrectISODate(startTime)) {
     const err = new Error(
@@ -121,7 +122,7 @@ const parseAndValidateUser = (req) => {
 /* ================================================================================================= */
 
 module.exports = {
-  isUUID,
+  validateUUID,
   isCorrectISODate,
   parseAndValidateRun,
   parseAndValidateUser,

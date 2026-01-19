@@ -8,8 +8,6 @@ const { addNewRun } = require("../database.js");
 /*  POST NEW RUN                                                                                     */
 /* ================================================================================================= */
 
-
-
 router.post("/new-run", async (req, res) => {
   const newRun = parseAndValidateRun(req);
   const newRunID = await addNewRun(newRun);
