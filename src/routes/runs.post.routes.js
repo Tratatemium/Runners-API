@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { addNewRun } = require("../../database.js");
+const { addNewRun } = require("../database.js");
 
 /* ================================================================================================= */
 /*  HELPER FUNCTIONS                                                                                 */

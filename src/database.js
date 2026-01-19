@@ -14,24 +14,27 @@ if (!process.env.MONGO_URI) {
 }
 
 /* ================================================================================================= */
-/*  DATABASE CONNECTION                                                                              */
+/*  DATABASE INITIALIZATION                                                                          */
 /* ================================================================================================= */
 
 const client = new MongoClient(process.env.MONGO_URI);
-let runs;
+let db;
 
-/* ================================================================================================= */
-/*  COLLECTION INITIALIZATION                                                                        */
-/* ================================================================================================= */
+const connectDB = async () => {
+  await client.connect();
+  console.log("Connected to database.");
+  db = client.db("runners-app");
+};
 
-const getRunsCollection = async () => {
-  if (!runs) {
-    await client.connect();
-    console.log("Connected to database.");
-    const db = client.db("runners-app");
-    runs = db.collection("runs");
+const getCollection = (collectionName) => {
+  if (!db) {
+    const err = new Error(
+      "Database not initialized. Ensure connectDB() has completed before accessing collections."
+    );
+    err.status = 500;
+    throw err;
   }
-  return runs;
+  return db.collection(collectionName);
 };
 
 /* ================================================================================================= */
@@ -47,10 +50,10 @@ const getRunByID = async (runID) => {
     throw err;
   }
 
-  const runs = await getRunsCollection();
+  const runs = getCollection("runs");
 
   const selectedRun = await runs.findOne({
-    _id: new ObjectId(runID),
+    _id: ObjectId.createFromHexString(runID),
   });
   if (!selectedRun) {
     const err = new Error(`No run with ID ${runID} found!`);
@@ -61,7 +64,7 @@ const getRunByID = async (runID) => {
 };
 
 const addNewRun = async (runJSON) => {
-  const runs = await getRunsCollection();
+  const runs = getCollection("runs");
 
   const result = await runs.insertOne(runJSON);
   if (!result.acknowledged) {
@@ -78,8 +81,7 @@ const addNewRun = async (runJSON) => {
 /* ================================================================================================= */
 
 module.exports = {
-  client,
-  getRunsCollection,
+  connectDB,
   getRunByID,
   addNewRun,
 };
