@@ -16,13 +16,13 @@ GET http://localhost:{{port}}/server-runtime
 # =================================================================================================
 
 ### correct ID #1
-GET http://localhost:{{port}}/runs/69625f10c3dfc91345faf311
+GET http://localhost:{{port}}/runs/dc9822e7-72d6-4cc8-b6da-c1c5208d6109
 
 ### correct ID #2
-GET http://localhost:{{port}}/runs/69625fd283de3e628cbb0b0b
+GET http://localhost:{{port}}/runs/0a08a75c-e72d-4b7b-bf77-be9bd105b68d
 
 ### incorrect ID #1
-GET http://localhost:{{port}}/runs/69625f10c4afc91345faf311
+GET http://localhost:{{port}}/runs/0a08a83c-e72d-4b7b-bf77-bc9bd225b68d
 
 ### incorrect ID #2 (wrong format)
 GET http://localhost:{{port}}/runs/000000zdg000000000000000000
@@ -37,9 +37,9 @@ Content-Type: application/json
 
 {
   "userId": "1d9a8400-07cd-466a-9d13-843a544a5b09",
-  "startTime": "2026-01-11T14:45:44.822Z",
-  "durationSec": 1550,
-  "distanceMeters": 1727
+  "startTime": "2026-01-19T12:25:44.822Z",
+  "durationSec": 457,
+  "distanceMeters": 1574
 }
 
 

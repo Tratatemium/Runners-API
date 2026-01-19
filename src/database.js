@@ -43,18 +43,10 @@ const getCollection = (collectionName) => {
 /* ================================================================================================= */
 
 const getRunByID = async (runID) => {
-  if (!ObjectId.isValid(runID)) {
-    const err = new Error(
-      "Invalid run ID format provided. It must be ObjectID."
-    );
-    err.status = 400;
-    throw err;
-  }
-
   const runs = getCollection("runs");
 
   const selectedRun = await runs.findOne({
-    _id: ObjectId.createFromHexString(runID),
+    runID: runID,
   });
   if (!selectedRun) {
     const err = new Error(`No run with ID ${runID} found!`);
