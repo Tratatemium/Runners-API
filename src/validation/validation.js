@@ -121,7 +121,7 @@ const validateUserFields = ({
     weightKg,
   }
 
-  return { validatedUserData, password }; 
+  return { validatedUserData, plainTextPassword: password }; 
 };
 
 const parseAndValidateUser = (req) => {
@@ -130,7 +130,7 @@ const parseAndValidateUser = (req) => {
   const { username, password, email, profile } = req.body;
   const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
 
-  const userData = validateUserFields({
+  const { userData, plainTextPassword } = validateUserFields({
     username,
     password,
     email,
@@ -140,7 +140,7 @@ const parseAndValidateUser = (req) => {
     heightCm,
     weightKg,
   });
-  return userData;
+  return { userData, plainTextPassword };
 };
 
 /* ================================================================================================= */
