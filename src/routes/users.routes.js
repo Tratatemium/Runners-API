@@ -11,7 +11,7 @@ router.post("/new-user", async (req, res) => {
     await createPasswordHash(plainTextPassword);
   const newUser = { ...userData, passwordHash, passwordMetadata };
   const newUserID = await addNewUser(newUser);
-  res.status(201).send(`New user ID: ${newUserID}`);
+  res.status(201).json({ id: newUserID });
 });
 
 module.exports = router;

@@ -11,14 +11,14 @@ const { getRunByID, addNewRun } = require("../database.js");
 router.get("/:id", async (req, res) => {
   validateUUID(req.params.id, "runID");
   const data = await getRunByID(req.params.id);
-  res.send(data);
+  res.json(data);
 });
 
 /*  POST NEW RUN */
 router.post("/new-run", async (req, res) => {
   const newRun = parseAndValidateRun(req);
   const newRunID = await addNewRun(newRun);
-  res.status(201).send(`New run ID: ${newRunID}`);
+  res.status(201).json({ id: newRunID });
 });
 
 module.exports = router;

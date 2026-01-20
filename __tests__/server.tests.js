@@ -3,17 +3,22 @@ const app = require("../src/app.js");
 
 describe("GET /", () => {
   it("checks server availability", async () => {
-    const response = await request(app).get("/");
+    const res = await request(app).get("/");
 
-    expect(response.statusCode).toBe(200);
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-type"]).toMatch(/json/);
+    expect(res.body).toHaveProperty("message");
   });
 });
 
 describe("GET /server-runtime", () => {
   it("checks server runtime", async () => {
-    const response = await request(app).get("/server-runtime");
+    const res = await request(app).get("/server-runtime");
 
-    expect(response.statusCode).toBe(200);
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-type"]).toMatch(/json/);
+    expect(res.body).toHaveProperty("message");
+    expect(res.body.message).toMatch(/^Server is running for \d+(\.\d)? s\.$/);
   });
 });
 

@@ -3,7 +3,8 @@ const { MongoServerSelectionError, MongoNetworkError } = require("mongodb");
 // JSON syntax error filter
 const jsonSyntaxErrorHandler = (err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-    return res.status(400).send("Invalid JSON.");
+    return res.status(400)
+      .json({ error: "Invalid JSON." });
   }
   return next(err);
 };
@@ -14,7 +15,8 @@ const dbErrorHandler = (err, req, res, next) => {
     err instanceof MongoServerSelectionError ||
     err instanceof MongoNetworkError
   ) {
-    return res.status(500).send("Failed to connect to database.");
+    return res.status(500)
+      .json({ error: "Failed to connect to database." });
   }
   return next(err);
 };
@@ -25,7 +27,7 @@ const finalErrorHandler = (err, req, res, next) => {
     Number.isInteger(err.status) && err.status >= 400 ? err.status : 500;
   const message = err.message || "Internal Server Error";
 
-  res.status(status).send(message);
+  res.status(status).json({ error: message });
 };
 
 module.exports = { jsonSyntaxErrorHandler, dbErrorHandler, finalErrorHandler };
