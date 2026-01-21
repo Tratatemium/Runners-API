@@ -1,4 +1,4 @@
-const { parseAndValidateUser } = require("../validation/validation.js");
+const { parseAndValidateUser } = require("../validation/users.validation.js");
 const { createPasswordHash } = require("../authentication/hashing.js");
 const { addNewUser } = require("../database.js");
 
