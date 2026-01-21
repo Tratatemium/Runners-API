@@ -1,15 +1,23 @@
-/* ================================================================================================= */
-/*  USER DATA VALIDATION                                                                             */
-/* ================================================================================================= */
+const validators = require("./validators.js");
 
-const validateUserFields = ({ username, password, email }) => {
-  isUsernameValid(username);
-  isUsernameUnique(username);
+const parseAndValidateUser = async (req) => {
+  validators.validateJsonContentType(req);
 
-  isEmailValid(email);
-  isEmailUnique(email);
+  validators.assertRequestFields(
+    req,
+    ["username", "password", "email"],
+    "User data",
+  );
 
-  isPasswordValid(password);
+  const { username, password, email } = req.body;
+
+  validateUsername(username);
+  await assertUsernameUnique(username);
+
+  validateEmail(email);
+  await assertEmailUnique(email);
+
+  validatePassword(password);
 
   const validated = {
     username,
@@ -18,66 +26,6 @@ const validateUserFields = ({ username, password, email }) => {
 
   return { userData: validated, plainTextPassword: password };
 };
-
-const parseAndValidateUser = (req) => {
-  validateJsonContentType(req);
-
-  const { username, password, email } = req.body;
-
-  const { userData, plainTextPassword } = validateUserFields({
-    username,
-    password,
-    email,
-  });
-
-  return { userData, plainTextPassword };
-};
-
-// const validateUserFields = ({
-//   username,
-//   password,
-//   email,
-//   firstName,
-//   lastName,
-//   dateOfBirth,
-//   heightCm,
-//   weightKg,
-// }) => {
-//   // To be implemented
-
-//   const validated = {
-//     username,
-//     email,
-//     profile: {
-//       firstName,
-//       lastName,
-//       dateOfBirth,
-//       heightCm,
-//       weightKg,
-//     }
-//   };
-
-//   return { userData: validated, plainTextPassword: password };
-// };
-
-// const parseAndValidateUser = (req) => {
-//   validateJsonContentType(req);
-
-//   const { username, password, email, profile } = req.body;
-//   const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
-
-//   const { userData, plainTextPassword } = validateUserFields({
-//     username,
-//     password,
-//     email,
-//     firstName,
-//     lastName,
-//     dateOfBirth,
-//     heightCm,
-//     weightKg,
-//   });
-//   return { userData, plainTextPassword };
-// };
 
 //  "profile": {
 //      "firstName": "Alex",
@@ -92,8 +40,5 @@ const parseAndValidateUser = (req) => {
 /* ================================================================================================= */
 
 module.exports = {
-  validateUUID,
-  validateISODate,
-  parseAndValidateRun,
   parseAndValidateUser,
 };
