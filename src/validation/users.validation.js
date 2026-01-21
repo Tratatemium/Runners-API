@@ -12,10 +12,10 @@ const parseAndValidateUser = async (req) => {
   const { username, password, email } = req.body;
 
   validators.validateUsername(username);
-  //   await assertUsernameUnique(username);
+  // TODO: Add username uniqueness validation (e.g., assertUsernameUnique)
 
   validators.validateEmail(email);
-  //   await assertEmailUnique(email);
+  // TODO: Add email uniqueness validation (e.g., assertEmailUnique)
 
   validators.validatePassword(password);
 
