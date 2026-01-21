@@ -23,7 +23,6 @@ const assertRequestFields = (
   requiredFields,
   objectName = "Request body",
 ) => {
-
   if (typeof req.body !== "object" || req.body === null) {
     throwValidationError(`${objectName} must be an object`);
   }
@@ -40,9 +39,7 @@ const assertRequestFields = (
 
 const assertString = (str, strName) => {
   if (typeof str !== "string") {
-    throwValidationError(
-      `${strName} must be a string.`,
-    );
+    throwValidationError(`${strName} must be a string.`);
   }
 };
 
@@ -86,7 +83,7 @@ const validateUsername = (username) => {
   const usernameRegex = /^[a-zA-Z0-9_]+$/;
   if (!usernameRegex.test(username)) {
     throwValidationError(
-      "Username may only contain letters, numbers, and underscores."
+      "Username may only contain letters, numbers, and underscores.",
     );
   }
 };
@@ -133,5 +130,5 @@ module.exports = {
   validatePositiveNumber,
   validateUsername,
   validateEmail,
-  validatePassword
+  validatePassword,
 };

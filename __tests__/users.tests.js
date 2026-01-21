@@ -7,7 +7,6 @@ beforeAll(async () => {
 });
 
 describe("POST /users/ - Integration Tests", () => {
-
   const validUserData = {
     username: "testuser123",
     password: "SecurePassword123!",
@@ -27,7 +26,6 @@ describe("POST /users/ - Integration Tests", () => {
   });
 
   describe("Required fields validation", () => {
-
     it("returns 400 for empty JSON", async () => {
       const res = await request(app).post("/users/").send({});
 
@@ -88,7 +86,6 @@ describe("POST /users/ - Integration Tests", () => {
   });
 
   describe("username validation", () => {
-
     it("returns 400 for non-string username", async () => {
       const res = await request(app)
         .post("/users")
@@ -108,7 +105,9 @@ describe("POST /users/ - Integration Tests", () => {
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Username must be between 6 and 30 characters long.");
+      expect(res.body.error).toBe(
+        "Username must be between 6 and 30 characters long.",
+      );
     });
 
     it("returns 400 for username longer than 30 characters", async () => {
@@ -119,7 +118,9 @@ describe("POST /users/ - Integration Tests", () => {
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Username must be between 6 and 30 characters long.");
+      expect(res.body.error).toBe(
+        "Username must be between 6 and 30 characters long.",
+      );
     });
 
     it("returns 400 for username with special characters", async () => {
@@ -180,7 +181,6 @@ describe("POST /users/ - Integration Tests", () => {
   });
 
   describe("email validation", () => {
-
     it("returns 400 for non-string email", async () => {
       const res = await request(app)
         .post("/users")
@@ -270,7 +270,6 @@ describe("POST /users/ - Integration Tests", () => {
   });
 
   describe("password validation", () => {
-    
     it("returns 400 for non-string password", async () => {
       const res = await request(app)
         .post("/users")
@@ -290,7 +289,9 @@ describe("POST /users/ - Integration Tests", () => {
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Password must be at least 12 characters long.");
+      expect(res.body.error).toBe(
+        "Password must be at least 12 characters long.",
+      );
     });
 
     it("returns 400 for password longer than 128 characters", async () => {
@@ -301,7 +302,9 @@ describe("POST /users/ - Integration Tests", () => {
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Password must be at most 128 characters long.");
+      expect(res.body.error).toBe(
+        "Password must be at most 128 characters long.",
+      );
     });
 
     it("accepts password exactly 12 characters long", async () => {
