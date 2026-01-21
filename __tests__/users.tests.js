@@ -13,7 +13,7 @@ describe("Users API", () => {
   });
 });
 
-describe("POST /users/new-user", () => {
+describe("POST /users/", () => {
   it("returns 201 and creates a new user with valid data", async () => {
     const newUser = {
       username: "fastfeet",
@@ -28,7 +28,7 @@ describe("POST /users/new-user", () => {
       },
     };
 
-    const res = await request(app).post("/users/new-user").send(newUser);
+    const res = await request(app).post("/users/").send(newUser);
 
     expect(res.statusCode).toBe(201);
     expect(res.headers["content-type"]).toMatch(/json/);

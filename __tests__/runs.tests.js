@@ -52,7 +52,7 @@ describe("GET /runs/:id", () => {
   });
 });
 
-describe("POST /runs/new-run", () => {
+describe("POST /runs/", () => {
   it("returns 201 and creates a new run with valid data", async () => {
     const newRun = {
       userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
@@ -61,7 +61,7 @@ describe("POST /runs/new-run", () => {
       distanceMeters: 1574,
     };
 
-    const res = await request(app).post("/runs/new-run").send(newRun);
+    const res = await request(app).post("/runs/").send(newRun);
 
     expect(res.statusCode).toBe(201);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -69,7 +69,7 @@ describe("POST /runs/new-run", () => {
   });
 
   it("returns 415 for wrong Content-Type", async () => {
-    const res = await request(app).post("/runs/new-run");
+    const res = await request(app).post("/runs/");
 
     expect(res.statusCode).toBe(415);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -77,7 +77,7 @@ describe("POST /runs/new-run", () => {
   });
 
   it("returns 400 for empty JSON", async () => {
-    const res = await request(app).post("/runs/new-run").send({});
+    const res = await request(app).post("/runs/").send({});
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -91,7 +91,7 @@ describe("POST /runs/new-run", () => {
       distanceMeters: 1727,
     };
 
-    const res = await request(app).post("/runs/new-run").send(invalidRun);
+    const res = await request(app).post("/runs/").send(invalidRun);
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -106,7 +106,7 @@ describe("POST /runs/new-run", () => {
       distanceMeters: 1727,
     };
 
-    const res = await request(app).post("/runs/new-run").send(invalidRun);
+    const res = await request(app).post("/runs/").send(invalidRun);
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -121,7 +121,7 @@ describe("POST /runs/new-run", () => {
       distanceMeters: 1727,
     };
 
-    const res = await request(app).post("/runs/new-run").send(invalidRun);
+    const res = await request(app).post("/runs/").send(invalidRun);
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -136,7 +136,7 @@ describe("POST /runs/new-run", () => {
       distanceMeters: 1727,
     };
 
-    const res = await request(app).post("/runs/new-run").send(invalidRun);
+    const res = await request(app).post("/runs/").send(invalidRun);
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -151,7 +151,7 @@ describe("POST /runs/new-run", () => {
       distanceMeters: "-1455a",
     };
 
-    const res = await request(app).post("/runs/new-run").send(invalidRun);
+    const res = await request(app).post("/runs/").send(invalidRun);
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
