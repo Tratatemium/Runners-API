@@ -1,7 +1,6 @@
 const request = require("supertest");
 const app = require("../src/app.js");
 const { connectDB } = require("../src/database.js");
-const { describe } = require("node:test");
 
 beforeAll(async () => {
   await connectDB();
