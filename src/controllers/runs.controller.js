@@ -1,9 +1,5 @@
-// runs.controller.js
-
-const {
-  validateUUID,
-  parseAndValidateRun,
-} = require("../validation/validation.js");
+const { parseAndValidateRun } = require("../validation/runs.validation.js");
+const { validateUUID } = require("../validation/validators.js");
 const { findRunByID, addNewRun } = require("../database.js");
 
 const getRunByID = async (req, res) => {

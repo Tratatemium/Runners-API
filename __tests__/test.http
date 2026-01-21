@@ -32,7 +32,7 @@ GET http://localhost:{{port}}/runs/000000zdg000000000000000000
 # ===========================================================================================
 
 ### Good entry
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -44,11 +44,11 @@ Content-Type: application/json
 
 
 ### Wrong type
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 
 
 ### Empty JSON
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -56,7 +56,7 @@ Content-Type: application/json
 }
 
 ### Missing duration
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -67,7 +67,7 @@ Content-Type: application/json
 
 
 ### Bad JSON
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -79,7 +79,7 @@ Content-Type: application/json
 
 
 ### Bad userID
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -91,7 +91,7 @@ Content-Type: application/json
 
 
 ### Bad date
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -101,9 +101,20 @@ Content-Type: application/json
   "distanceMeters": 1727
 }
 
+### Bad date
+POST http://localhost:3000/runs/
+Content-Type: application/json
+
+{
+  "userId": "1d9a8400-07cd-466a-9d13-843a544a5b09",
+  "startTime": 123456,
+  "durationSec": 1550,
+  "distanceMeters": 1727
+}
+
 
 ### Bad duration
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -115,7 +126,7 @@ Content-Type: application/json
 
 
 ### Bad distance
-POST http://localhost:3000/runs/new-run
+POST http://localhost:3000/runs/
 Content-Type: application/json
 
 {
@@ -125,19 +136,12 @@ Content-Type: application/json
   "distanceMeters": "-1455a"
 }
 
-### Good user data
-POST http://localhost:3000/users/new-user
+### Good new user data
+POST http://localhost:3000/users/
 Content-Type: application/json
 
 {
   "username": "fastfeet",
   "password": "StrongPassword!123",
-  "email": "runner@example.com",
-  "profile": {
-    "firstName": "Alex",
-    "lastName": "Miller",
-    "dateOfBirth": "1995-06-18",
-    "heightCm": 178,
-    "weightKg": 72
-  }
+  "email": "runner@example.com"
 }

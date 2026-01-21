@@ -6,7 +6,7 @@ beforeAll(async () => {
   await connectDB();
 });
 
-describe("GET /runs/:id", () => {
+describe("GET /runs/:id - Integration Tests", () => {
   it("returns 200 and a run JSON for an existing ID", async () => {
     const runID = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
 
@@ -40,7 +40,7 @@ describe("GET /runs/:id", () => {
   });
 
   it("returns 400 for non UUID", async () => {
-    const runID = "0000000000zxczv0000rgtrt0000";
+    const runID = "not-a-UUID";
 
     const res = await request(app).get(`/runs/${runID}`);
 
@@ -52,109 +52,402 @@ describe("GET /runs/:id", () => {
   });
 });
 
-describe("POST /runs/", () => {
-  it("returns 201 and creates a new run with valid data", async () => {
-    const newRun = {
-      userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
-      startTime: "2026-01-19T12:25:44.822Z",
-      durationSec: 457,
-      distanceMeters: 1574,
-    };
+describe("POST /runs/ - Integration Tests", () => {
+  const validRunData = {
+    userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
+    startTime: "2026-01-19T12:25:44.822Z",
+    durationSec: 1800,
+    distanceMeters: 5000,
+  };
 
-    const res = await request(app).post("/runs/").send(newRun);
-
-    expect(res.statusCode).toBe(201);
-    expect(res.headers["content-type"]).toMatch(/json/);
-    expect(res.body).toHaveProperty("id");
-  });
-
-  it("returns 415 for wrong Content-Type", async () => {
-    const res = await request(app).post("/runs/");
+  it("returns 415 when Content-Type is not JSON", async () => {
+    const res = await request(app)
+      .post("/runs")
+      .set("Content-Type", "text/plain")
+      .send("not json");
 
     expect(res.statusCode).toBe(415);
     expect(res.headers["content-type"]).toMatch(/json/);
     expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toBe("Content-Type must be json.");
   });
 
-  it("returns 400 for empty JSON", async () => {
-    const res = await request(app).post("/runs/").send({});
+  describe("Required fields validation", () => {
+    it("returns 400 for empty JSON", async () => {
+      const res = await request(app).post("/runs/").send({});
 
-    expect(res.statusCode).toBe(400);
-    expect(res.headers["content-type"]).toMatch(/json/);
-    expect(res.body).toHaveProperty("error");
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Run data is missing required fields: userId, startTime, durationSec, distanceMeters.",
+      );
+    });
+
+    it("returns 400 for missing userId field", async () => {
+      const { userId, ...dataWithoutUserId } = validRunData;
+      const res = await request(app).post("/runs/").send(dataWithoutUserId);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Run data is missing required fields: userId.",
+      );
+    });
+
+    it("returns 400 for missing startTime field", async () => {
+      const { startTime, ...dataWithoutStartTime } = validRunData;
+      const res = await request(app).post("/runs/").send(dataWithoutStartTime);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Run data is missing required fields: startTime.",
+      );
+    });
+
+    it("returns 400 for missing durationSec field", async () => {
+      const { durationSec, ...dataWithoutDurationSec } = validRunData;
+      const res = await request(app)
+        .post("/runs/")
+        .send(dataWithoutDurationSec);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Run data is missing required fields: durationSec.",
+      );
+    });
+
+    it("returns 400 for missing distanceMeters field", async () => {
+      const { distanceMeters, ...dataWithoutDistanceMeters } = validRunData;
+      const res = await request(app)
+        .post("/runs/")
+        .send(dataWithoutDistanceMeters);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Run data is missing required fields: distanceMeters.",
+      );
+    });
+
+    it("returns 400 when field is null", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, userId: null });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toContain("userId");
+    });
   });
 
-  it("returns 400 for missing duration field", async () => {
-    const invalidRun = {
-      userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
-      startTime: "2026-01-11T14:45:44.822Z",
-      distanceMeters: 1727,
-    };
+  describe("userId validation", () => {
+    it("returns 400 for non-string userId", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, userId: 12345 });
 
-    const res = await request(app).post("/runs/").send(invalidRun);
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("userId must be a string.");
+    });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.headers["content-type"]).toMatch(/json/);
-    expect(res.body).toHaveProperty("error");
+    it("returns 400 for invalid userId format", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, userId: "not-a-uuid" });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("userId must be a valid UUID.");
+    });
+
+    it("returns 400 for empty UUID", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, userId: "" });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("userId must be a valid UUID.");
+    });
+
+    it("handles UUID with whitespace", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({
+          ...validRunData,
+          userId: "  123e4567-e89b-12d3-a456-426614174000  ",
+        });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
   });
 
-  it("returns 400 for invalid userId format", async () => {
-    const invalidRun = {
-      userId: "fagfgsg5054a6wa6ew1",
-      startTime: "2026-01-11T14:45:44.822Z",
-      durationSec: 1550,
-      distanceMeters: 1727,
-    };
+  describe("startTime validation", () => {
+    it("returns 400 for non-string startTime", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, startTime: 12345 });
 
-    const res = await request(app).post("/runs/").send(invalidRun);
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("startTime must be a string.");
+    });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.headers["content-type"]).toMatch(/json/);
-    expect(res.body).toHaveProperty("error");
+    it("returns 400 for invalid ISO 8601 format", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, startTime: "2024-01-15 10:30:00" });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "startTime must be a valid date in the ISO 8601 format.",
+      );
+    });
+
+    it("returns 400 for invalid date", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, startTime: "2024-13-45T25:99:99.000Z" });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "startTime must be a valid date in the ISO 8601 format.",
+      );
+    });
+
+    it("returns 400 for empty startTime", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, startTime: "" });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "startTime must be a valid date in the ISO 8601 format.",
+      );
+    });
+
+    it("accepts valid ISO 8601 format with milliseconds", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, startTime: "2024-01-15T10:30:00.123Z" });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("accepts valid ISO 8601 format without milliseconds", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, startTime: "2024-01-15T10:30:00Z" });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("handles startTime with whitespace", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, startTime: "  2024-01-15T10:30:00.000Z  " });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
   });
 
-  it("returns 400 for invalid date format", async () => {
-    const invalidRun = {
-      userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
-      startTime: "2026-31-11T14:45:44.822Z",
-      durationSec: 1550,
-      distanceMeters: 1727,
-    };
+  describe("durationSec validation", () => {
+    it("returns 400 for zero durationSec", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, durationSec: 0 });
 
-    const res = await request(app).post("/runs/").send(invalidRun);
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("durationSec must be a positive number.");
+    });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.headers["content-type"]).toMatch(/json/);
-    expect(res.body).toHaveProperty("error");
+    it("returns 400 for negative durationSec", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, durationSec: -100 });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("durationSec must be a positive number.");
+    });
+
+    it("returns 400 for non-numeric durationSec", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, durationSec: "not-a-number" });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("durationSec must be a positive number.");
+    });
+
+    it("accepts valid positive durationSec number", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, durationSec: 1800 });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("accepts string number for durationSec", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, durationSec: "1800" });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("handles numeric string with whitespace for durationSec", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, durationSec: "  1800  " });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("accepts decimal numbers for durationSec", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, durationSec: 1800.5 });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
   });
 
-  it("returns 400 for invalid duration value", async () => {
-    const invalidRun = {
-      userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
-      startTime: "2026-01-11T14:45:44.822Z",
-      durationSec: "-1455a",
-      distanceMeters: 1727,
-    };
+  describe("distanceMeters validation", () => {
+    it("returns 400 for zero distanceMeters", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, distanceMeters: 0 });
 
-    const res = await request(app).post("/runs/").send(invalidRun);
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("distanceMeters must be a positive number.");
+    });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.headers["content-type"]).toMatch(/json/);
-    expect(res.body).toHaveProperty("error");
+    it("returns 400 for negative distanceMeters", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, distanceMeters: -5000 });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("distanceMeters must be a positive number.");
+    });
+
+    it("returns 400 for non-numeric distanceMeters", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, distanceMeters: "invalid" });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("distanceMeters must be a positive number.");
+    });
+
+    it("accepts valid positive distanceMeters number", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, distanceMeters: 5000 });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("accepts string number for distanceMeters", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, distanceMeters: "5000" });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("handles numeric string with whitespace for distanceMeters", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, distanceMeters: "  5000  " });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
+
+    it("accepts decimal numbers for distanceMeters", async () => {
+      const res = await request(app)
+        .post("/runs")
+        .send({ ...validRunData, distanceMeters: 5000.5 });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
   });
 
-  it("returns 400 for invalid distance value", async () => {
-    const invalidRun = {
-      userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
-      startTime: "2026-01-11T14:45:44.822Z",
-      durationSec: 1727,
-      distanceMeters: "-1455a",
-    };
+  describe("Successful validation", () => {
+    it("returns 201 for valid run data", async () => {
+      const res = await request(app).post("/runs").send(validRunData);
 
-    const res = await request(app).post("/runs/").send(invalidRun);
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.headers["content-type"]).toMatch(/json/);
-    expect(res.body).toHaveProperty("error");
+    it("handles data with whitespace and string numbers", async () => {
+      const res = await request(app).post("/runs").send({
+        userId: "  123e4567-e89b-12d3-a456-426614174000  ",
+        startTime: "  2024-01-15T10:30:00.000Z  ",
+        durationSec: "  1800  ",
+        distanceMeters: "  5000  ",
+      });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("id");
+    });
   });
 });
