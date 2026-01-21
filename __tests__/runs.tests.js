@@ -166,6 +166,17 @@ describe("POST /runs/ - Integration Tests", () => {
 
   describe("userId validation", () => {
 
+    it('returns 400 for non-string userId', async () => {
+      const res = await request(app)
+        .post('/runs')
+        .send({ ...validRunData, userId: 12345 });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe('userId must be a string.');
+    });
+
     it("returns 400 for invalid userId format", async () => {
       const res = await request(app)
         .post('/runs')
@@ -209,7 +220,7 @@ describe("POST /runs/ - Integration Tests", () => {
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe('startTime must be a string in ISO 8601 format.');
+      expect(res.body.error).toBe('startTime must be a string.');
     });
 
     it('returns 400 for invalid ISO 8601 format', async () => {

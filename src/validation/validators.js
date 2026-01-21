@@ -38,6 +38,14 @@ const assertRequestFields = (
   }
 };
 
+const assertString = (str, strName) => {
+  if (typeof str !== "string") {
+    throwValidationError(
+      `${strName} must be a string.`,
+    );
+  }
+};
+
 const validateUUID = (ID, IDname = "ID") => {
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -48,11 +56,6 @@ const validateUUID = (ID, IDname = "ID") => {
 };
 
 const validateISODate = (timestamp, timestampName) => {
-  if (typeof timestamp !== "string") {
-    throwValidationError(
-      `${timestampName} must be a string in ISO 8601 format.`,
-    );
-  }
   const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
   if (!isoRegex.test(timestamp)) {
     throwValidationError(
@@ -124,6 +127,7 @@ const validatePassword = (password) => {
 module.exports = {
   validateJsonContentType,
   assertRequestFields,
+  assertString,
   validateUUID,
   validateISODate,
   validatePositiveNumber,
