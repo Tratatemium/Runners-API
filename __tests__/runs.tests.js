@@ -52,14 +52,13 @@ describe("GET /runs/:id", () => {
   });
 });
 
-
 describe("POST /runs/new-run", () => {
   it("returns 201 and creates a new run with valid data", async () => {
     const newRun = {
       userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
       startTime: "2026-01-19T12:25:44.822Z",
       durationSec: 457,
-      distanceMeters: 1574
+      distanceMeters: 1574,
     };
 
     const res = await request(app).post("/runs/new-run").send(newRun);
@@ -89,7 +88,7 @@ describe("POST /runs/new-run", () => {
     const invalidRun = {
       userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
       startTime: "2026-01-11T14:45:44.822Z",
-      distanceMeters: 1727
+      distanceMeters: 1727,
     };
 
     const res = await request(app).post("/runs/new-run").send(invalidRun);
@@ -104,7 +103,7 @@ describe("POST /runs/new-run", () => {
       userId: "fagfgsg5054a6wa6ew1",
       startTime: "2026-01-11T14:45:44.822Z",
       durationSec: 1550,
-      distanceMeters: 1727
+      distanceMeters: 1727,
     };
 
     const res = await request(app).post("/runs/new-run").send(invalidRun);
@@ -119,7 +118,7 @@ describe("POST /runs/new-run", () => {
       userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
       startTime: "2026-31-11T14:45:44.822Z",
       durationSec: 1550,
-      distanceMeters: 1727
+      distanceMeters: 1727,
     };
 
     const res = await request(app).post("/runs/new-run").send(invalidRun);
@@ -134,7 +133,7 @@ describe("POST /runs/new-run", () => {
       userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
       startTime: "2026-01-11T14:45:44.822Z",
       durationSec: "-1455a",
-      distanceMeters: 1727
+      distanceMeters: 1727,
     };
 
     const res = await request(app).post("/runs/new-run").send(invalidRun);
@@ -149,7 +148,7 @@ describe("POST /runs/new-run", () => {
       userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
       startTime: "2026-01-11T14:45:44.822Z",
       durationSec: 1727,
-      distanceMeters: "-1455a"
+      distanceMeters: "-1455a",
     };
 
     const res = await request(app).post("/runs/new-run").send(invalidRun);

@@ -30,7 +30,7 @@ const connectDB = async () => {
 const getCollection = (collectionName) => {
   if (!db) {
     const err = new Error(
-      "Database not initialized. Ensure connectDB() has completed before accessing collections."
+      "Database not initialized. Ensure connectDB() has completed before accessing collections.",
     );
     err.status = 500;
     throw err;

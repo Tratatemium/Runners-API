@@ -16,16 +16,16 @@ describe("Users API", () => {
 describe("POST /users/new-user", () => {
   it("returns 201 and creates a new user with valid data", async () => {
     const newUser = {
-      "username": "fastfeet",
-      "password": "StrongPassword!123",
-      "email": "runner@example.com",
-      "profile": {
-        "firstName": "Alex",
-        "lastName": "Miller",
-        "dateOfBirth": "1995-06-18",
-        "heightCm": 178,
-        "weightKg": 72
-      }
+      username: "fastfeet",
+      password: "StrongPassword!123",
+      email: "runner@example.com",
+      profile: {
+        firstName: "Alex",
+        lastName: "Miller",
+        dateOfBirth: "1995-06-18",
+        heightCm: 178,
+        weightKg: 72,
+      },
     };
 
     const res = await request(app).post("/users/new-user").send(newUser);
@@ -35,4 +35,3 @@ describe("POST /users/new-user", () => {
     expect(res.body).toHaveProperty("id");
   });
 }, 10000);
-
