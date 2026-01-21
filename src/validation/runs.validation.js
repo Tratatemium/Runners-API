@@ -11,7 +11,7 @@ const parseAndValidateRun = (req) => {
 
   const { userId, startTime, durationSec, distanceMeters } = req.body;
 
-  validators.assertString(userId, "userID");
+  validators.assertString(userId, "userId");
   validators.assertString(startTime, "startTime");
 
   const userIdTrimmed = userId.trim();
