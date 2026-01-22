@@ -48,12 +48,7 @@ const findRunByID = async (runID) => {
   const selectedRun = await runs.findOne({
     runID: runID,
   });
-  if (!selectedRun) {
-    const err = new Error(`No run with ID ${runID} found!`);
-    err.status = 404;
-    throw err;
-  }
-  return selectedRun;
+  return selectedRun || null;
 };
 
 const addNewRun = async (newRun) => {

@@ -23,6 +23,7 @@ const dbErrorHandler = (err, req, res, next) => {
 
 // FINAL error handler
 const finalErrorHandler = (err, req, res, next) => {
+  console.error(err);
   const status =
     Number.isInteger(err.status) && err.status >= 400 ? err.status : 500;
   const message = err.message || "Internal Server Error";
