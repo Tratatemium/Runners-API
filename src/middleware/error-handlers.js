@@ -18,6 +18,7 @@ const jsonSyntaxErrorHandler = (err, req, res, next) => {
 const dbErrorHandler = (err, req, res, next) => {
   console.error(err);
 
+  // duplicates
   if (err instanceof MongoServerError && err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0];
     const value = err.keyValue?.[field];
