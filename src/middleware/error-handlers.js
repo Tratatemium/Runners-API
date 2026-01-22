@@ -2,6 +2,7 @@ const { MongoServerSelectionError, MongoNetworkError } = require("mongodb");
 
 // JSON syntax error filter
 const jsonSyntaxErrorHandler = (err, req, res, next) => {
+  console.error(err);
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
     return res.status(400)
       .json({ error: "Invalid JSON." });
@@ -11,6 +12,7 @@ const jsonSyntaxErrorHandler = (err, req, res, next) => {
 
 // Database error filter
 const dbErrorHandler = (err, req, res, next) => {
+  console.error(err);
   if (
     err instanceof MongoServerSelectionError ||
     err instanceof MongoNetworkError
