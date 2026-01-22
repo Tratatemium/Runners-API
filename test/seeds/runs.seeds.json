@@ -1,0 +1,16 @@
+[
+  {
+    "runId": "dc9822e7-72d6-4cc8-b6da-c1c5208d6109",
+    "userId": "1d9a8400-07cd-466a-9d13-843a544a5b09",
+    "startTime": "2026-01-19T12:25:44.822Z",
+    "durationSec": 457,
+    "distanceMeters": 1574
+  },
+  {
+    "runID": "a4b5c6d7-1234-4efg-8hij-9876543210ab",
+    "userID": "2b3c4d5e-6789-4fgh-0ijk-abcdef123456",
+    "startTime": "2026-01-20T08:15:00.000Z",
+    "durationSec": 320,
+    "distanceMeters": 1200
+  }
+]
