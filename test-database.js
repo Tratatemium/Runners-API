@@ -1,5 +1,4 @@
-const { client } = require("./database.js");
-const { randomUUID } = require("crypto");
+
 
 const testDB = async () => {
   await client.connect();

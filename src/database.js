@@ -18,13 +18,34 @@ if (!process.env.MONGO_URI) {
 /*  DATABASE INITIALIZATION                                                                          */
 /* ================================================================================================= */
 
-const client = new MongoClient(process.env.MONGO_URI);
+let client;
 let db;
 
-const connectDB = async () => {
+const connectDB = async (uri = process.env.MONGO_URI) => {
+  if (!uri) {
+    throw new Error("MongoDB URI not provided");
+  }
+  client = new MongoClient(uri);
   await client.connect();
-  console.log("Connected to database.");
   db = client.db("runners-app");
+  console.log("Connected to database.");
+};
+
+const closeDB = async () => {
+  if (client) {
+    await client.close();
+    client = null;
+    db = null;
+  }
+};
+
+const clearDB = async () => {
+  if (!db) return;
+
+  const collections = await db.collections();
+  for (collection of collections) {
+    await collection.deleteMany({});
+  }
 };
 
 const getCollection = (collectionName) => {
@@ -100,6 +121,8 @@ const addNewUser = async (newUser) => {
 
 module.exports = {
   connectDB,
+  closeDB,
+  clearDB,
   findRunByID,
   addNewRun,
   findUserByID,

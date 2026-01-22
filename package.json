@@ -20,5 +20,8 @@
   },
   "jest": {
     "silent": true
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.0.1"
   }
 }
