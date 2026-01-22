@@ -377,6 +377,31 @@ describe("POST /users/ - Integration Tests", () => {
       expect(res.body.error).toBe("username unique_user_001 already exists.");
     });
 
+    it("handles concurrent duplicate username requests safely", async () => {
+      const userA = {
+        username: "race_user",
+        password: "Password123!",
+        email: "a@example.com",
+      };
+
+      const userB = {
+        username: "race_user",
+        password: "Password456!",
+        email: "b@example.com",
+      };
+
+      const results = await Promise.allSettled([
+        request(app).post("/users").send(userA),
+        request(app).post("/users").send(userB),
+      ]);
+
+      const statuses = results.map(r => r.value.statusCode);
+
+      // One should succeed, one should fail
+      expect(statuses).toContain(201);
+      expect(statuses).toContain(409);
+    });
+
     it("returns 409 for duplicate email", async () => {
       // First, create a user
       const firstUser = {
@@ -400,6 +425,30 @@ describe("POST /users/ - Integration Tests", () => {
       expect(res.body.error).toBe(
         "email duplicate@example.com already exists.",
       );
+    });
+    
+    it("handles concurrent duplicate email requests safely", async () => {
+      const userA = {
+        username: "email_race_1",
+        password: "Password123!",
+        email: "race@example.com",
+      };
+
+      const userB = {
+        username: "email_race_2",
+        password: "Password456!",
+        email: "race@example.com",
+      };
+
+      const results = await Promise.allSettled([
+        request(app).post("/users").send(userA),
+        request(app).post("/users").send(userB),
+      ]);
+
+      const statuses = results.map(r => r.value.statusCode);
+
+      expect(statuses).toContain(201);
+      expect(statuses).toContain(409);
     });
   });
 

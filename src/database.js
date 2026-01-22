@@ -28,6 +28,16 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
   client = new MongoClient(uri);
   await client.connect();
   db = client.db("runners-app");
+
+  await db.collection("users").createIndex(
+    { username: 1 },
+    { unique: true }
+  );
+  await db.collection("users").createIndex(
+    { email: 1 },
+    { unique: true }
+  );
+
   console.log("Connected to database.");
 };
 
@@ -43,7 +53,7 @@ const clearDB = async () => {
   if (!db) return;
 
   const collections = await db.collections();
-  for (collection of collections) {
+  for (const collection of collections) {
     await collection.deleteMany({});
   }
 };
