@@ -4,7 +4,7 @@ const seeding = require("./seeds/seeding.js");
 beforeAll(async () => {
   await testDb.setup();
   await seeding.seedData("runs");
-  // await seeding.seedData("users");
+  await seeding.seedData("users");
 });
 
 afterAll(async () => {

@@ -1,3 +1,4 @@
+const { assert } = require("node:console");
 const validators = require("./validators.js");
 
 const parseAndValidateUser = async (req) => {
@@ -12,10 +13,10 @@ const parseAndValidateUser = async (req) => {
   const { username, password, email } = req.body;
 
   validators.validateUsername(username);
-  // TODO: Add username uniqueness validation (e.g., assertUsernameUnique)
+  validators.assertUserFieldUnique("username", username);
 
   validators.validateEmail(email);
-  // TODO: Add email uniqueness validation (e.g., assertEmailUnique)
+  validators.assertUserFieldUnique("email", email);
 
   validators.validatePassword(password);
 

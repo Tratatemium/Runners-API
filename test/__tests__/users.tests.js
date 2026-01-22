@@ -333,6 +333,54 @@ describe("POST /users/ - Integration Tests", () => {
     });
   });
 
+  describe("Uniqueness validation", () => {
+    it("returns 409 for duplicate username", async () => {
+      // First, create a user
+      const firstUser = {
+        username: "unique_user_001",
+        password: "FirstPassword123!",
+        email: "first@example.com",
+      };
+      await request(app).post("/users").send(firstUser);
+
+      // Try to create another user with the same username
+      const duplicateUsernameUser = {
+        username: "unique_user_001",
+        password: "DifferentPassword123!",
+        email: "different@example.com",
+      };
+      const res = await request(app).post("/users").send(duplicateUsernameUser);
+
+      expect(res.statusCode).toBe(409);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("username unique_user_001 already exists.");
+    });
+
+    it("returns 409 for duplicate email", async () => {
+      // First, create a user
+      const firstUser = {
+        username: "unique_user_002",
+        password: "FirstPassword123!",
+        email: "duplicate@example.com",
+      };
+      await request(app).post("/users").send(firstUser);
+
+      // Try to create another user with the same email
+      const duplicateEmailUser = {
+        username: "different_user",
+        password: "DifferentPassword123!",
+        email: "duplicate@example.com",
+      };
+      const res = await request(app).post("/users").send(duplicateEmailUser);
+
+      expect(res.statusCode).toBe(409);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("email duplicate@example.com already exists.");
+    });
+  });
+
   describe("Successful validation", () => {
     it("returns 201 for valid user data", async () => {
       const res = await request(app).post("/users").send(validUserData);

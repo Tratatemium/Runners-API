@@ -1,3 +1,14 @@
 [
-    
+  {
+    "userId" : "d19baf3f-cbb5-43b0-b6ea-9f92165be12f",
+    "username": "test_runner_01",
+    "password": "TestPassword123!",
+    "email": "runner01@test.com"
+  },
+  {
+    "userId" : "0cf04aae-1f37-4670-96e4-537f2ea5e61f",
+    "username": "test_runner_02",
+    "password": "SecurePass456!",
+    "email": "runner02@test.com"
+  }
 ]

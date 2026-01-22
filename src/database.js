@@ -97,6 +97,14 @@ const findUserById = async (userId) => {
   return selectedUser || null;
 };
 
+const findUserByField = async (field, value) => {
+  const users = getCollection("users");
+  const selectedUser = await users.findOne({
+    [field]: value,
+  });
+  return selectedUser || null;
+};
+
 const addNewUser = async (newUser) => {
   const users = getCollection("users");
   
@@ -127,5 +135,6 @@ module.exports = {
   findRunById,
   addNewRun,
   findUserById,
+  findUserByField,
   addNewUser,
 };
