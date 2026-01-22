@@ -7,8 +7,8 @@
     "distanceMeters": 1574
   },
   {
-    "runID": "a4b5c6d7-1234-4efg-8hij-9876543210ab",
-    "userID": "0cf04aae-1f37-4670-96e4-537f2ea5e61f",
+    "runId": "a4b5c6d7-1234-4efg-8hij-9876543210ab",
+    "userId": "0cf04aae-1f37-4670-96e4-537f2ea5e61f",
     "startTime": "2026-01-20T08:15:00.000Z",
     "durationSec": 320,
     "distanceMeters": 1200
