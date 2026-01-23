@@ -36,5 +36,5 @@ const login = async (email, password) => {
 
 module.exports = {
   createPasswordHash,
-  login
+  login,
 };

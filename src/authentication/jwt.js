@@ -3,7 +3,11 @@ const jwt = require("jsonwebtoken");
 const TOKEN_KEY = process.env.TOKEN_KEY;
 
 const createToken = (user) => {
-  const payload = { userId: user.userId, username: user.username , email: user.email };
+  const payload = {
+    userId: user.userId,
+    username: user.username,
+    email: user.email,
+  };
   const options = {
     algorithm: "HS256",
     expiresIn: "1h",
