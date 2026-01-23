@@ -25,7 +25,7 @@ const login = async (email, password) => {
   const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
 
   if (!foundUser || !isPasswordCorrect) {
-    const err = new Error("Wrong email & password combination");
+    const err = new Error("Invalid credentials");
     err.status = 401;
     throw err;
   }

@@ -159,6 +159,17 @@ Content-Type: application/json
 }
 
 
+### Bad Login
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "username": "fastfeet",
+  "password": "WrongPassword!456",
+  "email": "runner@example.com"
+}
+
+
 ### Ilo
 
 POST http://172.18.19.93:3003/api/topics
