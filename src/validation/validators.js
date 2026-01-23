@@ -119,13 +119,6 @@ const validatePassword = (password) => {
   }
 };
 
-const assertUserFieldUnique = async (field, value) => {
-  const existingUser = await db.findUserByField(field, value);
-  if (existingUser) {
-    throwValidationError(`${field} ${value} already exists.`, 409);
-  }
-};
-
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -140,5 +133,4 @@ module.exports = {
   validateUsername,
   validateEmail,
   validatePassword,
-  assertUserFieldUnique,
 };
