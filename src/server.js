@@ -1,10 +1,43 @@
+/* ================================================================================================= */
+/*  ENV CONFIG                                                                                       */
+/* ================================================================================================= */
+
 const dotenv = require("dotenv");
-dotenv.config();
 
-const app = require("./app.js");
-const { connectDB } = require("./database.js");
+const requireEnv = (key, purpose) => {
+  const value = process.env[key];
 
-const PORT = process.env.PORT || 3000;
+  if (!value) {
+    throw new Error(
+      `${key} environment variable is not set. Required ${purpose}.`
+    );
+  }
+
+  return value;
+};
+
+const configEnv = () => {
+  dotenv.config();
+
+  requireEnv("MONGO_URI", "to connect to MongoDB");
+  requireEnv("TOKEN_KEY", "to sign and verify JWTs");
+};
+
+try {
+  configEnv();
+} catch (err) {
+  console.error("Configuration error:", err);
+  process.exit(1);
+}
+
+/* ================================================================================================= */
+/*  BOOTSTRAP                                                                                        */
+/* ================================================================================================= */
+
+const app = require("./app");
+const { connectDB } = require("./database");
+
+const PORT = Number(process.env.PORT) || 3000;
 
 const startServer = async () => {
   try {
@@ -14,7 +47,7 @@ const startServer = async () => {
       console.log(`API server running on http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error("Failed to start server:", err);
+    console.error("Startup error:", err);
     process.exit(1);
   }
 };
