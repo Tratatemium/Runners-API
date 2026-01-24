@@ -3,15 +3,18 @@
 /* ================================================================================================= */
 
 const { MongoClient } = require("mongodb");
-const dotenv = require("dotenv");
 const { randomUUID } = require("crypto");
 
 /* ================================================================================================= */
 /*  CONFIGURATION                                                                                    */
 /* ================================================================================================= */
 
-if (!process.env.MONGO_URI) {
-  dotenv.config();
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  throw new Error(
+    "MONGO_URI environment variable is not set. It must be defined to connect to mongoDB"
+  );
 }
 
 /* ================================================================================================= */

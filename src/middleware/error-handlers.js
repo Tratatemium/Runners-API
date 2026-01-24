@@ -6,22 +6,19 @@ const {
 
 // JSON syntax error filter
 const jsonSyntaxErrorHandler = (err, req, res, next) => {
-  console.error(err);
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-    return res.status(400)
-      .json({ error: "Invalid JSON." });
+    return res.status(400).json({ error: "Invalid JSON." });
   }
-  return next(err);
+  next(err);
 };
 
 // Database error filter
 const dbErrorHandler = (err, req, res, next) => {
-  console.error(err);
+  const isDuplikateKey = err instanceof MongoServerError && err.code === 11000;
 
-  // duplicates
-  if (err instanceof MongoServerError && err.code === 11000) {
+  if (isDuplikateKey) {
     const field = Object.keys(err.keyValue || {})[0];
-    const value = err.keyValue?.[field];
+    const value = field ? err.keyValue[field] : undefined;
 
     return res.status(409).json({
       error: field
@@ -30,22 +27,27 @@ const dbErrorHandler = (err, req, res, next) => {
     });
   }
 
-  if (
+  const isConnectionError =
     err instanceof MongoServerSelectionError ||
-    err instanceof MongoNetworkError
-  ) {
-    return res.status(500)
-      .json({ error: "Failed to connect to database." });
+    err instanceof MongoNetworkError;
+
+  if (isConnectionError) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to connect to database." });
   }
-  return next(err);
+  
+  next(err);
 };
 
 // FINAL error handler
 const finalErrorHandler = (err, req, res, next) => {
-  console.error(err);
-  const status =
-    Number.isInteger(err.status) && err.status >= 400 ? err.status : 500;
-  const message = err.message || "Internal Server Error";
+  const isValidErrStatus = Number.isInteger(err.status) && err.status >= 400;
+
+  const status = isValidErrStatus ? err.status : 500;
+  const message =
+    isValidErrStatus && err.message ? err.message : "Internal Server Error";
+
+  if (status >= 500) console.error(err);
 
   res.status(status).json({ error: message });
 };
