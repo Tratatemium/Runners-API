@@ -6,7 +6,7 @@ const PUBLIC_KEY = process.env.PUBLIC_KEY;
 
 // Create token
 const createToken = async (user) => {
-  const payload = { id: user.id, username: user.username };
+  const payload = { userId: user.id, username: user.username, email: user.email };
   const options = {
     algorithm: "RS256",
     expiresIn: "15m",
