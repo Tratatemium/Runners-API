@@ -2,6 +2,12 @@ const jwt = require("jsonwebtoken");
 
 const TOKEN_KEY = process.env.TOKEN_KEY;
 
+if (!TOKEN_KEY) {
+  throw new Error(
+    "TOKEN_KEY environment variable is not set. It must be defined to sign and verify JWTs."
+  );
+}
+
 const createToken = (user) => {
   const payload = {
     userId: user.userId,
