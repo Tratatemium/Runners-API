@@ -145,3 +145,36 @@ Content-Type: application/json
   "password": "StrongPassword!123",
   "email": "runner@example.com"
 }
+
+
+
+### Good Login
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "username": "fastfeet",
+  "password": "StrongPassword!123",
+  "email": "runner@example.com"
+}
+
+
+### Bad Login
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "username": "fastfeet",
+  "password": "WrongPassword!456",
+  "email": "runner@example.com"
+}
+
+
+### Ilo
+
+POST http://172.18.19.93:3003/api/topics
+Content-Type: application/json
+
+{
+  "title": "[not today] Deploying api server on cloud service."
+}
