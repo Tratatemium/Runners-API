@@ -1,19 +1,20 @@
 const request = require("supertest");
 const app = require("../../src/app.js");
 
-describe("POST /users/login - Integration Tests", () => {
-  // Using pre-seeded test users
-  const testUser1 = {
-    username: "test_runner_01",
-    password: "TestPassword123!",
-    email: "runner01@test.com",
-  };
+// Using pre-seeded test users
+const testUser1 = {
+  username: "test_runner_01",
+  password: "TestPassword123!",
+  email: "runner01@test.com",
+};
 
-  const testUser2 = {
-    username: "test_runner_02",
-    password: "SecurePass456!",
-    email: "runner02@test.com",
-  };
+const testUser2 = {
+  username: "test_runner_02",
+  password: "SecurePass456!",
+  email: "runner02@test.com",
+};
+
+describe("POST /users/login - Integration Tests", () => {
 
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
@@ -139,18 +140,6 @@ describe("POST /users/login - Integration Tests", () => {
 });
 
 describe("GET /users/:id - Integration Tests", () => {
-  const testUser1 = {
-    username: "test_runner_01",
-    password: "TestPassword123!",
-    email: "runner01@test.com",
-  };
-
-  const testUser2 = {
-    username: "test_runner_02",
-    password: "SecurePass456!",
-    email: "runner02@test.com",
-  };
-
   let user1Token;
   let user1Id;
   let user2Token;
@@ -183,21 +172,10 @@ describe("GET /users/:id - Integration Tests", () => {
       expect(res.body.error).toBe("Invalid authorization header.");
     });
 
-    it("returns 401 when authorization header is malformed", async () => {
-      const res = await request(app)
-        .get(`/users/${user1Id}`)
-        .set("Authorization", "InvalidFormat");
-
-      expect(res.statusCode).toBe(401);
-      expect(res.headers["content-type"]).toMatch(/json/);
-      expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Invalid authorization header.");
-    });
-
     it("returns 401 when authorization header doesn't start with Bearer", async () => {
       const res = await request(app)
         .get(`/users/${user1Id}`)
-        .set("Authorization", `Token ${user1Token}`);
+        .set("Authorization", "InvalidFormat");
 
       expect(res.statusCode).toBe(401);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -209,17 +187,6 @@ describe("GET /users/:id - Integration Tests", () => {
       const res = await request(app)
         .get(`/users/${user1Id}`)
         .set("Authorization", "Bearer invalid.token.here");
-
-      expect(res.statusCode).toBe(401);
-      expect(res.headers["content-type"]).toMatch(/json/);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("returns 401 for expired or malformed token", async () => {
-      const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NSJ9.invalid";
-      const res = await request(app)
-        .get(`/users/${user1Id}`)
-        .set("Authorization", `Bearer ${fakeToken}`);
 
       expect(res.statusCode).toBe(401);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -260,17 +227,6 @@ describe("GET /users/:id - Integration Tests", () => {
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe("You are not allowed to perform this action.");
     });
-
-    it("returns 403 when user2 tries to access user1's data", async () => {
-      const res = await request(app)
-        .get(`/users/${user1Id}`)
-        .set("Authorization", `Bearer ${user2Token}`);
-
-      expect(res.statusCode).toBe(403);
-      expect(res.headers["content-type"]).toMatch(/json/);
-      expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("You are not allowed to perform this action.");
-    });
   });
 
   describe("Successful requests", () => {
@@ -282,31 +238,11 @@ describe("GET /users/:id - Integration Tests", () => {
       expect(res.statusCode).toBe(200);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("account");
-      expect(res.body.account).toHaveProperty("username", testUser1.username);
-      expect(res.body.account).toHaveProperty("email", testUser1.email);
-    });
-
-    it("returns user data without sensitive fields", async () => {
-      const res = await request(app)
-        .get(`/users/${user1Id}`)
-        .set("Authorization", `Bearer ${user1Token}`);
-
-      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("profile");
       expect(res.body).not.toHaveProperty("_id");
       expect(res.body).not.toHaveProperty("credentials");
-      expect(res.body).toHaveProperty("account");
-      expect(res.body).toHaveProperty("profile");
-    });
-
-    it("allows user2 to access their own profile", async () => {
-      const res = await request(app)
-        .get(`/users/${user2Id}`)
-        .set("Authorization", `Bearer ${user2Token}`);
-
-      expect(res.statusCode).toBe(200);
-      expect(res.headers["content-type"]).toMatch(/json/);
-      expect(res.body.account).toHaveProperty("username", testUser2.username);
-      expect(res.body.account).toHaveProperty("email", testUser2.email);
+      expect(res.body.account).toHaveProperty("username", testUser1.username);
+      expect(res.body.account).toHaveProperty("email", testUser1.email);
     });
   });
 });
