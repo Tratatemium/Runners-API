@@ -31,6 +31,7 @@ const login = async (req, res) => {
 
 const getUserById = async (req, res) => {
   const userData = await db.findUserById(req.params["id"]);
+  // TODO This should check for null and return a 404 error instead, similar to the pattern used in src/controllers/runs.controller.js lines 8-12.
   const { _id, credentials, ...safeData } = userData;
   res.status(200).json(safeData);
 };
