@@ -31,6 +31,7 @@ const login = async (email, password) => {
   }
 
   const token = createToken(foundUser);
+  db.updateLastLogin(foundUser);
   return token;
 };
 

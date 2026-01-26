@@ -115,6 +115,16 @@ const findUserByField = async (field, value) => {
   return selectedUser || null;
 };
 
+const updateLastLogin = async (foundUser) => {
+  const email = foundUser.account.email;
+  const users = getCollection("users");
+  const result = await users.updateOne(
+    { email: email },  // filter
+    { $set: { lastLogin: new Date().toISOString() } }     // update
+  );
+  return result;
+};
+
 const addNewUser = async (newUser) => {
   const users = getCollection("users");
 
@@ -143,5 +153,6 @@ module.exports = {
   addNewRun,
   findUserById,
   findUserByField,
+  updateLastLogin,
   addNewUser,
 };
