@@ -39,6 +39,10 @@ const dbErrorHandler = (err, req, res, next) => {
   next(err);
 };
 
+const authErrorHandler = (err, req, res, next) => {
+  next(err);
+};
+
 // FINAL error handler
 const finalErrorHandler = (err, req, res, next) => {
   const isValidErrStatus = Number.isInteger(err.status) && err.status >= 400;
@@ -52,4 +56,4 @@ const finalErrorHandler = (err, req, res, next) => {
   res.status(status).json({ error: message });
 };
 
-module.exports = { jsonSyntaxErrorHandler, dbErrorHandler, finalErrorHandler };
+module.exports = { jsonSyntaxErrorHandler, dbErrorHandler, authErrorHandler, finalErrorHandler };

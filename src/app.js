@@ -54,11 +54,13 @@ app.use("/users", usersRoutes);
 const {
   jsonSyntaxErrorHandler,
   dbErrorHandler,
+  authErrorHandler,
   finalErrorHandler,
 } = require("./middleware/error-handlers.js");
 
 app.use(jsonSyntaxErrorHandler);
 app.use(dbErrorHandler);
+app.use(authErrorHandler);
 app.use(finalErrorHandler);
 
 /* ================================================================================================= */

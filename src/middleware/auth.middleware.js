@@ -10,7 +10,7 @@ const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   // Expected format: "Bearer <token>"
 
-  const isAuthHeaderCorrect = authHeader || !authHeader.startsWith("Bearer ");
+  const isAuthHeaderCorrect = authHeader && authHeader.startsWith("Bearer ");
   if (!isAuthHeaderCorrect) {
     throwAuthError("Invalid authorization header.");
   }

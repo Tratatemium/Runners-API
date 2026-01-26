@@ -170,9 +170,17 @@ Content-Type: application/json
 }
 
 
-### Bad Login
+### No authorization header.
 GET http://localhost:3000/users/1988f4b1-40ff-416d-9b51-bb24797ad242
 Content-Type: application/json
+
+### Bad header.
+GET http://localhost:3000/users/1988f4b1-40ff-416d-9b51-bb24797ad242
+Authorization: blabla
+
+### Bad header.
+GET http://localhost:3000/users/1988f4b1-40ff-416d-9b51-bb24797ad242
+Authorization: Bearer 
 
 
 ### Ilo
