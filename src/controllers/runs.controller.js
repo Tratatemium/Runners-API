@@ -1,5 +1,5 @@
-const { parseAndValidateRun } = require("../validation/runs.validation.js");
-const { validateUUID } = require("../validation/validators.js");
+const { parseAndValidateRun } = require("../middleware/validation/runs.validation.js");
+const { validateUUID } = require("../middleware/validation/validators.js");
 const { findRunById, addNewRun } = require("../database.js");
 
 const getRunById = async (req, res) => {
