@@ -7,28 +7,17 @@ const throwAuthError = (message, status = 401) => {
 };
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const header = req.headers.authorization;
   // Expected format: "Bearer <token>"
-
-  const isAuthHeaderCorrect = authHeader && authHeader.startsWith("Bearer ");
-  if (!isAuthHeaderCorrect) {
+  if (!header || !header.startsWith("Bearer ")) {
     throwAuthError("Invalid authorization header.");
   }
 
-  const token = authHeader.substring(7);
+  const token = header.slice(7);
 
-  if (!token) {
-    throwAuthError("No token provided.");
-  }
-
-  try {
-    const decodedUser = verifyToken(token);
-    req.decodedUser = decodedUser;
-    next();
-  } catch (err) {
-    next(err);
-  }
+  const decodedUser = verifyToken(token);
+  req.decodedUser = decodedUser;
+  next();
 };
-
 
 module.exports = { authMiddleware };
