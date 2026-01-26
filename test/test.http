@@ -170,6 +170,11 @@ Content-Type: application/json
 }
 
 
+### Bad Login
+GET http://localhost:3000/users/1988f4b1-40ff-416d-9b51-bb24797ad242
+Content-Type: application/json
+
+
 ### Ilo
 
 POST http://172.18.19.93:3003/api/topics

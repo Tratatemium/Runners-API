@@ -19,4 +19,8 @@ const login = async (req, res) => {
   res.status(200).json({ token });
 };
 
-module.exports = { postNewUser, login };
+const getUserById = async (req, res) => {
+  res.status(200).send(req.decodedUser);
+};
+
+module.exports = { postNewUser, login, getUserById };
