@@ -21,9 +21,13 @@ const authMiddleware = (req, res, next) => {
     throwAuthError("No token provided.");
   }
 
-  const decodedUser = verifyToken(token);
-  req.decodedUser = decodedUser;
-  next();
+  try {
+    const decodedUser = verifyToken(token);
+    req.decodedUser = decodedUser;
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
 
 

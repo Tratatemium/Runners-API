@@ -180,7 +180,12 @@ Authorization: blabla
 
 ### Bad header.
 GET http://localhost:3000/users/1988f4b1-40ff-416d-9b51-bb24797ad242
-Authorization: Bearer 
+Authorization: Bearer 41
+
+
+### good token.
+GET http://localhost:3000/users/1988f4b1-40ff-416d-9b51-bb24797ad242
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxOTg4ZjRiMS00MGZmLTQxNmQtOWI1MS1iYjI0Nzk3YWQyNDIiLCJ1c2VybmFtZSI6ImZhc3RmZWV0IiwiZW1haWwiOiJydW5uZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3Njk0Mjg2NzAsImV4cCI6MTc2OTQzMjI3MCwiaXNzIjoicnVubmVycy1hcGkifQ.YiVBnh5eRCyJstyuofQ3kVKnaI0nwn8SXjXAuxTKa-c
 
 
 ### Ilo

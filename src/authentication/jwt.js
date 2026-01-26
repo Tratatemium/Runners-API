@@ -18,7 +18,7 @@ const createToken = (user) => {
   return token;
 };
 
-const verifyToken = async (token) => {
+const verifyToken = (token) => {
   const options = {
     algorithms: ["HS256"],
     issuer: "runners-api",
