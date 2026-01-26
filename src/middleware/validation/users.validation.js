@@ -1,6 +1,6 @@
 const validators = require("./validators.js");
 
-const parseAndValidateUser = async (req) => {
+const validateRegisterRequest = async (req, res, next) => {
   validators.validateJsonContentType(req);
 
   validators.assertRequestFields(
@@ -15,7 +15,7 @@ const parseAndValidateUser = async (req) => {
   validators.validateEmail(email);
   validators.validatePassword(password);
 
-  return { email, username, plainTextPassword: password };
+  next()
 };
 
 // TODO: Add profile field validation here if/when profile data is supported.
@@ -32,5 +32,5 @@ const parseAndValidateUser = async (req) => {
 /* ================================================================================================= */
 
 module.exports = {
-  parseAndValidateUser,
+  validateRegisterRequest,
 };

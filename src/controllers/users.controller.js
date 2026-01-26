@@ -1,13 +1,11 @@
-const { parseAndValidateUser } = require("../validation/users.validation.js");
 const auth = require("../authentication/auth.service.js");
 const db = require("../database.js");
 
 const postNewUser = async (req, res) => {
-  const { email, username, plainTextPassword } =
-    await parseAndValidateUser(req);
+  const { email, username, password } = req.body;
 
   const { passwordHash, passwordMetadata } =
-    await auth.createPasswordHash(plainTextPassword);
+    await auth.createPasswordHash(password);
   const newUser = {
     credentials: { passwordHash, passwordMetadata },
     account: {
