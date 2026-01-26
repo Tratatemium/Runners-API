@@ -1,7 +1,7 @@
 const auth = require("../authentication/auth.service.js");
 const db = require("../database.js");
 
-const postNewUser = async (req, res) => {
+const createUser = async (req, res) => {
   const { email, username, password } = req.body;
 
   const { passwordHash, passwordMetadata } =
@@ -35,4 +35,4 @@ const getUserById = async (req, res) => {
   res.status(200).json(safeData);
 };
 
-module.exports = { postNewUser, login, getUserById };
+module.exports = { createUser, login, getUserById };

@@ -8,7 +8,7 @@ const validation = require("../middleware/validation/users.validation.js");
 router.post(
   "/",
   validation.validateRegisterRequest,
-  usersController.postNewUser,
+  usersController.createUser,
 );
 
 router.post("/login", validation.validateLoginRequest, usersController.login);
