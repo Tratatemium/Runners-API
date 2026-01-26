@@ -1,14 +1,44 @@
 [
   {
-    "userId" : "d19baf3f-cbb5-43b0-b6ea-9f92165be12f",
-    "username": "test_runner_01",
-    "password": "TestPassword123!",
-    "email": "runner01@test.com"
+    "userId": "f96084c5-ad81-4a19-99ef-49cfdfeb6fb5",
+    "credentials": {
+      "passwordHash": "$2b$10$fM2Qyy49QteaGlgUnq.ZSuxKrdT5o1hWxcdOBksmi4WUrH2940spS",
+      "passwordMetadata": {
+        "algorithm": "bcrypt",
+        "updatedAt": {
+          "$date": "2026-01-26T20:38:40.659Z"
+        },
+        "failedLoginAttempts": 0,
+        "lockUntil": null
+      }
+    },
+    "account": {
+      "username": "test_runner_01",
+      "email": "runner01@test.com",
+      "createdAt": "2026-01-26T20:38:40.659Z",
+      "lastLogin": null
+    },
+    "profile": {}
   },
   {
-    "userId" : "0cf04aae-1f37-4670-96e4-537f2ea5e61f",
-    "username": "test_runner_02",
-    "password": "SecurePass456!",
-    "email": "runner02@test.com"
+    "userId": "86642e8c-d288-450b-aa92-b83dc18abcaf",
+    "credentials": {
+      "passwordHash": "$2b$10$LgZkmdH2eeXqXgh3Kh0Y9.4N1ygrbje3JOsEdfBFa.v2V9AF49wvS",
+      "passwordMetadata": {
+        "algorithm": "bcrypt",
+        "updatedAt": {
+          "$date": "2026-01-26T20:38:56.848Z"
+        },
+        "failedLoginAttempts": 0,
+        "lockUntil": null
+      }
+    },
+    "account": {
+      "username": "test_runner_02",
+      "email": "runner02@test.com",
+      "createdAt": "2026-01-26T20:38:56.848Z",
+      "lastLogin": null
+    },
+    "profile": {}
   }
 ]

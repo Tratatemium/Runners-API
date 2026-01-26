@@ -2,15 +2,22 @@ const express = require("express");
 const router = express.Router();
 
 const usersController = require("../controllers/users.controller.js");
-const authMiddleware = require("../middleware/auth.middleware.js");
+const authentication = require("../middleware/auth.middleware.js");
+const validation = require("../middleware/validation/users.validation.js");
 
-router.post("/", usersController.postNewUser);
-router.post("/login", usersController.login);
+router.post(
+  "/",
+  validation.validateRegisterRequest,
+  usersController.createUser,
+);
+
+router.post("/login", validation.validateLoginRequest, usersController.login);
 
 router.get(
   "/:id",
-  authMiddleware.checkAuth,
-  authMiddleware.checkOwnership("id"),
+  authentication.checkAuth,
+  validation.validateUUID("id"),
+  authentication.checkOwnership("id"),
   usersController.getUserById,
 );
 

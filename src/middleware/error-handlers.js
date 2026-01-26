@@ -22,7 +22,7 @@ const dbErrorHandler = (err, req, res, next) => {
 
     return res.status(409).json({
       error: field
-        ? `${field} ${value} already exists.`
+        ? `${field.slice(8)} ${value} already exists.` // TODO: take field dynamicly
         : "Duplicate key error",
     });
   }

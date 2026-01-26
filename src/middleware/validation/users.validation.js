@@ -1,6 +1,6 @@
 const validators = require("./validators.js");
 
-const parseAndValidateUser = async (req) => {
+const validateRegisterRequest = async (req, res, next) => {
   validators.validateJsonContentType(req);
 
   validators.assertRequestFields(
@@ -15,8 +15,36 @@ const parseAndValidateUser = async (req) => {
   validators.validateEmail(email);
   validators.validatePassword(password);
 
-  return { email, username, plainTextPassword: password };
+  next()
 };
+
+const validateLoginRequest = async (req, res, next) => {
+  validators.validateJsonContentType(req);
+
+  validators.assertRequestFields(
+    req,
+    ["username", "password", "email"],
+    "User data",
+  );
+
+  const { username, password, email } = req.body;
+
+  validators.validateUsername(username);
+  validators.validateEmail(email);
+  validators.validatePassword(password);
+
+  next()
+};
+
+const validateUUID = (param = "id") => {
+  return (req, res, next) => {
+    validators.validateUUID(req.params[param]);
+    next()
+  };
+};
+
+
+
 
 // TODO: Add profile field validation here if/when profile data is supported.
 //  "profile": {
@@ -32,5 +60,7 @@ const parseAndValidateUser = async (req) => {
 /* ================================================================================================= */
 
 module.exports = {
-  parseAndValidateUser,
+  validateRegisterRequest,
+  validateLoginRequest,
+  validateUUID
 };
