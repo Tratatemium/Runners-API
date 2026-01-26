@@ -30,11 +30,11 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
   db = client.db("runners-app");
 
   await db.collection("users").createIndex(
-    { username: 1 },
+    { "account.username": 1 },
     { unique: true }
   );
   await db.collection("users").createIndex(
-    { email: 1 },
+    { "account.email": 1 },
     { unique: true }
   );
 

@@ -19,9 +19,9 @@ const createPasswordHash = async (plainTextPassword) => {
 };
 
 const login = async (email, password) => {
-  const foundUser = await db.findUserByField("email", email);
+  const foundUser = await db.findUserByField("account.email", email);
 
-  const passwordHash = foundUser ? foundUser.passwordHash : DUMMY_HASH;
+  const passwordHash = foundUser ? foundUser.credentials.passwordHash : DUMMY_HASH;
   const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
 
   if (!foundUser || !isPasswordCorrect) {

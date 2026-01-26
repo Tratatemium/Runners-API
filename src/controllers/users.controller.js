@@ -30,7 +30,8 @@ const login = async (req, res) => {
 
 const getUserById = async (req, res) => {
   const userData = await db.findUserById(req.params["id"]);
-  res.status(200).json(userData);
+  const { _id, credentials, ...safeData } = userData;
+  res.status(200).json(safeData);
 };
 
 module.exports = { postNewUser, login, getUserById };

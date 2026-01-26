@@ -17,6 +17,7 @@ const dbErrorHandler = (err, req, res, next) => {
   const isDuplicateKey = err instanceof MongoServerError && err.code === 11000;
 
   if (isDuplicateKey) {
+    console.error(err)
     const field = Object.keys(err.keyValue || {})[0];
     const value = field ? err.keyValue[field] : undefined;
 
