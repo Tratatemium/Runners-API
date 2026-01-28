@@ -1,4 +1,4 @@
-const auth = require("../authentication/auth.service.js");
+const auth = require("../services/auth.service.js");
 const db = require("../database.js");
 
 const createUser = async (req, res) => {
