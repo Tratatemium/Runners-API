@@ -1,4 +1,4 @@
-const { verifyToken } = require("../utils/jwt.js");
+const { verifyToken } = require("../utils/jwt.utils.js");
 
 const throwAuthError = (message, status = 401) => {
   const err = new Error(message);
