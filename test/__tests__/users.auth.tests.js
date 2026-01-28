@@ -15,7 +15,6 @@ const testUser2 = {
 };
 
 describe("POST /users/login - Integration Tests", () => {
-
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
@@ -44,7 +43,9 @@ describe("POST /users/login - Integration Tests", () => {
 
     it("returns 400 for missing username field", async () => {
       const { username, ...dataWithoutUsername } = testUser1;
-      const res = await request(app).post("/users/login").send(dataWithoutUsername);
+      const res = await request(app)
+        .post("/users/login")
+        .send(dataWithoutUsername);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -56,7 +57,9 @@ describe("POST /users/login - Integration Tests", () => {
 
     it("returns 400 for missing password field", async () => {
       const { password, ...dataWithoutPassword } = testUser1;
-      const res = await request(app).post("/users/login").send(dataWithoutPassword);
+      const res = await request(app)
+        .post("/users/login")
+        .send(dataWithoutPassword);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -68,7 +71,9 @@ describe("POST /users/login - Integration Tests", () => {
 
     it("returns 400 for missing email field", async () => {
       const { email, ...dataWithoutEmail } = testUser1;
-      const res = await request(app).post("/users/login").send(dataWithoutEmail);
+      const res = await request(app)
+        .post("/users/login")
+        .send(dataWithoutEmail);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -81,13 +86,11 @@ describe("POST /users/login - Integration Tests", () => {
 
   describe("Authentication validation", () => {
     it("returns 401 for incorrect password", async () => {
-      const res = await request(app)
-        .post("/users/login")
-        .send({
-          username: testUser1.username,
-          email: testUser1.email,
-          password: "WrongPassword123!",
-        });
+      const res = await request(app).post("/users/login").send({
+        username: testUser1.username,
+        email: testUser1.email,
+        password: "WrongPassword123!",
+      });
 
       expect(res.statusCode).toBe(401);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -95,13 +98,11 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 401 for non-existent email", async () => {
-      const res = await request(app)
-        .post("/users/login")
-        .send({
-          username: "validuser123",
-          email: "nonexistent@example.com",
-          password: "ValidPassword123!",
-        });
+      const res = await request(app).post("/users/login").send({
+        username: "validuser123",
+        email: "nonexistent@example.com",
+        password: "ValidPassword123!",
+      });
 
       expect(res.statusCode).toBe(401);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -124,7 +125,9 @@ describe("POST /users/login - Integration Tests", () => {
       const res = await request(app).post("/users/login").send(testUser2);
 
       expect(res.statusCode).toBe(200);
-      expect(res.body.token).toMatch(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/);
+      expect(res.body.token).toMatch(
+        /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/,
+      );
     });
 
     it("allows multiple logins with same credentials", async () => {

@@ -3,7 +3,7 @@ const router = express.Router();
 
 const validation = require("../middleware/validation/users.validation.js");
 const authentication = require("../middleware/authentication/auth.middleware.js");
-const guard = require("../middleware/authentication/guard.middleware.js")
+const guard = require("../middleware/authentication/guard.middleware.js");
 const usersMiddleware = require("../middleware/users.middleware.js");
 const usersController = require("../controllers/users.controller.js");
 
@@ -27,7 +27,7 @@ router.get(
 // router.get(
 //   "/:id",
 //   validation.validateUUID("id"),
-//   authentication.checkAuth, 
+//   authentication.checkAuth,
 //   guard.checkOwnership("id"),
 //   usersController.getUserById,
 // );
