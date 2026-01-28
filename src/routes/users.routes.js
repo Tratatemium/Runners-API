@@ -27,6 +27,32 @@ router.get(
   usersController.getMe,
 );
 
+// TODO: PATCH users/me
+
+// TODO: PATCH users/me/password
+// {
+//   "currentPassword": "old_password",
+//   "newPassword": "new_password"
+// }
+
+// TODO: PATCH users/me/email
+// {
+//   "currentPassword": "old_password",
+//   "newEmail": "new@example.com"
+// }
+
+// IDEA: POST /users/password-reset
+// {
+//   "email": "user@example.com"
+// }
+
+// IDEA: POST /users/password-reset/confirm
+// {
+//   "token": "reset_token",
+//   "newPassword": "new_password"
+// }
+
+
 // TODO: this functionality is moved to GET users/me, this should be refactored into admin route
 // router.get(
 //   "/:id",
