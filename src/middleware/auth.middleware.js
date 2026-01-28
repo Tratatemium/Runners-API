@@ -15,15 +15,15 @@ const checkAuth = (req, res, next) => {
 
   const token = header.slice(7);
 
-  const authUser = verifyToken(token);
-  req.authUser = authUser;
+  const userData = verifyToken(token);
+  req.user = userData;
   next();
 };
 
 const checkOwnership = (param = "id") => {
   return (req, res, next) => {
     const resourceId = req.params[param];
-    const providedId = req.authUser.userId;
+    const providedId = req.user.userId;
     if (providedId !== resourceId) {
       return res
         .status(403)
