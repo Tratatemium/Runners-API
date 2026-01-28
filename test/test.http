@@ -137,7 +137,7 @@ Content-Type: application/json
 }
 
 ### Good new user data
-POST http://localhost:3000/users/
+POST http://localhost:3000/users/signup
 Content-Type: application/json
 
 {
