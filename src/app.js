@@ -56,7 +56,7 @@ const {
   dbErrorHandler,
   authErrorHandler,
   finalErrorHandler,
-} = require("./middleware/error-handlers.js");
+} = require("./middleware/error.middleware.js");
 
 app.use(jsonSyntaxErrorHandler);
 app.use(dbErrorHandler);
