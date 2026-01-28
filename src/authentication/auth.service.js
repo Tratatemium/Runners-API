@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const db = require("../database.js");
-const { createToken } = require("./jwt.js");
+const { createToken } = require("../utils/jwt.js");
 
 const saltRounds = 10;
 const algorithm = "bcrypt";
