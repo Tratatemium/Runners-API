@@ -27,10 +27,17 @@ const login = async (req, res) => {
   res.status(200).json({ token });
 };
 
+// TODO: this functionality is used by GET users/:id, this should be refactored into admin route
 const getUserById = async (req, res) => {
   const userData = await db.findUserById(req.params["id"]);
   const { _id, credentials, ...safeData } = userData;
   res.status(200).json(safeData);
 };
 
-module.exports = { createUser, login, getUserById };
+const getMe = (req, res) => {
+  const userData = req.userDoc;
+  const { _id, credentials, ...safeData } = userData;
+  res.status(200).json(safeData);
+};
+
+module.exports = { createUser, login, getUserById, getMe };

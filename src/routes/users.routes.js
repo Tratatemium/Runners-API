@@ -14,13 +14,21 @@ router.post(
 
 router.post("/login", validation.validateLoginRequest, usersController.login);
 
-router.get("/users/me", authentication.checkAuth, usersMiddleware.attachUser)
+// NOTE: possibly add guard middleware to check if user is active / banned / etc.
+router.get(
+  "/users/me",
+  authentication.checkAuth,
+  usersMiddleware.attachUser,
+  usersController.getMe,
+);
+
+// TODO: this functionality is moved to GET users/me, this should be refactored into admin route
 router.get(
   "/:id",
   authentication.checkAuth,
   validation.validateUUID("id"),
   guard.checkOwnership("id"),
   usersController.getUserById,
-); // TODO: this functionality is moved to GET users/me, this should be refactored into admin route
+);
 
 module.exports = router;
