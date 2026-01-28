@@ -135,3 +135,6 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Test files
+test.http
