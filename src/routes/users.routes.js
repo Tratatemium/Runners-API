@@ -27,6 +27,8 @@ router.get(
   usersController.getMe,
 );
 
+module.exports = router;
+
 // TODO: PATCH users/me
 
 
@@ -63,4 +65,4 @@ router.get(
 //   usersController.getUserById,
 // );
 
-module.exports = router;
+

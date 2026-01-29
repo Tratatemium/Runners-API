@@ -15,9 +15,7 @@ const loginUser = async (req, res) => {
 
 const getMe = (req, res) => {
   const userData = req.userDoc;
-  console.log(userData)
   const { _id, credentials, ...safeData } = userData._doc;
-  console.log(safeData)
   res.status(200).json(safeData);
 };
 
