@@ -2,13 +2,9 @@ const Run = require("../models/runs.models.js");
 const { randomUUID } = require("crypto");
 
 const findRunById = async (runId) => {
-  // console.log(runId, typeof runId);
   const selectedRun = await Run.findOne({
     runId: runId,
   });
-  const runs = await Run.find({});
-  console.log(runs);
-  console.log(selectedRun);
   return selectedRun || null;
 };
 
