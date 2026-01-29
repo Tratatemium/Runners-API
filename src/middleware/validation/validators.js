@@ -22,18 +22,35 @@ const assertRequestFields = (
   req,
   requiredFields,
   objectName = "Request body",
+  mode = "require_all",
 ) => {
+  if (!["require_all", "require_some"].includes(mode)) {
+    throw new Error(`Invalid validation mode: ${mode}`);
+  }
   if (typeof req.body !== "object" || req.body === null) {
     throwValidationError(`${objectName} must be an object`);
   }
-  const missingFields = requiredFields.filter(
-    (field) => req.body[field] === undefined || req.body[field] === null,
-  );
-  if (missingFields.length > 0) {
-    const missingFieldsString = missingFields.join(", ");
-    throwValidationError(
-      `${objectName} is missing required fields: ${missingFieldsString}.`,
-    );
+
+  const hasValue = (field) =>
+    req.body[field] !== undefined && req.body[field] !== null;
+
+  if (mode === "require_all") {
+    const missingFields = requiredFields.filter((field) => !hasValue(field));
+    if (missingFields.length > 0) {
+      throwValidationError(
+        `${objectName} is missing required fields: ${missingFields.join(", ")}.`,
+      );
+    }
+    return;
+  }
+
+  if (mode === "require_some") {
+    const hasAtLeastOneField = requiredFields.some((field) => hasValue(field));
+    if (!hasAtLeastOneField) {
+      throwValidationError(
+        `${objectName} must have one of the required fields: ${requiredFields.join(", ")}.`,
+      );
+    }
   }
 };
 
