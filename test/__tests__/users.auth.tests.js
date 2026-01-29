@@ -83,6 +83,45 @@ describe("POST /users/login - Integration Tests", () => {
         "Provide either email or username, but not both.",
       );
     });
+
+    it("returns 400 for empty string username", async () => {
+      const res = await request(app)
+        .post("/users/login")
+        .send({
+          username: "",
+          password: testUser1.password,
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 400 for empty string email", async () => {
+      const res = await request(app)
+        .post("/users/login")
+        .send({
+          email: "",
+          password: testUser1.password,
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 400 for empty string password", async () => {
+      const res = await request(app)
+        .post("/users/login")
+        .send({
+          username: testUser1.username,
+          password: "",
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
   });
 
   describe("Authentication validation", () => {
