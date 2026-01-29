@@ -21,8 +21,8 @@ const signup = async (email, username, password) => {
   return newUserId;
 };
 
-const login = async (email, password) => {
-  const foundUser = await userRepo.findUserByField("account.email", email);
+const login = async (identifier, password) => {
+  const foundUser = await userRepo.findUserByEmailOrUsername(identifier);
 
   await comparePasswordHash(foundUser, password);
 
