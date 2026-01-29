@@ -139,6 +139,7 @@ const validatePassword = (password) => {
 /* ================================================================================================= */
 
 module.exports = {
+  throwValidationError,
   validateJsonContentType,
   assertRequestFields,
   assertString,

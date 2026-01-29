@@ -32,6 +32,8 @@ const validateLoginRequest = (req, res, next) => {
 
   const { username, password, email } = req.body;
 
+  if (email && username) validators.throwValidationError("Provide either email or username, but not both.");
+
   if (username) validators.validateUsername(username);
   if (email) validators.validateEmail(email);
   validators.validatePassword(password);
