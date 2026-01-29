@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
-
-const TOKEN_KEY = process.env.TOKEN_KEY;
+const { TOKEN_KEY } = require("../config/env.config.js");
 
 const createToken = (user) => {
   const payload = {

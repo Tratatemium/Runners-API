@@ -1,5 +1,5 @@
 const { MongoMemoryServer } = require("mongodb-memory-server");
-const database = require("../../src/database.js");
+const dbUtils = require("../../src/utils/db.utils.js");
 
 let mongo;
 
@@ -7,16 +7,16 @@ const setup = async () => {
   mongo = await MongoMemoryServer.create();
   const uri = mongo.getUri();
 
-  await database.connectDB(uri);
+  await dbUtils.connectDB(uri);
 };
 
 const teardown = async () => {
-  await database.closeDB();
+  await dbUtils.closeDB();
   await mongo.stop();
 };
 
 const clear = async () => {
-  await database.clearDB();
+  await dbUtils.clearDB();
 };
 
 module.exports = { setup, teardown, clear };

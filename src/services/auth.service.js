@@ -1,4 +1,4 @@
-const db = require("../database.js");
+const userRepo = require("../repositories/users.repository.js");
 const {
   createPasswordHash,
   comparePasswordHash,
@@ -12,25 +12,24 @@ const signup = async (email, username, password) => {
     account: {
       username,
       email,
-      createdAt: new Date().toISOString(),
       lastLogin: null,
     },
     profile: {},
   };
 
-  const newUserId = await db.addNewUser(newUser);
+  const newUserId = await userRepo.addNewUser(newUser);
   return newUserId;
 };
 
 const login = async (email, password) => {
-  const foundUser = await db.findUserByField("account.email", email);
+  const foundUser = await userRepo.findUserByField("account.email", email);
 
   await comparePasswordHash(foundUser, password);
 
   //TODO: implement failed login attempts check
 
   const token = createToken(foundUser);
-  await db.updateLastLogin(foundUser);
+  await userRepo.updateLastLogin(foundUser);
   return token;
 };
 

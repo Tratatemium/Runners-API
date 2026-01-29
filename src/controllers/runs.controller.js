@@ -1,10 +1,10 @@
 const { parseAndValidateRun } = require("../middleware/validation/runs.validation.js");
 const { validateUUID } = require("../middleware/validation/validators.js");
-const { findRunById, addNewRun } = require("../database.js");
+const runsRepo = require("../repositories/runs.repository.js");
 
 const getRunById = async (req, res) => {
   validateUUID(req.params.id, "runId");
-  const data = await findRunById(req.params.id);
+  const data = await runsRepo.findRunById(req.params.id);
   if (!data) {
     const err = new Error(`No run with ID ${req.params.id} found!`);
     err.status = 404;
@@ -15,7 +15,7 @@ const getRunById = async (req, res) => {
 
 const postNewRun = async (req, res) => {
   const newRun = parseAndValidateRun(req);
-  const newRunId = await addNewRun(newRun);
+  const newRunId = await runsRepo.addNewRun(newRun);
   res.status(201).json({ id: newRunId });
 };
 

@@ -5,9 +5,7 @@
       "passwordHash": "$2b$10$fM2Qyy49QteaGlgUnq.ZSuxKrdT5o1hWxcdOBksmi4WUrH2940spS",
       "passwordMetadata": {
         "algorithm": "bcrypt",
-        "updatedAt": {
-          "$date": "2026-01-26T20:38:40.659Z"
-        },
+        "updatedAt": "2026-01-26T20:38:40.659Z",
         "failedLoginAttempts": 0,
         "lockUntil": null
       }
@@ -15,7 +13,6 @@
     "account": {
       "username": "test_runner_01",
       "email": "runner01@test.com",
-      "createdAt": "2026-01-26T20:38:40.659Z",
       "lastLogin": null
     },
     "profile": {}
@@ -26,9 +23,7 @@
       "passwordHash": "$2b$10$LgZkmdH2eeXqXgh3Kh0Y9.4N1ygrbje3JOsEdfBFa.v2V9AF49wvS",
       "passwordMetadata": {
         "algorithm": "bcrypt",
-        "updatedAt": {
-          "$date": "2026-01-26T20:38:56.848Z"
-        },
+        "updatedAt": "2026-01-26T20:38:56.848Z",
         "failedLoginAttempts": 0,
         "lockUntil": null
       }
@@ -36,7 +31,6 @@
     "account": {
       "username": "test_runner_02",
       "email": "runner02@test.com",
-      "createdAt": "2026-01-26T20:38:56.848Z",
       "lastLogin": null
     },
     "profile": {}
