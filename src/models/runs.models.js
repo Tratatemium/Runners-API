@@ -2,10 +2,13 @@ const mongoose = require("mongoose");
 
 const RunSchema = new mongoose.Schema(
   {
+    runId: {
+      type: String,
+      required: true,
+    },
     userId: {
       type: String,
       required: true,
-      index: true,
     },
     startTime: {
       type: Date,
@@ -26,6 +29,7 @@ const RunSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+RunSchema.index({ runId: 1 }, { unique: true });
 // Optional compound index for user + startTime queries
 RunSchema.index({ userId: 1, startTime: -1 });
 
