@@ -1,8 +1,7 @@
-const { RunCommandCursor } = require("mongodb");
-const Run = require("../models/Run");
+const Run = require("../models/runs.models.js");
 
 const findRunById = async (runId) => {
-  const selectedRun = await RunCommandCursor.findOne({
+  const selectedRun = await Run.findOne({
     runId: runId,
   });
   return selectedRun || null;
