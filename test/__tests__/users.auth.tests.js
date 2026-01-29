@@ -66,6 +66,23 @@ describe("POST /users/login - Integration Tests", () => {
         "User data must have one of the required fields: username, email.",
       );
     });
+
+    it("returns 400 when both username and email are provided", async () => {
+      const res = await request(app)
+        .post("/users/login")
+        .send({
+          username: testUser1.username,
+          email: testUser1.email,
+          password: testUser1.password,
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Provide either email or username, but not both.",
+      );
+    });
   });
 
   describe("Authentication validation", () => {
