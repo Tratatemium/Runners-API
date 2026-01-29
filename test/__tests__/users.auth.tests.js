@@ -37,29 +37,14 @@ describe("POST /users/login - Integration Tests", () => {
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe(
-        "User data is missing required fields: username, password, email.",
-      );
-    });
-
-    it("returns 400 for missing username field", async () => {
-      const { username, ...dataWithoutUsername } = testUser1;
-      const res = await request(app)
-        .post("/users/login")
-        .send(dataWithoutUsername);
-
-      expect(res.statusCode).toBe(400);
-      expect(res.headers["content-type"]).toMatch(/json/);
-      expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe(
-        "User data is missing required fields: username.",
+        "User data is missing required fields: password.",
       );
     });
 
     it("returns 400 for missing password field", async () => {
-      const { password, ...dataWithoutPassword } = testUser1;
       const res = await request(app)
         .post("/users/login")
-        .send(dataWithoutPassword);
+        .send({ username: testUser1.username });
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -69,25 +54,34 @@ describe("POST /users/login - Integration Tests", () => {
       );
     });
 
-    it("returns 400 for missing email field", async () => {
-      const { email, ...dataWithoutEmail } = testUser1;
+    it("returns 400 when both username and email are missing", async () => {
       const res = await request(app)
         .post("/users/login")
-        .send(dataWithoutEmail);
+        .send({ password: testUser1.password });
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe(
-        "User data is missing required fields: email.",
+        "User data must have one of the required fields: username, email.",
       );
     });
   });
 
   describe("Authentication validation", () => {
-    it("returns 401 for incorrect password", async () => {
+    it("returns 401 for incorrect password with username", async () => {
       const res = await request(app).post("/users/login").send({
         username: testUser1.username,
+        password: "WrongPassword123!",
+      });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 401 for incorrect password with email", async () => {
+      const res = await request(app).post("/users/login").send({
         email: testUser1.email,
         password: "WrongPassword123!",
       });
@@ -97,9 +91,19 @@ describe("POST /users/login - Integration Tests", () => {
       expect(res.body).toHaveProperty("error");
     });
 
+    it("returns 401 for non-existent username", async () => {
+      const res = await request(app).post("/users/login").send({
+        username: "nonexistent_user",
+        password: "ValidPassword123!",
+      });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
     it("returns 401 for non-existent email", async () => {
       const res = await request(app).post("/users/login").send({
-        username: "validuser123",
         email: "nonexistent@example.com",
         password: "ValidPassword123!",
       });
@@ -111,8 +115,11 @@ describe("POST /users/login - Integration Tests", () => {
   });
 
   describe("Successful login", () => {
-    it("returns 200 and token for valid credentials", async () => {
-      const res = await request(app).post("/users/login").send(testUser1);
+    it("returns 200 and token for valid credentials with username", async () => {
+      const res = await request(app).post("/users/login").send({
+        username: testUser1.username,
+        password: testUser1.password,
+      });
 
       expect(res.statusCode).toBe(200);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -121,8 +128,24 @@ describe("POST /users/login - Integration Tests", () => {
       expect(res.body.token.length).toBeGreaterThan(0);
     });
 
-    it("returns valid JWT token structure", async () => {
-      const res = await request(app).post("/users/login").send(testUser2);
+    it("returns 200 and token for valid credentials with email", async () => {
+      const res = await request(app).post("/users/login").send({
+        email: testUser1.email,
+        password: testUser1.password,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("token");
+      expect(typeof res.body.token).toBe("string");
+      expect(res.body.token.length).toBeGreaterThan(0);
+    });
+
+    it("returns valid JWT token structure when logging in with username", async () => {
+      const res = await request(app).post("/users/login").send({
+        username: testUser2.username,
+        password: testUser2.password,
+      });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.token).toMatch(
@@ -130,9 +153,39 @@ describe("POST /users/login - Integration Tests", () => {
       );
     });
 
-    it("allows multiple logins with same credentials", async () => {
-      const res1 = await request(app).post("/users/login").send(testUser1);
-      const res2 = await request(app).post("/users/login").send(testUser1);
+    it("returns valid JWT token structure when logging in with email", async () => {
+      const res = await request(app).post("/users/login").send({
+        email: testUser2.email,
+        password: testUser2.password,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.token).toMatch(
+        /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/,
+      );
+    });
+
+    it("allows multiple logins with same credentials using username", async () => {
+      const loginData = {
+        username: testUser1.username,
+        password: testUser1.password,
+      };
+      const res1 = await request(app).post("/users/login").send(loginData);
+      const res2 = await request(app).post("/users/login").send(loginData);
+
+      expect(res1.statusCode).toBe(200);
+      expect(res2.statusCode).toBe(200);
+      expect(res1.body).toHaveProperty("token");
+      expect(res2.body).toHaveProperty("token");
+    });
+
+    it("allows multiple logins with same credentials using email", async () => {
+      const loginData = {
+        email: testUser1.email,
+        password: testUser1.password,
+      };
+      const res1 = await request(app).post("/users/login").send(loginData);
+      const res2 = await request(app).post("/users/login").send(loginData);
 
       expect(res1.statusCode).toBe(200);
       expect(res2.statusCode).toBe(200);
@@ -148,11 +201,17 @@ describe("GET /users/me - Integration Tests", () => {
 
   beforeAll(async () => {
     // Login as user1 and get token
-    const loginRes1 = await request(app).post("/users/login").send(testUser1);
+    const loginRes1 = await request(app).post("/users/login").send({
+      email: testUser1.email,
+      password: testUser1.password,
+    });
     user1Token = loginRes1.body.token;
 
     // Login as user2 and get token
-    const loginRes2 = await request(app).post("/users/login").send(testUser2);
+    const loginRes2 = await request(app).post("/users/login").send({
+      email: testUser2.email,
+      password: testUser2.password,
+    });
     user2Token = loginRes2.body.token;
   });
 

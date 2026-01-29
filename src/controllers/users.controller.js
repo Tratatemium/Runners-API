@@ -8,7 +8,8 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, username, password } = req.body;
-  const token = await auth.login(email, password);
+  const identifier = email ? email : username;
+  const token = await auth.login(identifier, password);
   res.status(200).json({ token });
 };
 
