@@ -1,6 +1,6 @@
 const { parseAndValidateRun } = require("../middleware/validation/runs.validation.js");
 const { validateUUID } = require("../middleware/validation/validators.js");
-const runsRepo = require("../repositories/users.repository.js");
+const runsRepo = require("../repositories/runs.repository.js");
 
 const getRunById = async (req, res) => {
   validateUUID(req.params.id, "runId");
