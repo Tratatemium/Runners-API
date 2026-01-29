@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 /*  SUB-SCHEMAS                                                                                      */
 /* ================================================================================================= */
 
-const passwordMetadataSchema = new mongoose.Schema(
+const PasswordMetadataSchema = new mongoose.Schema(
   {
     algorithm: {
       type: String,
@@ -70,7 +70,6 @@ const UserSchema = new mongoose.Schema(
     userId: {
       type: String,
       required: true,
-      index: true,
     },
 
     credentials: {
