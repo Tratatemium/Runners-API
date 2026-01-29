@@ -50,7 +50,8 @@ try {
 /* ================================================================================================= */
 
 const app = require("./app");
-const { connectDB } = require("./database");
+// const { connectDB } = require("./database");
+const { connectDB } = require("./utils/db.utils.js");
 
 const startServer = async () => {
   try {

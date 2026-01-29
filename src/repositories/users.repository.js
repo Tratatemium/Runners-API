@@ -26,7 +26,7 @@ const addNewUser = async (newUser) => {
   const userToInsert = { userId: newUserId, ...newUser };
   const savedUser = await User.create(userToInsert);
   console.log("New user added to the database. ID:", newUserId);
-  return savedUser;
+  return savedUser.userId;
 };
 
 /* ================================================================================================= */
