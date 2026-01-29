@@ -12,7 +12,6 @@ const signup = async (email, username, password) => {
     account: {
       username,
       email,
-      createdAt: new Date(),
       lastLogin: null,
     },
     profile: {},

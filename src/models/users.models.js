@@ -53,10 +53,6 @@ const AccountSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
     lastLogin: {
       type: Date,
       default: null,
@@ -92,7 +88,7 @@ const UserSchema = new mongoose.Schema(
       default: {},
     },
   },
-  { timestamps: false },
+  { timestamps: true },
 );
 
 /* ================================================================================================= */
