@@ -5,11 +5,9 @@ const connectDB = async (uri = MONGO_URI) => {
   if (!uri) {
     throw new Error("MongoDB URI not provided");
   }
-
   await mongoose.connect(uri, {
     dbName: "runners-app",
   });
-
   console.log("Connected to database (Mongoose).");
 };
 
