@@ -1,4 +1,5 @@
 const auth = require("../services/auth.service.js");
+const userService = require("../services/user.service.js");
 
 const createUser = async (req, res) => {
   const { email, username, password } = req.body;
@@ -19,4 +20,11 @@ const getMe = (req, res) => {
   res.status(200).json(safeData);
 };
 
-module.exports = { createUser, loginUser, getMe };
+const updateProfile = async (req, res) => {
+  const userId = req.user.userId;
+  const profile = req.body.profile;
+  const savedProfile = await userService.updateProfile(userId, profile);
+  res.status(200).json(savedProfile);
+};
+
+module.exports = { createUser, loginUser, getMe, updateProfile };

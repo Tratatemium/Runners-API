@@ -52,14 +52,46 @@ const validateUUID = (param = "id") => {
   };
 };
 
-// TODO: Add profile field validation here if/when profile data is supported.
-//  "profile": {
-//      "firstName": "Alex",
-//      "lastName": "Miller",
-//      "dateOfBirth": "1995-06-18",
-//      "heightCm": 178,
-//      "weightKg": 72
-//    }
+const validateProfile = (req, res, next) => {
+  validators.validateJsonContentType(req);
+  const profile = req.body.profile;
+  if (!profile || typeof profile !== "object" || Array.isArray(profile)) {
+    validators.throwValidationError("profile (object) must be provided.");
+  }
+
+  const allowedFields = [
+    "firstName",
+    "lastName",
+    "dateOfBirth",
+    "heightCm",
+    "weightKg",
+  ];
+
+  for (const key of Object.keys(profile)) {
+    if (!allowedFields.includes(key)) {
+      validators.throwValidationError(`Unknown field: ${key}`);
+    }
+  }
+
+  const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
+
+  if (firstName !== undefined && firstName !== null)
+    validators.validateName(firstName, "firstName");
+
+  if (lastName !== undefined && lastName !== null)
+    validators.validateName(lastName, "lastName");
+
+  if (dateOfBirth !== undefined && dateOfBirth !== null)
+    validators.validateISODate(dateOfBirth, "dateOfBirth");
+
+  if (heightCm !== undefined && heightCm !== null)
+    validators.validatePositiveNumber(heightCm, "heightCm");
+
+  if (weightKg !== undefined && weightKg !== null)
+    validators.validatePositiveNumber(weightKg, "weightKg");
+
+  next();
+};
 
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
@@ -69,4 +101,5 @@ module.exports = {
   validateRegisterRequest,
   validateLoginRequest,
   validateUUID,
+  validateProfile,
 };

@@ -61,6 +61,31 @@ const AccountSchema = new mongoose.Schema(
   { _id: false },
 );
 
+const ProfileSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    heightCm: {
+      type: Number,
+      min: 0,
+    },
+    weightKg: {
+      type: Number,
+      min: 0,
+    },
+  },
+  { _id: false }
+);
+
 /* ================================================================================================= */
 /*  MAIN USER SCHEMA                                                                                 */
 /* ================================================================================================= */
@@ -83,7 +108,7 @@ const UserSchema = new mongoose.Schema(
     },
 
     profile: {
-      type: mongoose.Schema.Types.Mixed,
+      type: ProfileSchema,
       default: {},
     },
   },

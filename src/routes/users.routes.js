@@ -18,17 +18,23 @@ router.post(
   usersController.loginUser,
 );
 
+// NOTE: possibly add guard middleware to check if user is active / banned / etc.
+
 router.get(
   "/me",
   authentication.checkAuth,
   usersMiddleware.attachUser,
-  // NOTE: possibly add guard middleware to check if user is active / banned / etc.
   usersController.getMe,
 );
 
-module.exports = router;
+router.patch(
+  "/me",
+  validation.validateProfile,
+  authentication.checkAuth,
+  usersController.updateProfile,
+);
 
-// TODO: PATCH users/me
+module.exports = router;
 
 // TODO: PATCH users/me/password
 // {

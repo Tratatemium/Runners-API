@@ -37,6 +37,15 @@ const addNewUser = async (newUser) => {
   return savedUser.userId;
 };
 
+const updateProfile = async (userId, profilePatch) => {
+  const update = {};
+  for (const [key, value] of Object.entries(profilePatch)) {
+    update[`profile.${key}`] = value;
+  }
+  const result = await User.findOneAndUpdate({ userId }, { $set: update }, { new: true });
+  return result.profile;
+};
+
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -47,4 +56,5 @@ module.exports = {
   findUserByEmailOrUsername,
   updateLastLogin,
   addNewUser,
+  updateProfile,
 };

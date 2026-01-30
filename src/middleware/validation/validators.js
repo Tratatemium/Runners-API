@@ -70,7 +70,7 @@ const validateUUID = (ID, IDname = "ID") => {
 };
 
 const validateISODate = (timestamp, timestampName) => {
-  const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+  const isoRegex = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)?$/;
   if (!isoRegex.test(timestamp)) {
     throwValidationError(
       `${timestampName} must be a valid date in the ISO 8601 format.`,
@@ -85,7 +85,7 @@ const validateISODate = (timestamp, timestampName) => {
 };
 
 const validatePositiveNumber = (number, numberName) => {
-  if (isNaN(number) || number <= 0) {
+  if (isNaN(number) || number <= 0 || typeof number !== "number") {
     throwValidationError(`${numberName} must be a positive number.`);
   }
 };
@@ -134,6 +134,26 @@ const validatePassword = (password) => {
   }
 };
 
+const validateName = (name, fieldName) => {
+  if (typeof name !== "string")
+    throwValidationError(`${fieldName} must be a string.`);
+
+  const trimmed = name.trim();
+  if (trimmed.length === 0) {
+    throwValidationError(`${fieldName} cannot be empty.`);
+  }
+  if (trimmed.length < 2 || trimmed.length > 50) {
+    throwValidationError(
+      `${fieldName} must contain between 2 and 50 characters.`,
+    );
+  }
+
+  const nameRegex = /^\p{L}+([ '-]\p{L}+)*$/u;
+  if (!nameRegex.test(trimmed)) {
+    throwValidationError(`${fieldName} contains forbidden characters.`);
+  }
+};
+
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -149,4 +169,5 @@ module.exports = {
   validateUsername,
   validateEmail,
   validatePassword,
+  validateName,
 };
