@@ -1,5 +1,7 @@
 const request = require("supertest");
 const app = require("../../src/app.js");
+const seeding = require("../helpers/seeding.js");
+const User = require("../../src/models/users.models.js");
 
 // Using pre-seeded test users
 const testUser1 = {
@@ -23,6 +25,11 @@ describe("PATCH /users/password - Integration Tests", () => {
       password: testUser1.password,
     });
     user1Token = loginRes.body.token;
+  });
+
+  afterEach(async () => {
+    await User.deleteMany({});
+    await seeding.seedData(User, "users");
   });
 
   describe("Content-Type validation", () => {
@@ -237,6 +244,11 @@ describe("PATCH /users/email - Integration Tests", () => {
     user2Token = loginRes.body.token;
   });
 
+  afterEach(async () => {
+    await User.deleteMany({});
+    await seeding.seedData(User, "users");
+  });
+
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
@@ -444,6 +456,11 @@ describe("PATCH /users/username - Integration Tests", () => {
       password: testUser1.password,
     });
     user1Token = loginRes.body.token;
+  });
+
+  afterEach(async () => {
+    await User.deleteMany({});
+    await seeding.seedData(User, "users");
   });
 
   describe("Content-Type validation", () => {
