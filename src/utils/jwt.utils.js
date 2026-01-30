@@ -4,8 +4,8 @@ const { TOKEN_KEY } = require("../config/env.config.js");
 const createToken = (user) => {
   const payload = {
     userId: user.userId,
-    username: user.username,
-    email: user.email,
+    username: user.account.username,
+    email: user.account.email,
   };
   const options = {
     algorithm: "HS256",

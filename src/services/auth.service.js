@@ -29,7 +29,6 @@ const updatePassword = async (userId, newPassword) => {
 
 const login = async (identifier, password) => {
   const foundUser = await userRepo.findUserByEmailOrUsername(identifier);
-
   await comparePasswordHash(foundUser, password);
 
   //TODO: implement failed login attempts check
