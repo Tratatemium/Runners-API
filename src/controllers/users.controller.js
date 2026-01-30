@@ -25,7 +25,7 @@ const updateProfile = async (req, res) => {
   const profile = req.body.profile;
   console.log(req.profile)
   const savedProfile = await userService.updateProfile(userId, profile);
-  res.sendStatus(200);
+  res.status(200).json(savedProfile);
 };
 
 module.exports = { createUser, loginUser, getMe, updateProfile };
