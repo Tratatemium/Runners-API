@@ -134,7 +134,7 @@ const validatePassword = (password) => {
   }
 };
 
-const vaildateName = (name, fieldName) => {
+const validateName = (name, fieldName) => {
   if (typeof name !== "string")
     throwValidationError(`${fieldName} must be a string.`);
 
@@ -164,5 +164,5 @@ module.exports = {
   validateUsername,
   validateEmail,
   validatePassword,
-  vaildateName,
+  validateName,
 };
