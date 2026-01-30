@@ -52,7 +52,7 @@ const validateUUID = (param = "id") => {
   };
 };
 
-const validateProfile = () => {
+const validateProfile = (req, res, next) => {
 
 };
 
