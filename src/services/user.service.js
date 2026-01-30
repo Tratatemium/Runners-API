@@ -1,4 +1,5 @@
 const usersRepo = require("../repositories/users.repository.js");
+const auth = require("./auth.service.js")
 
 const throwUserNotFoundError = () => {
   const err = new Error("User not found.");
