@@ -28,8 +28,9 @@ router.get(
 );
 
 router.patch(
-  "/me",
+  "/me",  
   validation.validateProfile,
+  authentication.checkAuth,
   usersController.updateProfile
 );
 

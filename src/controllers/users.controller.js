@@ -1,4 +1,5 @@
 const auth = require("../services/auth.service.js");
+const userService = require("../services/user.service.js")
 
 const createUser = async (req, res) => {
   const { email, username, password } = req.body;
@@ -20,7 +21,9 @@ const getMe = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-
+  const userId = req.user.userId;
+  const { firstName, lastName, dateOfBirth, heightCm, weightKg } = req.profile;
+  userService.updateProfile();
 }
 
 module.exports = { createUser, loginUser, getMe, updateProfile };
