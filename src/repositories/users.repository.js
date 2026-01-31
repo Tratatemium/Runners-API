@@ -66,6 +66,13 @@ const updateCredentials = async (userId, newCredentials) => {
   return result;
 };
 
+const incrementAccessTokenVersion = async (userId) => {
+  const result = await User.updateOne(
+    { userId },
+    { $inc: { "auth.accessTokenVersion": 1 } },
+  );
+};
+
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -79,4 +86,5 @@ module.exports = {
   updateProfile,
   updateAccount,
   updateCredentials,
+  incrementAccessTokenVersion,
 };

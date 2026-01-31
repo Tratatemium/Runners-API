@@ -45,9 +45,15 @@ const login = async (identifier, password) => {
   return token;
 };
 
+// NOTE: change this if refresh tokens are implemented to generalized func
+const invalidatePreviousAccessTokens = async (userId) => {
+  await userRepo.incrementAccessTokenVersion(userId);
+};
+
 module.exports = {
   signup,
   updatePassword,
   authenticateUser,
   login,
+  invalidatePreviousAccessTokens,
 };
