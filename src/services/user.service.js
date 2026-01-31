@@ -1,5 +1,5 @@
 const usersRepo = require("../repositories/users.repository.js");
-const auth = require("./auth.service.js")
+const auth = require("./auth.service.js");
 
 const throwUserNotFoundError = () => {
   const err = new Error("User not found.");
@@ -17,20 +17,23 @@ const updateAccount = async (req, fieldToUpdate) => {
   const userId = req.user.userId;
   let result;
   switch (fieldToUpdate) {
-    case "password":
+    case "password": {
       const newPassword = req.body.newPassword;
       result = await auth.updatePassword(userId, newPassword);
       break;
+    }
 
-    case "email":
+    case "email": {
       const newEmail = req.body.newEmail;
       result = await usersRepo.updateAccount(userId, "email", newEmail);
       break;
+    }
 
-    case "username":
+    case "username": {
       const newUsername = req.body.newUsername;
       result = await usersRepo.updateAccount(userId, "username", newUsername);
       break;
+    }
     default:
       throw new Error(
         `fieldToUpdate must be "password", "email", or "username".`,
