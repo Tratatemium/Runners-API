@@ -10,6 +10,9 @@
         "lockUntil": null
       }
     },
+    "auth": {
+      "accessTokenVersion": 0
+    },
     "account": {
       "username": "test_runner_01",
       "email": "runner01@test.com",
@@ -27,6 +30,9 @@
         "failedLoginAttempts": 0,
         "lockUntil": null
       }
+    },
+    "auth": {
+      "accessTokenVersion": 24
     },
     "account": {
       "username": "test_runner_02",
