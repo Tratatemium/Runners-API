@@ -67,7 +67,7 @@ const updateCredentials = async (userId, newCredentials) => {
 };
 
 const incrementAccessTokenVersion = async (userId) => {
-  const result = await User.updateOne(
+  await User.updateOne(
     { userId },
     { $inc: { "auth.accessTokenVersion": 1 } },
   );
