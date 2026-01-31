@@ -6,6 +6,7 @@ const createToken = (user) => {
     userId: user.userId,
     username: user.account.username,
     email: user.account.email,
+    accessTokenVersion: user.auth.accessTokenVersion,
   };
   const options = {
     algorithm: "HS256",
