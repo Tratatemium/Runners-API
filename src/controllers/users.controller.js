@@ -36,7 +36,7 @@ const updateAccount = (fieldToUpdate) => {
   }
 
   return async (req, res) => {
-    const { email, userId }= req.user;
+    const { email, userId } = req.user;
     const currentPassword = req.body.currentPassword;
     await auth.authenticateUser(email, currentPassword);
     await userService.updateAccount(req, fieldToUpdate);
