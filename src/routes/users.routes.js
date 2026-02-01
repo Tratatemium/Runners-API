@@ -18,11 +18,7 @@ router.post(
   usersController.loginUser,
 );
 
-router.post(
-  "/logout-all",
-  authentication.checkAuth,
-  usersController.logoutAll,
-)
+router.post("/logout-all", authentication.checkAuth, usersController.logoutAll);
 
 // NOTE: possibly add guard middleware to check if user is active / banned / etc.
 
