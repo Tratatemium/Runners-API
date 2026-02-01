@@ -68,37 +68,84 @@ const validateUUID = (ID, IDname = "ID") => {
   }
 };
 
-const validateISODateTimeUTC = (timestamp, name) => {
-  const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
-
-  if (!isoRegex.test(timestamp)) {
-    throwValidationError(
-      `${name} must be a valid ISO 8601 timestamp with timezone (UTC).`,
-    );
+/**
+ * Validate ISO date or datetime.
+ * @param {string} value - The input string to validate
+ * @param {string} name - Field name for error messages
+ * @param {'date'|'datetime'} mode - 'date' for YYYY-MM-DD, 'datetime' for YYYY-MM-DDTHH:mm:ssZ
+ */
+const validateISO = (value, name, mode = "datetime") => {
+  if (typeof value !== "string") {
+    throwValidationError(`${name} must be a string.`);
   }
 
-  const date = new Date(timestamp);
-  if (!Number.isFinite(date.getTime())) {
-    throwValidationError(`${name} must be a valid ISO 8601 timestamp.`);
-  }
-};
+  // -------------------
+  // DATE-ONLY MODE
+  // -------------------
+  if (mode === "date") {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(value)) {
+      throwValidationError(
+        `${name} must be a valid ISO 8601 date (YYYY-MM-DD).`,
+      );
+    }
 
-const validateISODateOnly = (dateStr, name) => {
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const date = new Date(`${value}T00:00:00Z`);
+    if (!Number.isFinite(date.getTime())) {
+      throwValidationError(`${name} must be a valid calendar date.`);
+    }
 
-  if (!dateRegex.test(dateStr)) {
-    throwValidationError(`${name} must be a valid ISO 8601 date (YYYY-MM-DD).`);
+    if (date.toISOString().slice(0, 10) !== value) {
+      throwValidationError(`${name} must be a real calendar date.`);
+    }
+
+    return;
   }
 
-  const date = new Date(`${dateStr}T00:00:00Z`);
-  if (!Number.isFinite(date.getTime())) {
-    throwValidationError(`${name} must be a valid calendar date.`);
+  // -------------------
+  // DATETIME MODE
+  // -------------------
+  if (mode === "datetime") {
+    const datetimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+    if (!datetimeRegex.test(value)) {
+      throwValidationError(
+        `${name} must be a valid ISO 8601 timestamp with timezone (UTC).`,
+      );
+    }
+
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) {
+      throwValidationError(`${name} must be a valid ISO 8601 timestamp.`);
+    }
+
+    const [datePart, timePart] = value.split("T");
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart
+      .replace("Z", "")
+      .split(":")
+      .map(Number);
+
+    const isValid =
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() + 1 === month &&
+      date.getUTCDate() === day &&
+      date.getUTCHours() === hour &&
+      date.getUTCMinutes() === minute &&
+      date.getUTCSeconds() === second;
+
+    if (!isValid) {
+      throwValidationError(`${name} must be a real calendar date and time.`);
+    }
+
+    return;
   }
 
-  // Prevent JS date normalization (e.g. 2024-02-31 → Mar 2)
-  if (date.toISOString().slice(0, 10) !== dateStr) {
-    throwValidationError(`${name} must be a real calendar date.`);
-  }
+  // -------------------
+  // INVALID MODE
+  // -------------------
+  throw new Error(
+    `Invalid mode "${mode}" in validateISO. Must be "date" or "datetime".`,
+  );
 };
 
 const validatePositiveNumber = (number, numberName) => {
@@ -181,8 +228,7 @@ module.exports = {
   assertRequestFields,
   assertString,
   validateUUID,
-  validateISODateTimeUTC,
-  validateISODateOnly,
+  validateISO,
   validatePositiveNumber,
   validateUsername,
   validateEmail,
