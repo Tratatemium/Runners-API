@@ -349,3 +349,158 @@ describe("GET /users/me - Integration Tests", () => {
     });
   });
 });
+
+describe("POST /users/logout-all - Integration Tests", () => {
+  let user1Token;
+
+  beforeAll(async () => {
+    // Login as user1 and get token
+    const loginRes = await request(app).post("/users/login").send({
+      email: testUser1.email,
+      password: testUser1.password,
+    });
+    user1Token = loginRes.body.token;
+  });
+
+  describe("Authentication validation", () => {
+    it("returns 401 when no authorization header is provided", async () => {
+      const res = await request(app).post("/users/logout-all");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 401 when authorization header doesn't start with Bearer", async () => {
+      const res = await request(app)
+        .post("/users/logout-all")
+        .set("Authorization", "InvalidFormat");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 401 for invalid token", async () => {
+      const res = await request(app)
+        .post("/users/logout-all")
+        .set("Authorization", "Bearer invalid.token.here");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
+
+  describe("Successful logout", () => {
+    it("returns 200 when logging out all sessions", async () => {
+      const res = await request(app)
+        .post("/users/logout-all")
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(res.statusCode).toBe(200);
+    });
+
+    it("invalidates all previous tokens after logout-all", async () => {
+      // Login to get a token
+      const loginRes = await request(app).post("/users/login").send({
+        email: testUser1.email,
+        password: testUser1.password,
+      });
+      const token = loginRes.body.token;
+
+      // Verify token works
+      const beforeLogout = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${token}`);
+      expect(beforeLogout.statusCode).toBe(200);
+
+      // Logout all sessions
+      await request(app)
+        .post("/users/logout-all")
+        .set("Authorization", `Bearer ${token}`);
+
+      // Try to use old token
+      const afterLogout = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(afterLogout.statusCode).toBe(401);
+      expect(afterLogout.body).toHaveProperty("error");
+    });
+
+    it("invalidates multiple tokens after logout-all", async () => {
+      // Login twice to get two tokens
+      const loginRes1 = await request(app).post("/users/login").send({
+        email: testUser1.email,
+        password: testUser1.password,
+      });
+      const token1 = loginRes1.body.token;
+
+      const loginRes2 = await request(app).post("/users/login").send({
+        email: testUser1.email,
+        password: testUser1.password,
+      });
+      const token2 = loginRes2.body.token;
+
+      // Verify both tokens work
+      const check1 = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${token1}`);
+      expect(check1.statusCode).toBe(200);
+
+      const check2 = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${token2}`);
+      expect(check2.statusCode).toBe(200);
+
+      // Logout all sessions using first token
+      await request(app)
+        .post("/users/logout-all")
+        .set("Authorization", `Bearer ${token1}`);
+
+      // Both tokens should now be invalid
+      const afterLogout1 = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${token1}`);
+      expect(afterLogout1.statusCode).toBe(401);
+
+      const afterLogout2 = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${token2}`);
+      expect(afterLogout2.statusCode).toBe(401);
+    });
+
+    it("allows login with new token after logout-all", async () => {
+      // Login and logout all
+      const loginRes1 = await request(app).post("/users/login").send({
+        email: testUser1.email,
+        password: testUser1.password,
+      });
+      const oldToken = loginRes1.body.token;
+
+      await request(app)
+        .post("/users/logout-all")
+        .set("Authorization", `Bearer ${oldToken}`);
+
+      // Login again to get new token
+      const loginRes2 = await request(app).post("/users/login").send({
+        email: testUser1.email,
+        password: testUser1.password,
+      });
+
+      expect(loginRes2.statusCode).toBe(200);
+      expect(loginRes2.body).toHaveProperty("token");
+
+      const newToken = loginRes2.body.token;
+
+      // Use new token to access protected endpoint
+      const res = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${newToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("account");
+    });
+  });
+});

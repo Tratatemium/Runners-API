@@ -14,6 +14,12 @@ const loginUser = async (req, res) => {
   res.status(200).json({ token });
 };
 
+const logoutAll = async (req, res) => {
+  const { userId } = req.user;
+  await auth.invalidatePreviousAccessTokens(userId);
+  res.sendStatus(200);
+};
+
 const getMe = (req, res) => {
   const userData = req.userDoc;
   const { _id, credentials, ...safeData } = userData._doc;
@@ -45,4 +51,4 @@ const updateAccount = (fieldToUpdate) => {
   };
 };
 
-module.exports = { createUser, loginUser, getMe, updateProfile, updateAccount };
+module.exports = { createUser, loginUser, logoutAll, getMe, updateProfile, updateAccount };
