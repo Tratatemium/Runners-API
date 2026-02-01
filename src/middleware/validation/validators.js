@@ -34,7 +34,7 @@ const assertRequestFields = (
   const hasValue = (field) => req.body[field] != null;
 
   if (mode === "require_all") {
-    const missingFields = requiredFields.filter(field => !hasValue(field));
+    const missingFields = requiredFields.filter((field) => !hasValue(field));
     if (missingFields.length > 0) {
       throwValidationError(
         `${objectName} is missing required fields: ${missingFields.join(", ")}.`,
@@ -44,7 +44,7 @@ const assertRequestFields = (
   }
 
   if (mode === "require_some") {
-    const hasAtLeastOneField = requiredFields.some(field => hasValue(field));
+    const hasAtLeastOneField = requiredFields.some((field) => hasValue(field));
     if (!hasAtLeastOneField) {
       throwValidationError(
         `${objectName} must have one of the required fields: ${requiredFields.join(", ")}.`,
@@ -68,19 +68,85 @@ const validateUUID = (ID, IDname = "ID") => {
   }
 };
 
-const validateISODate = (timestamp, timestampName) => {
-  const isoRegex = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)?$/;
-  if (!isoRegex.test(timestamp)) {
-    throwValidationError(
-      `${timestampName} must be a valid date in the ISO 8601 format.`,
-    );
+/**
+ * Validate ISO date or datetime.
+ * @param {string} value - The input string to validate
+ * @param {string} name - Field name for error messages
+ * @param {'date'|'datetime'} mode - 'date' for YYYY-MM-DD, 'datetime' for YYYY-MM-DDTHH:mm:ssZ
+ */
+const validateISO = (value, name, mode = "datetime") => {
+  if (typeof value !== "string") {
+    throwValidationError(`${name} must be a string.`);
   }
-  const date = new Date(timestamp);
-  if (isNaN(date.getTime())) {
-    throwValidationError(
-      `${timestampName} must be a valid date in the ISO 8601 format.`,
-    );
+
+  // -------------------
+  // DATE-ONLY MODE
+  // -------------------
+  if (mode === "date") {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(value)) {
+      throwValidationError(
+        `${name} must be a valid ISO 8601 date (YYYY-MM-DD).`,
+      );
+    }
+
+    const date = new Date(`${value}T00:00:00Z`);
+    if (!Number.isFinite(date.getTime())) {
+      throwValidationError(`${name} must be a valid calendar date.`);
+    }
+
+    if (date.toISOString().slice(0, 10) !== value) {
+      throwValidationError(`${name} must be a real calendar date.`);
+    }
+
+    return;
   }
+
+  // -------------------
+  // DATETIME MODE
+  // -------------------
+  if (mode === "datetime") {
+    const datetimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+    if (!datetimeRegex.test(value)) {
+      throwValidationError(
+        `${name} must be a valid ISO 8601 timestamp with timezone (UTC).`,
+      );
+    }
+
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) {
+      throwValidationError(`${name} must be a valid ISO 8601 timestamp.`);
+    }
+
+    const [datePart, timePart] = value.split("T");
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart
+      .replace("Z", "")
+      .split(":")
+      .map(Number);
+    const secondWhole = Math.floor(second);
+
+    const isValid =
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() + 1 === month &&
+      date.getUTCDate() === day &&
+      date.getUTCHours() === hour &&
+      date.getUTCMinutes() === minute &&
+      date.getUTCSeconds() === secondWhole;
+
+    if (!isValid) {
+      throwValidationError(`${name} must be a real calendar date and time.`);
+    }
+
+    return;
+  }
+
+  // -------------------
+  // INVALID MODE
+  // -------------------
+  throw new Error(
+    `Invalid mode "${mode}" in validateISO. Must be "date" or "datetime".`,
+  );
 };
 
 const validatePositiveNumber = (number, numberName) => {
@@ -163,7 +229,7 @@ module.exports = {
   assertRequestFields,
   assertString,
   validateUUID,
-  validateISODate,
+  validateISO,
   validatePositiveNumber,
   validateUsername,
   validateEmail,

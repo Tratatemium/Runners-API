@@ -1,5 +1,5 @@
 const usersRepo = require("../repositories/users.repository.js");
-const auth = require("./auth.service.js");
+const authService = require("./auth.service.js");
 
 const throwUserNotFoundError = () => {
   const err = new Error("User not found.");
@@ -16,7 +16,7 @@ const updateProfile = async (userId, profilePatch) => {
 const updateAccount = async (userId, fieldToUpdate, reqBody) => {
   const handlers = {
     password: (userId, reqBody) =>
-      auth.updatePassword(userId, reqBody.newPassword),
+      authService.updatePassword(userId, reqBody.newPassword),
     email: (userId, reqBody) =>
       usersRepo.updateAccount(userId, "email", reqBody.newEmail),
     username: (userId, reqBody) =>

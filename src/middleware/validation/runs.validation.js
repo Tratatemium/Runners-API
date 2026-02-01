@@ -1,39 +1,41 @@
 const validators = require("./validators.js");
 
-const parseAndValidateRun = (req) => {
+const validateUUID = (param = "id") => {
+  return (req, res, next) => {
+    validators.validateUUID(req.params[param]);
+    next();
+  };
+};
+
+const validateRun = (req, res, next) => {
   validators.validateJsonContentType(req);
 
   validators.assertRequestFields(
     req,
-    ["userId", "startTime", "durationSec", "distanceMeters"],
+    ["startTime", "durationSec", "distanceMeters"],
     "Run data",
   );
 
-  const { userId, startTime, durationSec, distanceMeters } = req.body;
+  const { startTime, durationSec, distanceMeters } = req.body;
 
-  validators.assertString(userId, "userId");
   validators.assertString(startTime, "startTime");
-
-  const userIdTrimmed = userId.trim();
   const startTimeTrimmed = startTime.trim();
-
-  validators.validateUUID(userIdTrimmed, "userId");
-  validators.validateISODate(startTimeTrimmed, "startTime");
+  validators.validateISO(startTimeTrimmed, "startTime", "datetime");
 
   const durationNormalized = Number(String(durationSec).trim());
-  const distanceNormalized = Number(String(distanceMeters).trim());
-
   validators.validatePositiveNumber(durationNormalized, "durationSec");
+
+  const distanceNormalized = Number(String(distanceMeters).trim());
   validators.validatePositiveNumber(distanceNormalized, "distanceMeters");
 
   const runData = {
-    userId: userIdTrimmed,
     startTime: startTimeTrimmed,
     durationSec: durationNormalized,
     distanceMeters: distanceNormalized,
   };
 
-  return runData;
+  req.runData = runData;
+  next();
 };
 
-module.exports = { parseAndValidateRun };
+module.exports = { validateUUID, validateRun };

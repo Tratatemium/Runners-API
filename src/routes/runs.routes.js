@@ -1,11 +1,17 @@
-// runs.routes.js
-
 const express = require("express");
 const router = express.Router();
 
+const validation = require("../middleware/validation/runs.validation.js");
+const authMiddleware = require("../middleware/auth.middleware.js");
 const runsController = require("../controllers/runs.controller.js");
 
-router.get("/:id", runsController.getRunById);
-router.post("/", runsController.postNewRun);
+router.post(
+  "/",
+  validation.validateRun,
+  authMiddleware.checkAuth,
+  runsController.postNewRun,
+);
+
+router.get("/:id", validation.validateUUID("id"), runsController.getRunById);
 
 module.exports = router;
