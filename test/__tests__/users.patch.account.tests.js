@@ -23,7 +23,7 @@ describe("PATCH /users/me/account (password) - Integration Tests", () => {
     const loginRes = await request(app).post("/auth/login").send({
       email: testUser1.email,
       password: testUser1.password,
-        });
+    });
     expect(loginRes.statusCode).toBe(200);
     expect(loginRes.body).toHaveProperty("token");
     user1Token = loginRes.body.token;
@@ -172,7 +172,6 @@ describe("PATCH /users/me/account (password) - Integration Tests", () => {
   });
 
   describe("newPassword validation", () => {
-
     it("returns 400 when newPassword is too short", async () => {
       const res = await request(app)
         .patch("/users/me/account")
