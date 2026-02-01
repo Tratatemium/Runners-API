@@ -97,7 +97,7 @@ const validateAccountUpdate = (req, res, next) => {
   const updateFields = [
     { key: "password", value: newPassword, validate: validators.validatePassword },
     { key: "email", value: newEmail, validate: validators.validateEmail },
-    { key: "username", value: newUsername, validate: validators.validateUsername }
+    { key: "username", value: newUsername, validate: validators.validateUsername },
   ];
   
   const provided = updateFields.filter(field => field.value != null);
