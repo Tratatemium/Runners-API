@@ -44,7 +44,7 @@ const assertRequestFields = (
   }
 
   if (mode === "require_some") {
-    const hasAtLeastOneField = requiredFields.some((field) => hasValue(field));
+    const hasAtLeastOneField = requiredFields.some(field => hasValue(field));
     if (!hasAtLeastOneField) {
       throwValidationError(
         `${objectName} must have one of the required fields: ${requiredFields.join(", ")}.`,

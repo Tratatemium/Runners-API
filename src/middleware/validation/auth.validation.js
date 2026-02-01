@@ -46,5 +46,5 @@ const validateLoginRequest = (req, res, next) => {
 
 module.exports = {
   validateRegisterRequest,
-  validateLoginRequest, 
+  validateLoginRequest,
 };
