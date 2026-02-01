@@ -1,49 +1,6 @@
 const validators = require("./validators.js");
 
-const validateRegisterRequest = (req, res, next) => {
-  validators.validateJsonContentType(req);
-
-  validators.assertRequestFields(
-    req,
-    ["username", "password", "email"],
-    "User data",
-    "require_all",
-  );
-
-  const { username, password, email } = req.body;
-
-  validators.validateUsername(username);
-  validators.validateEmail(email);
-  validators.validatePassword(password);
-
-  next();
-};
-
-const validateLoginRequest = (req, res, next) => {
-  validators.validateJsonContentType(req);
-
-  validators.assertRequestFields(req, ["password"], "User data", "require_all");
-  validators.assertRequestFields(
-    req,
-    ["username", "email"],
-    "User data",
-    "require_some",
-  );
-
-  const { username, password, email } = req.body;
-
-  if (email && username)
-    validators.throwValidationError(
-      "Provide either email or username, but not both.",
-    );
-
-  if (username != null) validators.validateUsername(username);
-  if (email != null) validators.validateEmail(email);
-  validators.validatePassword(password);
-
-  next();
-};
-
+// NOTE: currently unused
 const validateUUID = (param = "id") => {
   return (req, res, next) => {
     validators.validateUUID(req.params[param]);
@@ -51,7 +8,7 @@ const validateUUID = (param = "id") => {
   };
 };
 
-const validateProfile = (req, res, next) => {
+const validateProfileUpdate = (req, res, next) => {
   validators.validateJsonContentType(req);
   const profile = req.body.profile;
   if (!profile || typeof profile !== "object" || Array.isArray(profile)) {
@@ -97,7 +54,7 @@ const validateAccountUpdate = (req, res, next) => {
   const updateFields = [
     { key: "password", value: newPassword, validate: validators.validatePassword },
     { key: "email", value: newEmail, validate: validators.validateEmail },
-    { key: "username", value: newUsername, validate: validators.validateUsername }
+    { key: "username", value: newUsername, validate: validators.validateUsername },
   ];
   
   const provided = updateFields.filter(field => field.value != null);
@@ -120,9 +77,7 @@ const validateAccountUpdate = (req, res, next) => {
 /* ================================================================================================= */
 
 module.exports = {
-  validateRegisterRequest,
-  validateLoginRequest,
   validateUUID,
-  validateProfile,
+  validateProfileUpdate,
   validateAccountUpdate,
 };

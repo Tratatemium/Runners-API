@@ -1,24 +1,5 @@
-const auth = require("../services/auth.service.js");
 const userService = require("../services/user.service.js");
-
-const createUser = async (req, res) => {
-  const { email, username, password } = req.body;
-  const newUserId = await auth.signup(email, username, password);
-  res.status(201).json({ id: newUserId });
-};
-
-const loginUser = async (req, res) => {
-  const { email, username, password } = req.body;
-  const identifier = email ? email : username;
-  const token = await auth.login(identifier, password);
-  res.status(200).json({ token });
-};
-
-const logoutAll = async (req, res) => {
-  const { userId } = req.user;
-  await auth.invalidatePreviousAccessTokens(userId);
-  res.sendStatus(200);
-};
+const authService = require("../services/auth.service.js");
 
 const getMe = (req, res) => {
   const userData = req.userDoc;
@@ -36,23 +17,18 @@ const updateProfile = async (req, res) => {
 const updateAccount = async (req, res) => {
   const { userId, email: currentEmail } = req.user;
   const currentPassword = req.body.currentPassword;
-  await auth.authenticateUser(currentEmail, currentPassword);
+  await authService.authenticateUser(currentEmail, currentPassword);
 
   const fieldToUpdate = req.fieldToUpdate;
-  if (!req.fieldToUpdate) {
-    throw new Error(
-      'req.fieldToUpdate must be "password", "email", or "username".',
-    );
+  if (!fieldToUpdate) {
+    throw new Error("req.fieldToUpdate must be provided in middleware.");
   }
   await userService.updateAccount(userId, fieldToUpdate, req.body);
-  await auth.invalidatePreviousAccessTokens(userId);
+  await authService.invalidatePreviousAccessTokens(userId);
   res.sendStatus(200);
 };
 
 module.exports = {
-  createUser,
-  loginUser,
-  logoutAll,
   getMe,
   updateProfile,
   updateAccount,

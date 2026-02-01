@@ -34,7 +34,7 @@ const assertRequestFields = (
   const hasValue = (field) => req.body[field] != null;
 
   if (mode === "require_all") {
-    const missingFields = requiredFields.filter((field) => !hasValue(field));
+    const missingFields = requiredFields.filter(field => !hasValue(field));
     if (missingFields.length > 0) {
       throwValidationError(
         `${objectName} is missing required fields: ${missingFields.join(", ")}.`,
@@ -44,7 +44,7 @@ const assertRequestFields = (
   }
 
   if (mode === "require_some") {
-    const hasAtLeastOneField = requiredFields.some((field) => hasValue(field));
+    const hasAtLeastOneField = requiredFields.some(field => hasValue(field));
     if (!hasAtLeastOneField) {
       throwValidationError(
         `${objectName} must have one of the required fields: ${requiredFields.join(", ")}.`,

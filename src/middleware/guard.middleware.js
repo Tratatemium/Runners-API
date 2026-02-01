@@ -1,3 +1,4 @@
+// NOTE: currently unused
 const checkOwnership = (param = "id") => {
   return (req, res, next) => {
     const resourceId = req.params[param];
