@@ -34,7 +34,7 @@ const validateProfileUpdate = (req, res, next) => {
   if (firstName != null) validators.validateName(firstName, "firstName");
   if (lastName != null) validators.validateName(lastName, "lastName");
   if (dateOfBirth != null)
-    validators.validateISODate(dateOfBirth, "dateOfBirth");
+    validators.validateISODateOnly(dateOfBirth, "dateOfBirth");
   if (heightCm != null) validators.validatePositiveNumber(heightCm, "heightCm");
   if (weightKg != null) validators.validatePositiveNumber(weightKg, "weightKg");
 

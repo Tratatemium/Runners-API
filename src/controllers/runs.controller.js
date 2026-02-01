@@ -1,6 +1,13 @@
-const { parseAndValidateRun } = require("../middleware/validation/runs.validation.js");
 const { validateUUID } = require("../middleware/validation/validators.js");
 const runsRepo = require("../repositories/runs.repository.js");
+
+
+const postNewRun = async (req, res) => {
+  const userId = req.user.userId;
+  const newRun = { userId, ... req.runData }
+  const newRunId = await runsRepo.addNewRun(newRun);
+  res.status(201).json({ id: newRunId });
+};
 
 const getRunById = async (req, res) => {
   validateUUID(req.params.id, "runId");
@@ -11,12 +18,6 @@ const getRunById = async (req, res) => {
     throw err;
   }
   res.json(data);
-};
-
-const postNewRun = async (req, res) => {
-  const newRun = parseAndValidateRun(req);
-  const newRunId = await runsRepo.addNewRun(newRun);
-  res.status(201).json({ id: newRunId });
 };
 
 module.exports = { getRunById, postNewRun };

@@ -13,7 +13,7 @@ const validateRun = (req, res, next) => {
 
   validators.assertString(startTime, "startTime");
   const startTimeTrimmed = startTime.trim();
-  validators.validateISODate(startTimeTrimmed, "startTime");
+  validators.validateISODateTimeUTC(startTimeTrimmed, "startTime");
 
   const durationNormalized = Number(String(durationSec).trim());
   validators.validatePositiveNumber(durationNormalized, "durationSec");
