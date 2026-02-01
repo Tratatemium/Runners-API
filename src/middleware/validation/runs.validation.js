@@ -1,5 +1,12 @@
 const validators = require("./validators.js");
 
+const validateUUID = (param = "id") => {
+  return (req, res, next) => {
+    validators.validateUUID(req.params[param]);
+    next();
+  };
+};
+
 const validateRun = (req, res, next) => {
   validators.validateJsonContentType(req);
 
@@ -31,4 +38,4 @@ const validateRun = (req, res, next) => {
   next();
 };
 
-module.exports = { validateRun };
+module.exports = { validateUUID, validateRun };

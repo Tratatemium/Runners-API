@@ -34,7 +34,7 @@ const assertRequestFields = (
   const hasValue = (field) => req.body[field] != null;
 
   if (mode === "require_all") {
-    const missingFields = requiredFields.filter(field => !hasValue(field));
+    const missingFields = requiredFields.filter((field) => !hasValue(field));
     if (missingFields.length > 0) {
       throwValidationError(
         `${objectName} is missing required fields: ${missingFields.join(", ")}.`,
@@ -44,7 +44,7 @@ const assertRequestFields = (
   }
 
   if (mode === "require_some") {
-    const hasAtLeastOneField = requiredFields.some(field => hasValue(field));
+    const hasAtLeastOneField = requiredFields.some((field) => hasValue(field));
     if (!hasAtLeastOneField) {
       throwValidationError(
         `${objectName} must have one of the required fields: ${requiredFields.join(", ")}.`,
@@ -69,8 +69,7 @@ const validateUUID = (ID, IDname = "ID") => {
 };
 
 const validateISODateTimeUTC = (timestamp, name) => {
-  const isoRegex =
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+  const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
 
   if (!isoRegex.test(timestamp)) {
     throwValidationError(
@@ -80,9 +79,7 @@ const validateISODateTimeUTC = (timestamp, name) => {
 
   const date = new Date(timestamp);
   if (!Number.isFinite(date.getTime())) {
-    throwValidationError(
-      `${name} must be a valid ISO 8601 timestamp.`,
-    );
+    throwValidationError(`${name} must be a valid ISO 8601 timestamp.`);
   }
 };
 
@@ -90,23 +87,17 @@ const validateISODateOnly = (dateStr, name) => {
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
   if (!dateRegex.test(dateStr)) {
-    throwValidationError(
-      `${name} must be a valid ISO 8601 date (YYYY-MM-DD).`,
-    );
+    throwValidationError(`${name} must be a valid ISO 8601 date (YYYY-MM-DD).`);
   }
 
   const date = new Date(`${dateStr}T00:00:00Z`);
   if (!Number.isFinite(date.getTime())) {
-    throwValidationError(
-      `${name} must be a valid calendar date.`,
-    );
+    throwValidationError(`${name} must be a valid calendar date.`);
   }
 
   // Prevent JS date normalization (e.g. 2024-02-31 → Mar 2)
   if (date.toISOString().slice(0, 10) !== dateStr) {
-    throwValidationError(
-      `${name} must be a real calendar date.`,
-    );
+    throwValidationError(`${name} must be a real calendar date.`);
   }
 };
 

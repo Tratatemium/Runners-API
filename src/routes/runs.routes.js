@@ -12,6 +12,6 @@ router.post(
   runsController.postNewRun,
 );
 
-router.get("/:id", runsController.getRunById);
+router.get("/:id", validation.validateUUID("id"), runsController.getRunById);
 
 module.exports = router;
