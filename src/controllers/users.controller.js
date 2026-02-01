@@ -1,4 +1,5 @@
 const userService = require("../services/user.service.js");
+const authService = require("../services/auth.service.js");
 
 const getMe = (req, res) => {
   const userData = req.userDoc;
@@ -16,14 +17,14 @@ const updateProfile = async (req, res) => {
 const updateAccount = async (req, res) => {
   const { userId, email: currentEmail } = req.user;
   const currentPassword = req.body.currentPassword;
-  await auth.authenticateUser(currentEmail, currentPassword);
+  await authService.authenticateUser(currentEmail, currentPassword);
 
   const fieldToUpdate = req.fieldToUpdate;
   if (!fieldToUpdate) {
     throw new Error("req.fieldToUpdate must be provided in middleware.");
   }
   await userService.updateAccount(userId, fieldToUpdate, req.body);
-  await auth.invalidatePreviousAccessTokens(userId);
+  await authService.invalidatePreviousAccessTokens(userId);
   res.sendStatus(200);
 };
 
