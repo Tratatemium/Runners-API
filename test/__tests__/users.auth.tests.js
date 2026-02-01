@@ -14,11 +14,11 @@ const testUser2 = {
   email: "runner02@test.com",
 };
 
-describe("POST /users/login - Integration Tests", () => {
+describe("POST /auth/login - Integration Tests", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .post("/users/login")
+        .post("/auth/login")
         .set("Content-Type", "text/plain")
         .send("not json");
 
@@ -31,7 +31,7 @@ describe("POST /users/login - Integration Tests", () => {
 
   describe("Required fields validation", () => {
     it("returns 400 for empty JSON", async () => {
-      const res = await request(app).post("/users/login").send({});
+      const res = await request(app).post("/auth/login").send({});
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -43,7 +43,7 @@ describe("POST /users/login - Integration Tests", () => {
 
     it("returns 400 for missing password field", async () => {
       const res = await request(app)
-        .post("/users/login")
+        .post("/auth/login")
         .send({ username: testUser1.username });
 
       expect(res.statusCode).toBe(400);
@@ -56,7 +56,7 @@ describe("POST /users/login - Integration Tests", () => {
 
     it("returns 400 when both username and email are missing", async () => {
       const res = await request(app)
-        .post("/users/login")
+        .post("/auth/login")
         .send({ password: testUser1.password });
 
       expect(res.statusCode).toBe(400);
@@ -68,7 +68,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 400 when both username and email are provided", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         username: testUser1.username,
         email: testUser1.email,
         password: testUser1.password,
@@ -83,7 +83,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 400 for empty string username", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         username: "",
         password: testUser1.password,
       });
@@ -94,7 +94,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 400 for empty string email", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         email: "",
         password: testUser1.password,
       });
@@ -105,7 +105,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 400 for empty string password", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         username: testUser1.username,
         password: "",
       });
@@ -118,7 +118,7 @@ describe("POST /users/login - Integration Tests", () => {
 
   describe("Authentication validation", () => {
     it("returns 401 for incorrect password with username", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         username: testUser1.username,
         password: "WrongPassword123!",
       });
@@ -129,7 +129,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 401 for incorrect password with email", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         email: testUser1.email,
         password: "WrongPassword123!",
       });
@@ -140,7 +140,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 401 for non-existent username", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         username: "nonexistent_user",
         password: "ValidPassword123!",
       });
@@ -151,7 +151,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 401 for non-existent email", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         email: "nonexistent@example.com",
         password: "ValidPassword123!",
       });
@@ -164,7 +164,7 @@ describe("POST /users/login - Integration Tests", () => {
 
   describe("Successful login", () => {
     it("returns 200 and token for valid credentials with username", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         username: testUser1.username,
         password: testUser1.password,
       });
@@ -177,7 +177,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns 200 and token for valid credentials with email", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         email: testUser1.email,
         password: testUser1.password,
       });
@@ -190,7 +190,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns valid JWT token structure when logging in with username", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         username: testUser2.username,
         password: testUser2.password,
       });
@@ -202,7 +202,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("returns valid JWT token structure when logging in with email", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         email: testUser2.email,
         password: testUser2.password,
       });
@@ -218,8 +218,8 @@ describe("POST /users/login - Integration Tests", () => {
         username: testUser1.username,
         password: testUser1.password,
       };
-      const res1 = await request(app).post("/users/login").send(loginData);
-      const res2 = await request(app).post("/users/login").send(loginData);
+      const res1 = await request(app).post("/auth/login").send(loginData);
+      const res2 = await request(app).post("/auth/login").send(loginData);
 
       expect(res1.statusCode).toBe(200);
       expect(res2.statusCode).toBe(200);
@@ -232,8 +232,8 @@ describe("POST /users/login - Integration Tests", () => {
         email: testUser1.email,
         password: testUser1.password,
       };
-      const res1 = await request(app).post("/users/login").send(loginData);
-      const res2 = await request(app).post("/users/login").send(loginData);
+      const res1 = await request(app).post("/auth/login").send(loginData);
+      const res2 = await request(app).post("/auth/login").send(loginData);
 
       expect(res1.statusCode).toBe(200);
       expect(res2.statusCode).toBe(200);
@@ -242,7 +242,7 @@ describe("POST /users/login - Integration Tests", () => {
     });
 
     it("allows login with email in different case (case-insensitive)", async () => {
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         email: testUser1.email.toUpperCase(),
         password: testUser1.password,
       });
@@ -256,7 +256,7 @@ describe("POST /users/login - Integration Tests", () => {
 
     it("allows login with mixed case email", async () => {
       const mixedCaseEmail = "RuNnEr02@TeSt.CoM";
-      const res = await request(app).post("/users/login").send({
+      const res = await request(app).post("/auth/login").send({
         email: mixedCaseEmail,
         password: testUser2.password,
       });
@@ -274,14 +274,14 @@ describe("GET /users/me - Integration Tests", () => {
 
   beforeAll(async () => {
     // Login as user1 and get token
-    const loginRes1 = await request(app).post("/users/login").send({
+    const loginRes1 = await request(app).post("/auth/login").send({
       email: testUser1.email,
       password: testUser1.password,
     });
     user1Token = loginRes1.body.token;
 
     // Login as user2 and get token
-    const loginRes2 = await request(app).post("/users/login").send({
+    const loginRes2 = await request(app).post("/auth/login").send({
       email: testUser2.email,
       password: testUser2.password,
     });
@@ -350,12 +350,12 @@ describe("GET /users/me - Integration Tests", () => {
   });
 });
 
-describe("POST /users/logout-all - Integration Tests", () => {
+describe("POST /auth/logout-all - Integration Tests", () => {
   let user1Token;
 
   beforeAll(async () => {
     // Login as user1 and get token
-    const loginRes = await request(app).post("/users/login").send({
+    const loginRes = await request(app).post("/auth/login").send({
       email: testUser1.email,
       password: testUser1.password,
     });
@@ -364,7 +364,7 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
   describe("Authentication validation", () => {
     it("returns 401 when no authorization header is provided", async () => {
-      const res = await request(app).post("/users/logout-all");
+      const res = await request(app).post("/auth/logout-all");
 
       expect(res.statusCode).toBe(401);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -373,7 +373,7 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
     it("returns 401 when authorization header doesn't start with Bearer", async () => {
       const res = await request(app)
-        .post("/users/logout-all")
+        .post("/auth/logout-all")
         .set("Authorization", "InvalidFormat");
 
       expect(res.statusCode).toBe(401);
@@ -383,7 +383,7 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
     it("returns 401 for invalid token", async () => {
       const res = await request(app)
-        .post("/users/logout-all")
+        .post("/auth/logout-all")
         .set("Authorization", "Bearer invalid.token.here");
 
       expect(res.statusCode).toBe(401);
@@ -395,7 +395,7 @@ describe("POST /users/logout-all - Integration Tests", () => {
   describe("Successful logout", () => {
     it("returns 200 when logging out all sessions", async () => {
       const res = await request(app)
-        .post("/users/logout-all")
+        .post("/auth/logout-all")
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(res.statusCode).toBe(200);
@@ -403,7 +403,7 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
     it("invalidates all previous tokens after logout-all", async () => {
       // Login to get a token
-      const loginRes = await request(app).post("/users/login").send({
+      const loginRes = await request(app).post("/auth/login").send({
         email: testUser1.email,
         password: testUser1.password,
       });
@@ -417,7 +417,7 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
       // Logout all sessions
       await request(app)
-        .post("/users/logout-all")
+        .post("/auth/logout-all")
         .set("Authorization", `Bearer ${token}`);
 
       // Try to use old token
@@ -431,13 +431,13 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
     it("invalidates multiple tokens after logout-all", async () => {
       // Login twice to get two tokens
-      const loginRes1 = await request(app).post("/users/login").send({
+      const loginRes1 = await request(app).post("/auth/login").send({
         email: testUser1.email,
         password: testUser1.password,
       });
       const token1 = loginRes1.body.token;
 
-      const loginRes2 = await request(app).post("/users/login").send({
+      const loginRes2 = await request(app).post("/auth/login").send({
         email: testUser1.email,
         password: testUser1.password,
       });
@@ -456,7 +456,7 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
       // Logout all sessions using first token
       await request(app)
-        .post("/users/logout-all")
+        .post("/auth/logout-all")
         .set("Authorization", `Bearer ${token1}`);
 
       // Both tokens should now be invalid
@@ -473,18 +473,18 @@ describe("POST /users/logout-all - Integration Tests", () => {
 
     it("allows login with new token after logout-all", async () => {
       // Login and logout all
-      const loginRes1 = await request(app).post("/users/login").send({
+      const loginRes1 = await request(app).post("/auth/login").send({
         email: testUser1.email,
         password: testUser1.password,
       });
       const oldToken = loginRes1.body.token;
 
       await request(app)
-        .post("/users/logout-all")
+        .post("/auth/logout-all")
         .set("Authorization", `Bearer ${oldToken}`);
 
       // Login again to get new token
-      const loginRes2 = await request(app).post("/users/login").send({
+      const loginRes2 = await request(app).post("/auth/login").send({
         email: testUser1.email,
         password: testUser1.password,
       });

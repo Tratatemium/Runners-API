@@ -10,7 +10,7 @@ describe("POST /users/ - Integration Tests", () => {
 
   it("returns 415 when Content-Type is not JSON", async () => {
     const res = await request(app)
-      .post("/users/signup")
+      .post("/auth/signup")
       .set("Content-Type", "text/plain")
       .send("not json");
 
@@ -22,7 +22,7 @@ describe("POST /users/ - Integration Tests", () => {
 
   describe("Required fields validation", () => {
     it("returns 400 for empty JSON", async () => {
-      const res = await request(app).post("/users/signup").send({});
+      const res = await request(app).post("/auth/signup").send({});
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -34,7 +34,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for missing username field", async () => {
       const { username, ...dataWithoutUsername } = validUserData;
-      const res = await request(app).post("/users/signup").send(dataWithoutUsername);
+      const res = await request(app).post("/auth/signup").send(dataWithoutUsername);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -46,7 +46,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for missing password field", async () => {
       const { password, ...dataWithoutPassword } = validUserData;
-      const res = await request(app).post("/users/signup").send(dataWithoutPassword);
+      const res = await request(app).post("/auth/signup").send(dataWithoutPassword);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -58,7 +58,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for missing email field", async () => {
       const { email, ...dataWithoutEmail } = validUserData;
-      const res = await request(app).post("/users/signup").send(dataWithoutEmail);
+      const res = await request(app).post("/auth/signup").send(dataWithoutEmail);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -70,7 +70,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 when field is null", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, username: null });
 
       expect(res.statusCode).toBe(400);
@@ -83,7 +83,7 @@ describe("POST /users/ - Integration Tests", () => {
   describe("username validation", () => {
     it("returns 400 for non-string username", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, username: 12345 });
 
       expect(res.statusCode).toBe(400);
@@ -94,7 +94,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for username shorter than 6 characters", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, username: "short" });
 
       expect(res.statusCode).toBe(400);
@@ -107,7 +107,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for username longer than 30 characters", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, username: "a".repeat(31) });
 
       expect(res.statusCode).toBe(400);
@@ -120,7 +120,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for username with special characters", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, username: "user@name!" });
 
       expect(res.statusCode).toBe(400);
@@ -133,7 +133,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for username with spaces", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, username: "user name" });
 
       expect(res.statusCode).toBe(400);
@@ -145,7 +145,7 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts valid username with letters, numbers, and underscores", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "valid_user123",
         password: "SecurePassword123!",
         email: "valid_user123@example.com",
@@ -157,7 +157,7 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts username exactly 6 characters long", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "user12",
         password: "SecurePassword123!",
         email: "user12@example.com",
@@ -170,7 +170,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("accepts username exactly 30 characters long", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({
           username: "a".repeat(30),
           password: "SecurePassword123!",
@@ -186,7 +186,7 @@ describe("POST /users/ - Integration Tests", () => {
   describe("email validation", () => {
     it("returns 400 for non-string email", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, email: 12345 });
 
       expect(res.statusCode).toBe(400);
@@ -198,7 +198,7 @@ describe("POST /users/ - Integration Tests", () => {
     it("returns 400 for email longer than 254 characters", async () => {
       const longEmail = "a".repeat(250) + "@test.com";
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, email: longEmail });
 
       expect(res.statusCode).toBe(400);
@@ -209,7 +209,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for email with whitespace", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, email: "test user@example.com" });
 
       expect(res.statusCode).toBe(400);
@@ -220,7 +220,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for invalid email format without @", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, email: "invalidemail.com" });
 
       expect(res.statusCode).toBe(400);
@@ -231,7 +231,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for invalid email format without domain", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, email: "invalid@" });
 
       expect(res.statusCode).toBe(400);
@@ -242,7 +242,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for empty email", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, email: "" });
 
       expect(res.statusCode).toBe(400);
@@ -252,7 +252,7 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts valid email address", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "validemail",
         password: "SecurePassword123!",
         email: "valid.email@example.com",
@@ -264,7 +264,7 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts email with subdomain", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "subdomain",
         password: "SecurePassword123!",
         email: "user@mail.example.com",
@@ -279,7 +279,7 @@ describe("POST /users/ - Integration Tests", () => {
   describe("password validation", () => {
     it("returns 400 for non-string password", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, password: 12345 });
 
       expect(res.statusCode).toBe(400);
@@ -290,7 +290,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for password shorter than 12 characters", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, password: "Short1!" });
 
       expect(res.statusCode).toBe(400);
@@ -303,7 +303,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for password longer than 128 characters", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({ ...validUserData, password: "a".repeat(129) });
 
       expect(res.statusCode).toBe(400);
@@ -315,7 +315,7 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts password exactly 12 characters long", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "pass12char",
         password: "ValidPass123",
         email: "pass12char@example.com",
@@ -328,7 +328,7 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("accepts password exactly 128 characters long", async () => {
       const res = await request(app)
-        .post("/users/signup")
+        .post("/auth/signup")
         .send({
           username: "pass128char",
           password: "a".repeat(128),
@@ -341,7 +341,7 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts password with special characters", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "passspecial",
         password: "P@ssw0rd!#$%^&*()",
         email: "passspecial@example.com",
@@ -361,7 +361,7 @@ describe("POST /users/ - Integration Tests", () => {
         password: "FirstPassword123!",
         email: "first@example.com",
       };
-      await request(app).post("/users/signup").send(firstUser);
+      await request(app).post("/auth/signup").send(firstUser);
 
       // Try to create another user with the same username
       const duplicateUsernameUser = {
@@ -369,7 +369,7 @@ describe("POST /users/ - Integration Tests", () => {
         password: "DifferentPassword123!",
         email: "different@example.com",
       };
-      const res = await request(app).post("/users/signup").send(duplicateUsernameUser);
+      const res = await request(app).post("/auth/signup").send(duplicateUsernameUser);
 
       expect(res.statusCode).toBe(409);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -391,8 +391,8 @@ describe("POST /users/ - Integration Tests", () => {
       };
 
       const results = await Promise.allSettled([
-        request(app).post("/users/signup").send(userA),
-        request(app).post("/users/signup").send(userB),
+        request(app).post("/auth/signup").send(userA),
+        request(app).post("/auth/signup").send(userB),
       ]);
 
       const statuses = results.map(r => r.value.statusCode);
@@ -409,7 +409,7 @@ describe("POST /users/ - Integration Tests", () => {
         password: "FirstPassword123!",
         email: "duplicate@example.com",
       };
-      await request(app).post("/users/signup").send(firstUser);
+      await request(app).post("/auth/signup").send(firstUser);
 
       // Try to create another user with the same email
       const duplicateEmailUser = {
@@ -417,7 +417,7 @@ describe("POST /users/ - Integration Tests", () => {
         password: "DifferentPassword123!",
         email: "duplicate@example.com",
       };
-      const res = await request(app).post("/users/signup").send(duplicateEmailUser);
+      const res = await request(app).post("/auth/signup").send(duplicateEmailUser);
 
       expect(res.statusCode).toBe(409);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -441,8 +441,8 @@ describe("POST /users/ - Integration Tests", () => {
       };
 
       const results = await Promise.allSettled([
-        request(app).post("/users/signup").send(userA),
-        request(app).post("/users/signup").send(userB),
+        request(app).post("/auth/signup").send(userA),
+        request(app).post("/auth/signup").send(userB),
       ]);
 
       const statuses = results.map(r => r.value.statusCode);
@@ -454,7 +454,7 @@ describe("POST /users/ - Integration Tests", () => {
 
   describe("Successful validation", () => {
     it("returns 201 for valid user data", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "testuser123",
         password: "SecurePassword123!",
         email: "testuser123@example.com",
@@ -466,7 +466,7 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("returns 201 for valid user with all allowed characters", async () => {
-      const res = await request(app).post("/users/signup").send({
+      const res = await request(app).post("/auth/signup").send({
         username: "user_name_123",
         password: "SecureP@ssw0rd!",
         email: "user.name+tag@example.co.uk",

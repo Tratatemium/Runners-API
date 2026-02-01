@@ -14,20 +14,20 @@ const testUser2 = {
   email: "runner02@test.com",
 };
 
-describe("PATCH /users/me - Integration Tests", () => {
+describe("PATCH /users/me/profile - Integration Tests", () => {
   let user1Token;
   let user2Token;
 
   beforeAll(async () => {
     // Login as user1 and get token
-    const loginRes1 = await request(app).post("/users/login").send({
+    const loginRes1 = await request(app).post("/auth/login").send({
       email: testUser1.email,
       password: testUser1.password,
     });
     user1Token = loginRes1.body.token;
 
     // Login as user2 and get token
-    const loginRes2 = await request(app).post("/users/login").send({
+    const loginRes2 = await request(app).post("/auth/login").send({
       email: testUser2.email,
       password: testUser2.password,
     });
@@ -37,7 +37,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Content-Type", "text/plain")
         .set("Authorization", `Bearer ${user1Token}`)
         .send("not json");
@@ -52,7 +52,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("Authentication validation", () => {
     it("returns 401 when no authorization header is provided", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .send({ profile: { firstName: "John" } });
 
       expect(res.statusCode).toBe(401);
@@ -62,7 +62,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 401 when authorization header doesn't start with Bearer", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", "InvalidToken")
         .send({ profile: { firstName: "John" } });
 
@@ -73,7 +73,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 401 for invalid token", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", "Bearer invalid.token.here")
         .send({ profile: { firstName: "John" } });
 
@@ -86,7 +86,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("Profile object validation", () => {
     it("returns 400 when profile is missing", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({});
 
@@ -98,7 +98,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 when profile is null", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: null });
 
@@ -110,7 +110,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 when profile is not an object", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: "not an object" });
 
@@ -122,7 +122,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 when profile is an array", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: [] });
 
@@ -134,7 +134,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for unknown field in profile", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { unknownField: "value" } });
 
@@ -146,7 +146,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for multiple unknown fields", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { age: 25, city: "Stockholm" } });
 
@@ -159,7 +159,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("firstName validation", () => {
     it("returns 400 for empty string firstName", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "" } });
 
@@ -170,7 +170,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for firstName with numbers", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "John123" } });
 
@@ -181,7 +181,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for firstName with special characters", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "John@Doe" } });
 
@@ -192,7 +192,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for firstName that is too short", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "J" } });
 
@@ -203,7 +203,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for firstName that is too long", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "A".repeat(51) } });
 
@@ -216,7 +216,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("lastName validation", () => {
     it("returns 400 for empty string lastName", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { lastName: "" } });
 
@@ -227,7 +227,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for lastName with numbers", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { lastName: "Doe123" } });
 
@@ -238,7 +238,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for lastName with special characters", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { lastName: "Doe#Smith" } });
 
@@ -251,7 +251,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("dateOfBirth validation", () => {
     it("returns 400 for invalid date format", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { dateOfBirth: "1990-13-45" } });
 
@@ -262,7 +262,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for non-ISO date format", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { dateOfBirth: "12/31/1990" } });
 
@@ -273,7 +273,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for empty string dateOfBirth", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { dateOfBirth: "" } });
 
@@ -286,7 +286,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("heightCm validation", () => {
     it("returns 400 for negative heightCm", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { heightCm: -180 } });
 
@@ -297,7 +297,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for zero heightCm", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { heightCm: 0 } });
 
@@ -308,7 +308,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for string heightCm", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { heightCm: "180" } });
 
@@ -321,7 +321,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("weightKg validation", () => {
     it("returns 400 for negative weightKg", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { weightKg: -70 } });
 
@@ -332,7 +332,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for zero weightKg", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { weightKg: 0 } });
 
@@ -343,7 +343,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 400 for string weightKg", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { weightKg: "70" } });
 
@@ -356,7 +356,7 @@ describe("PATCH /users/me - Integration Tests", () => {
   describe("Successful profile updates", () => {
     it("returns 200 when updating firstName only", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "John" } });
 
@@ -366,7 +366,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 200 when updating lastName only", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { lastName: "Doe" } });
 
@@ -376,7 +376,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 200 when updating dateOfBirth only", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { dateOfBirth: "1990-05-15" } });
 
@@ -386,7 +386,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 200 when updating heightCm only", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { heightCm: 180 } });
 
@@ -396,7 +396,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 200 when updating weightKg only", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { weightKg: 75 } });
 
@@ -406,7 +406,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 200 when updating multiple fields", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           profile: {
@@ -422,7 +422,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("returns 200 when updating all fields", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           profile: {
@@ -440,12 +440,12 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("allows different users to update their own profiles", async () => {
       const res1 = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "Anna" } });
 
       const res2 = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({ profile: { firstName: "Boris" } });
 
@@ -455,7 +455,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("accepts valid name with hyphens", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "Anne-Marie" } });
 
@@ -465,7 +465,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("accepts valid name with apostrophes", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { lastName: "O'Brien" } });
 
@@ -475,7 +475,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("accepts valid name with spaces", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "Mary Jane" } });
 
@@ -485,7 +485,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("accepts decimal values for heightCm", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { heightCm: 175.5 } });
 
@@ -495,7 +495,7 @@ describe("PATCH /users/me - Integration Tests", () => {
 
     it("accepts decimal values for weightKg", async () => {
       const res = await request(app)
-        .patch("/users/me")
+        .patch("/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { weightKg: 72.3 } });
 
