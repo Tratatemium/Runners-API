@@ -6,20 +6,6 @@ const authentication = require("../middleware/auth.middleware.js");
 const usersMiddleware = require("../middleware/users.middleware.js");
 const usersController = require("../controllers/users.controller.js");
 
-router.post(
-  "/signup",
-  validation.validateRegisterRequest,
-  usersController.createUser,
-);
-
-router.post(
-  "/login",
-  validation.validateLoginRequest,
-  usersController.loginUser,
-);
-
-router.post("/logout-all", authentication.checkAuth, usersController.logoutAll);
-
 // NOTE: possibly add guard middleware to check if user is active / banned / etc.
 
 router.get(
@@ -30,28 +16,28 @@ router.get(
 );
 
 router.patch(
-  "/me",
+  "/me/profile",
   validation.validateProfile,
   authentication.checkAuth,
   usersController.updateProfile,
 );
 
 router.patch(
-  "/password",
+  "/me/password",
   validation.validateAccountUpdate("password"),
   authentication.checkAuth,
   usersController.updateAccount("password"),
 );
 
 router.patch(
-  "/email",
+  "/me/email",
   validation.validateAccountUpdate("email"),
   authentication.checkAuth,
   usersController.updateAccount("email"),
 );
 
 router.patch(
-  "/username",
+  "/me/username",
   validation.validateAccountUpdate("username"),
   authentication.checkAuth,
   usersController.updateAccount("username"),
