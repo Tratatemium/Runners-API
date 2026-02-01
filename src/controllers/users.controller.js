@@ -33,22 +33,27 @@ const updateProfile = async (req, res) => {
   res.status(200).json(savedProfile);
 };
 
-const updateAccount = (fieldToUpdate) => {
-  const acceptableFields = ["password", "email", "username"];
-  if (!acceptableFields.includes(fieldToUpdate)) {
+const updateAccount = async (req, res) => {
+  const { userId, email: currentEmail } = req.user;
+  const currentPassword = req.body.currentPassword;
+  await auth.authenticateUser(currentEmail, currentPassword);
+
+  const fieldToUpdate = req.fieldToUpdate;
+  if (!req.fieldToUpdate) {
     throw new Error(
-      `fieldToUpdate must be "password", "email", or "username".`,
+      'req.fieldToUpdate must be "password", "email", or "username".',
     );
   }
-
-  return async (req, res) => {
-    const { email, userId } = req.user;
-    const currentPassword = req.body.currentPassword;
-    await auth.authenticateUser(email, currentPassword);
-    await userService.updateAccount(req, fieldToUpdate);
-    await auth.invalidatePreviousAccessTokens(userId);
-    res.sendStatus(200);
-  };
+  await userService.updateAccount(userId, fieldToUpdate, req.body);
+  await auth.invalidatePreviousAccessTokens(userId);
+  res.sendStatus(200);
 };
 
-module.exports = { createUser, loginUser, logoutAll, getMe, updateProfile, updateAccount };
+module.exports = {
+  createUser,
+  loginUser,
+  logoutAll,
+  getMe,
+  updateProfile,
+  updateAccount,
+};

@@ -84,46 +84,35 @@ const validateProfile = (req, res, next) => {
   next();
 };
 
-const validateAccountUpdate = (fieldToUpdate) => {
-  return (req, res, next) => {
-    validators.validateJsonContentType(req);
+const validateAccountUpdate = (req, res, next) => {
+  validators.validateJsonContentType(req);
 
-    const { currentPassword, newPassword, newEmail, newUsername } = req.body;
+  const { currentPassword, newPassword, newEmail, newUsername } = req.body;
 
-    if (currentPassword == null) {
-      validators.throwValidationError("currentPassword must be provided.");
-    }
-    validators.validatePassword(currentPassword);
+  if (currentPassword == null) {
+    validators.throwValidationError("currentPassword must be provided.");
+  }
+  validators.validatePassword(currentPassword);
 
-    switch (fieldToUpdate) {
-      case "password":
-        if (newPassword == null) {
-          validators.throwValidationError("newPassword must be provided.");
-        }
-        validators.validatePassword(newPassword);
-        break;
+  const updateFields = [
+    { key: "password", value: newPassword, validate: validators.validatePassword },
+    { key: "email", value: newEmail, validate: validators.validateEmail },
+    { key: "username", value: newUsername, validate: validators.validateUsername }
+  ];
+  
+  const provided = updateFields.filter(field => field.value != null);
 
-      case "email":
-        if (newEmail == null) {
-          validators.throwValidationError("newEmail must be provided.");
-        }
-        validators.validateEmail(newEmail);
-        break;
+  if (provided.length !== 1) {
+    validators.throwValidationError(
+      "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername.",
+    );
+  }
 
-      case "username":
-        if (newUsername == null) {
-          validators.throwValidationError("newUsername must be provided.");
-        }
-        validators.validateUsername(newUsername);
-        break;
+  const fieldToUpdate = provided[0];
+  fieldToUpdate.validate(fieldToUpdate.value);
+  req.fieldToUpdate = fieldToUpdate.key;
 
-      default:
-        throw new Error(
-          `fieldToUpdate must be "password", "email", or "username".`,
-        );
-    }
-    next();
-  };
+  next();
 };
 
 /* ================================================================================================= */

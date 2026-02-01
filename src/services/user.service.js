@@ -13,33 +13,23 @@ const updateProfile = async (userId, profilePatch) => {
   return savedProfile;
 };
 
-const updateAccount = async (req, fieldToUpdate) => {
-  const userId = req.user.userId;
-  let result;
-  switch (fieldToUpdate) {
-    case "password": {
-      const newPassword = req.body.newPassword;
-      result = await auth.updatePassword(userId, newPassword);
-      break;
-    }
+const updateAccount = async (userId, fieldToUpdate, reqBody) => {
+  const handlers = {
+    password: (userId, reqBody) =>
+      auth.updatePassword(userId, reqBody.newPassword),
+    email: (userId, reqBody) =>
+      usersRepo.updateAccount(userId, "email", reqBody.newEmail),
+    username: (userId, reqBody) =>
+      usersRepo.updateAccount(userId, "username", reqBody.newUsername),
+  };
 
-    case "email": {
-      const newEmail = req.body.newEmail;
-      result = await usersRepo.updateAccount(userId, "email", newEmail);
-      break;
-    }
-
-    case "username": {
-      const newUsername = req.body.newUsername;
-      result = await usersRepo.updateAccount(userId, "username", newUsername);
-      break;
-    }
-    default:
-      throw new Error(
-        `fieldToUpdate must be "password", "email", or "username".`,
-      );
+  const handler = handlers[fieldToUpdate];
+  if (!handler) {
+    throw new Error("Invalid fieldToUpdate");
   }
-  if (result.matchedCount === 0) throwUserNotFoundError();
+
+  const result = await handler(userId, reqBody);
+  if (result?.matchedCount === 0) throwUserNotFoundError();
 };
 
 module.exports = { updateProfile, updateAccount };

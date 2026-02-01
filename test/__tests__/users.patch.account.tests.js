@@ -16,7 +16,7 @@ const testUser2 = {
   email: "runner02@test.com",
 };
 
-describe("PATCH /users/me/password - Integration Tests", () => {
+describe("PATCH /users/me/account (password) - Integration Tests", () => {
   let user1Token;
 
   beforeAll(async () => {
@@ -37,7 +37,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Content-Type", "text/plain")
         .set("Authorization", `Bearer ${user1Token}`)
         .send("not json");
@@ -51,7 +51,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
 
   describe("Authentication validation", () => {
     it("returns 401 when no authorization header is provided", async () => {
-      const res = await request(app).patch("/users/me/password").send({
+      const res = await request(app).patch("/users/me/account").send({
         currentPassword: testUser1.password,
         newPassword: "NewPassword456!",
       });
@@ -63,7 +63,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
 
     it("returns 401 when authorization header doesn't start with Bearer", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", "InvalidToken")
         .send({
           currentPassword: testUser1.password,
@@ -77,7 +77,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
 
     it("returns 401 for invalid token", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", "Bearer invalid.token.here")
         .send({
           currentPassword: testUser1.password,
@@ -93,7 +93,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
   describe("currentPassword validation", () => {
     it("returns 400 when currentPassword is missing", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ newPassword: "NewPassword456!" });
 
@@ -105,7 +105,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
 
     it("returns 401 when currentPassword is incorrect", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: "WrongPassword123!",
@@ -118,22 +118,64 @@ describe("PATCH /users/me/password - Integration Tests", () => {
     });
   });
 
-  describe("newPassword validation", () => {
-    it("returns 400 when newPassword is missing", async () => {
+  describe("Field update validation", () => {
+    it("returns 400 when no update field is provided", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ currentPassword: testUser1.password });
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("newPassword must be provided.");
+      expect(res.body.error).toBe(
+        "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername.",
+      );
     });
+
+    it("returns 400 when multiple update fields are provided", async () => {
+      const res = await request(app)
+        .patch("/users/me/account")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          currentPassword: testUser1.password,
+          newPassword: "NewPassword456!",
+          newEmail: "newemail@test.com",
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername.",
+      );
+    });
+
+    it("returns 400 when all three update fields are provided", async () => {
+      const res = await request(app)
+        .patch("/users/me/account")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          currentPassword: testUser1.password,
+          newPassword: "NewPassword456!",
+          newEmail: "newemail@test.com",
+          newUsername: "newusername123",
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername.",
+      );
+    });
+  });
+
+  describe("newPassword validation", () => {
 
     it("returns 400 when newPassword is too short", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -150,7 +192,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
 
     it("returns 400 when newPassword is too long", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -167,7 +209,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
 
     it("returns 400 when newPassword is not a string", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -184,7 +226,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
   describe("Successful password updates", () => {
     it("returns 200 when updating password with valid credentials", async () => {
       const res = await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -200,7 +242,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
 
       // Update password
       await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${oldToken}`)
         .send({
           currentPassword: testUser1.password,
@@ -219,7 +261,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
     it("allows successful login with new token after password update", async () => {
       // Update password
       await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -249,7 +291,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
     it("allows login with new password after update", async () => {
       // Update password
       await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -269,7 +311,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
     it("rejects login with old password after update", async () => {
       // Update password
       await request(app)
-        .patch("/users/me/password")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -287,7 +329,7 @@ describe("PATCH /users/me/password - Integration Tests", () => {
   });
 });
 
-describe("PATCH /users/me/email - Integration Tests", () => {
+describe("PATCH /users/me/account (email) - Integration Tests", () => {
   let user2Token;
 
   beforeAll(async () => {
@@ -306,7 +348,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Content-Type", "text/plain")
         .set("Authorization", `Bearer ${user2Token}`)
         .send("not json");
@@ -320,7 +362,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
 
   describe("Authentication validation", () => {
     it("returns 401 when no authorization header is provided", async () => {
-      const res = await request(app).patch("/users/me/email").send({
+      const res = await request(app).patch("/users/me/account").send({
         currentPassword: testUser2.password,
         newEmail: "newemail@test.com",
       });
@@ -332,7 +374,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
 
     it("returns 401 for invalid token", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", "Bearer invalid.token.here")
         .send({
           currentPassword: testUser2.password,
@@ -348,7 +390,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
   describe("currentPassword validation", () => {
     it("returns 400 when currentPassword is missing", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({ newEmail: "newemail@test.com" });
 
@@ -360,7 +402,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
 
     it("returns 401 when currentPassword is incorrect", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: "WrongPassword123!",
@@ -374,21 +416,9 @@ describe("PATCH /users/me/email - Integration Tests", () => {
   });
 
   describe("newEmail validation", () => {
-    it("returns 400 when newEmail is missing", async () => {
-      const res = await request(app)
-        .patch("/users/me/email")
-        .set("Authorization", `Bearer ${user2Token}`)
-        .send({ currentPassword: testUser2.password });
-
-      expect(res.statusCode).toBe(400);
-      expect(res.headers["content-type"]).toMatch(/json/);
-      expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("newEmail must be provided.");
-    });
-
     it("returns 400 when newEmail is not a valid email format", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: testUser2.password,
@@ -403,7 +433,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
 
     it("returns 400 when newEmail contains whitespace", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: testUser2.password,
@@ -418,7 +448,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
 
     it("returns 400 when newEmail is too long", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: testUser2.password,
@@ -433,7 +463,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
 
     it("returns 400 when newEmail is not a string", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: testUser2.password,
@@ -450,7 +480,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
   describe("Successful email updates", () => {
     it("returns 200 when updating email with valid credentials", async () => {
       const res = await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: testUser2.password,
@@ -466,7 +496,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
 
       // Update email
       await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${oldToken}`)
         .send({
           currentPassword: testUser2.password,
@@ -485,7 +515,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
     it("allows login with new email after update", async () => {
       // Update email
       await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: testUser2.password,
@@ -505,7 +535,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
     it("rejects login with old email after update", async () => {
       // Update email
       await request(app)
-        .patch("/users/me/email")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: testUser2.password,
@@ -523,7 +553,7 @@ describe("PATCH /users/me/email - Integration Tests", () => {
   });
 });
 
-describe("PATCH /users/me/username - Integration Tests", () => {
+describe("PATCH /users/me/account (username) - Integration Tests", () => {
   let user1Token;
 
   beforeAll(async () => {
@@ -542,7 +572,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Content-Type", "text/plain")
         .set("Authorization", `Bearer ${user1Token}`)
         .send("not json");
@@ -556,7 +586,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
   describe("Authentication validation", () => {
     it("returns 401 when no authorization header is provided", async () => {
-      const res = await request(app).patch("/users/me/username").send({
+      const res = await request(app).patch("/users/me/account").send({
         currentPassword: testUser1.password,
         newUsername: "new_username",
       });
@@ -568,7 +598,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("returns 401 for invalid token", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", "Bearer invalid.token.here")
         .send({
           currentPassword: testUser1.password,
@@ -584,7 +614,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
   describe("currentPassword validation", () => {
     it("returns 400 when currentPassword is missing", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ newUsername: "new_username" });
 
@@ -596,7 +626,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("returns 401 when currentPassword is incorrect", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: "WrongPassword123!",
@@ -610,21 +640,9 @@ describe("PATCH /users/me/username - Integration Tests", () => {
   });
 
   describe("newUsername validation", () => {
-    it("returns 400 when newUsername is missing", async () => {
-      const res = await request(app)
-        .patch("/users/me/username")
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({ currentPassword: testUser1.password });
-
-      expect(res.statusCode).toBe(400);
-      expect(res.headers["content-type"]).toMatch(/json/);
-      expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("newUsername must be provided.");
-    });
-
     it("returns 400 when newUsername is too short", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -641,7 +659,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("returns 400 when newUsername is too long", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -658,7 +676,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("returns 400 when newUsername contains special characters", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -675,7 +693,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("returns 400 when newUsername contains spaces", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -692,7 +710,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("returns 400 when newUsername is not a string", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -709,7 +727,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
   describe("Successful username updates", () => {
     it("returns 200 when updating username with valid credentials", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -725,7 +743,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
       // Update username
       await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${oldToken}`)
         .send({
           currentPassword: testUser1.password,
@@ -744,7 +762,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
     it("allows login with new username after update", async () => {
       // Update username
       await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -764,7 +782,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
     it("rejects login with old username after update", async () => {
       // Update username
       await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -782,7 +800,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("accepts valid username with underscores", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
@@ -794,7 +812,7 @@ describe("PATCH /users/me/username - Integration Tests", () => {
 
     it("accepts valid username with numbers", async () => {
       const res = await request(app)
-        .patch("/users/me/username")
+        .patch("/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: testUser1.password,
