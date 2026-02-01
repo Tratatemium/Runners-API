@@ -23,24 +23,10 @@ router.patch(
 );
 
 router.patch(
-  "/me/password",
-  validation.validateAccountUpdate("password"),
+  "/me/account",
+  validation.validateAccountUpdate,
   authentication.checkAuth,
-  usersController.updateAccount("password"),
-);
-
-router.patch(
-  "/me/email",
-  validation.validateAccountUpdate("email"),
-  authentication.checkAuth,
-  usersController.updateAccount("email"),
-);
-
-router.patch(
-  "/me/username",
-  validation.validateAccountUpdate("username"),
-  authentication.checkAuth,
-  usersController.updateAccount("username"),
+  usersController.updateAccount,
 );
 
 module.exports = router;
