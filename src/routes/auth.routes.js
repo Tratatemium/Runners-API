@@ -21,7 +21,6 @@ router.post("/logout-all", authorization.checkAuth, authController.logoutAll);
 
 module.exports = router;
 
-
 // IDEA: POST /auth/password-reset
 // {
 //   "email": "user@example.com"
