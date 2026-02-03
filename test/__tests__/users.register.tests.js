@@ -34,7 +34,9 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for missing username field", async () => {
       const { username, ...dataWithoutUsername } = validUserData;
-      const res = await request(app).post("/auth/signup").send(dataWithoutUsername);
+      const res = await request(app)
+        .post("/auth/signup")
+        .send(dataWithoutUsername);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -46,7 +48,9 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for missing password field", async () => {
       const { password, ...dataWithoutPassword } = validUserData;
-      const res = await request(app).post("/auth/signup").send(dataWithoutPassword);
+      const res = await request(app)
+        .post("/auth/signup")
+        .send(dataWithoutPassword);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -58,7 +62,9 @@ describe("POST /users/ - Integration Tests", () => {
 
     it("returns 400 for missing email field", async () => {
       const { email, ...dataWithoutEmail } = validUserData;
-      const res = await request(app).post("/auth/signup").send(dataWithoutEmail);
+      const res = await request(app)
+        .post("/auth/signup")
+        .send(dataWithoutEmail);
 
       expect(res.statusCode).toBe(400);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -369,7 +375,9 @@ describe("POST /users/ - Integration Tests", () => {
         password: "DifferentPassword123!",
         email: "different@example.com",
       };
-      const res = await request(app).post("/auth/signup").send(duplicateUsernameUser);
+      const res = await request(app)
+        .post("/auth/signup")
+        .send(duplicateUsernameUser);
 
       expect(res.statusCode).toBe(409);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -395,7 +403,7 @@ describe("POST /users/ - Integration Tests", () => {
         request(app).post("/auth/signup").send(userB),
       ]);
 
-      const statuses = results.map(r => r.value.statusCode);
+      const statuses = results.map((r) => r.value.statusCode);
 
       // One should succeed, one should fail
       expect(statuses).toContain(201);
@@ -417,7 +425,9 @@ describe("POST /users/ - Integration Tests", () => {
         password: "DifferentPassword123!",
         email: "duplicate@example.com",
       };
-      const res = await request(app).post("/auth/signup").send(duplicateEmailUser);
+      const res = await request(app)
+        .post("/auth/signup")
+        .send(duplicateEmailUser);
 
       expect(res.statusCode).toBe(409);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -426,7 +436,7 @@ describe("POST /users/ - Integration Tests", () => {
         "email duplicate@example.com already exists.",
       );
     });
-    
+
     it("handles concurrent duplicate email requests safely", async () => {
       const userA = {
         username: "email_race_1",
@@ -445,7 +455,7 @@ describe("POST /users/ - Integration Tests", () => {
         request(app).post("/auth/signup").send(userB),
       ]);
 
-      const statuses = results.map(r => r.value.statusCode);
+      const statuses = results.map((r) => r.value.statusCode);
 
       expect(statuses).toContain(201);
       expect(statuses).toContain(409);

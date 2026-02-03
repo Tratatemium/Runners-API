@@ -17,8 +17,8 @@ const addNewRun = async (newRun) => {
 };
 
 const findRunsByUserId = async (userId) => {
-    return await Run.find({ userId: userId })
-    .sort({ startTime: -1, runId: 1 })  // most recent first
+  return await Run.find({ userId: userId })
+    .sort({ startTime: -1, runId: 1 }) // most recent first
     .lean();
 };
 

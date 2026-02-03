@@ -62,7 +62,7 @@ describe("GET /runs/:id - Integration Tests", () => {
   });
 });
 
-describe("POST /runs/ - Integration Tests", () => {
+describe("POST /users/me/runs - Integration Tests", () => {
   let user1Token;
 
   beforeAll(async () => {
@@ -82,7 +82,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
   describe("Authentication", () => {
     it("returns 401 when no authorization header is provided", async () => {
-      const res = await request(app).post("/runs").send(validRunData);
+      const res = await request(app).post("/users/me/runs").send(validRunData);
 
       expect(res.statusCode).toBe(401);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -91,7 +91,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 401 when authorization header doesn't start with Bearer", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", "InvalidToken")
         .send(validRunData);
 
@@ -102,7 +102,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 401 for invalid token", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", "Bearer invalid.token.here")
         .send(validRunData);
 
@@ -114,7 +114,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
   it("returns 415 when Content-Type is not JSON", async () => {
     const res = await request(app)
-      .post("/runs")
+      .post("/users/me/runs")
       .set("Authorization", `Bearer ${user1Token}`)
       .set("Content-Type", "text/plain")
       .send("not json");
@@ -128,7 +128,7 @@ describe("POST /runs/ - Integration Tests", () => {
   describe("Required fields validation", () => {
     it("returns 400 for empty JSON", async () => {
       const res = await request(app)
-        .post("/runs/")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({});
 
@@ -143,7 +143,7 @@ describe("POST /runs/ - Integration Tests", () => {
     it("returns 400 for missing startTime field", async () => {
       const { startTime, ...dataWithoutStartTime } = validRunData;
       const res = await request(app)
-        .post("/runs/")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send(dataWithoutStartTime);
 
@@ -158,7 +158,7 @@ describe("POST /runs/ - Integration Tests", () => {
     it("returns 400 for missing durationSec field", async () => {
       const { durationSec, ...dataWithoutDurationSec } = validRunData;
       const res = await request(app)
-        .post("/runs/")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send(dataWithoutDurationSec);
 
@@ -173,7 +173,7 @@ describe("POST /runs/ - Integration Tests", () => {
     it("returns 400 for missing distanceMeters field", async () => {
       const { distanceMeters, ...dataWithoutDistanceMeters } = validRunData;
       const res = await request(app)
-        .post("/runs/")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send(dataWithoutDistanceMeters);
 
@@ -187,7 +187,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 when field is null", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, startTime: null });
 
@@ -201,7 +201,7 @@ describe("POST /runs/ - Integration Tests", () => {
   describe("Rejected fields validation", () => {
     it("userId in body is ignored and uses authenticated user's ID", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, userId: "some-other-uuid" });
 
@@ -213,7 +213,7 @@ describe("POST /runs/ - Integration Tests", () => {
   describe("startTime validation", () => {
     it("returns 400 for non-string startTime", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, startTime: 12345 });
 
@@ -225,7 +225,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 for invalid ISO 8601 format", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           ...validRunData,
@@ -242,7 +242,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 for invalid date", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           ...validRunData,
@@ -259,7 +259,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 for empty startTime", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           ...validRunData,
@@ -276,7 +276,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts valid ISO 8601 format with milliseconds", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send(validRunData);
 
@@ -286,7 +286,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts valid ISO 8601 format without milliseconds", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, startTime: "2026-01-19T12:25:44Z" });
 
@@ -296,7 +296,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("handles startTime with whitespace", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, startTime: "  2024-01-15T10:30:00.000Z  " });
 
@@ -309,7 +309,7 @@ describe("POST /runs/ - Integration Tests", () => {
   describe("durationSec validation", () => {
     it("returns 400 for zero durationSec", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, durationSec: 0 });
 
@@ -321,7 +321,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 for negative durationSec", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, durationSec: -100 });
 
@@ -333,7 +333,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 for non-numeric durationSec", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, durationSec: "not-a-number" });
 
@@ -345,7 +345,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts valid positive durationSec number", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, durationSec: 1800 });
 
@@ -356,7 +356,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts string number for durationSec", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, durationSec: "1800" });
 
@@ -367,7 +367,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("handles numeric string with whitespace for durationSec", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, durationSec: "  1800  " });
 
@@ -378,7 +378,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts decimal numbers for durationSec", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, durationSec: 1800.5 });
 
@@ -391,7 +391,7 @@ describe("POST /runs/ - Integration Tests", () => {
   describe("distanceMeters validation", () => {
     it("returns 400 for zero distanceMeters", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, distanceMeters: 0 });
 
@@ -403,7 +403,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 for negative distanceMeters", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, distanceMeters: -5000 });
 
@@ -415,7 +415,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("returns 400 for non-numeric distanceMeters", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, distanceMeters: "invalid" });
 
@@ -427,7 +427,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts valid positive distanceMeters number", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, distanceMeters: 5000 });
 
@@ -438,7 +438,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts string number for distanceMeters", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, distanceMeters: "5000" });
 
@@ -449,7 +449,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("handles numeric string with whitespace for distanceMeters", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, distanceMeters: "  5000  " });
 
@@ -460,7 +460,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("accepts decimal numbers for distanceMeters", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...validRunData, distanceMeters: 5000.5 });
 
@@ -473,7 +473,7 @@ describe("POST /runs/ - Integration Tests", () => {
   describe("Successful validation", () => {
     it("returns 201 for valid run data", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send(validRunData);
 
@@ -484,7 +484,7 @@ describe("POST /runs/ - Integration Tests", () => {
 
     it("handles data with whitespace and string numbers", async () => {
       const res = await request(app)
-        .post("/runs")
+        .post("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "  2024-01-15T10:30:00.000Z  ",
@@ -499,7 +499,7 @@ describe("POST /runs/ - Integration Tests", () => {
   });
 });
 
-describe("GET /runs/my - Integration Tests", () => {
+describe("GET /users/me/runs - Integration Tests", () => {
   let user1Token;
   let user2Token;
 
@@ -521,7 +521,7 @@ describe("GET /runs/my - Integration Tests", () => {
 
   describe("Authentication", () => {
     it("returns 401 when no authorization header is provided", async () => {
-      const res = await request(app).get("/runs/my");
+      const res = await request(app).get("/users/me/runs");
 
       expect(res.statusCode).toBe(401);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -530,7 +530,7 @@ describe("GET /runs/my - Integration Tests", () => {
 
     it("returns 401 when authorization header doesn't start with Bearer", async () => {
       const res = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", "InvalidToken");
 
       expect(res.statusCode).toBe(401);
@@ -540,7 +540,7 @@ describe("GET /runs/my - Integration Tests", () => {
 
     it("returns 401 for invalid token", async () => {
       const res = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", "Bearer invalid.token.here");
 
       expect(res.statusCode).toBe(401);
@@ -552,7 +552,7 @@ describe("GET /runs/my - Integration Tests", () => {
   describe("Successful retrieval", () => {
     it("returns 200 and an array of runs for user1 (has multiple runs)", async () => {
       const res = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(res.statusCode).toBe(200);
@@ -574,7 +574,7 @@ describe("GET /runs/my - Integration Tests", () => {
 
     it("returns 200 and an array of runs for user2", async () => {
       const res = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect(res.statusCode).toBe(200);
@@ -590,11 +590,11 @@ describe("GET /runs/my - Integration Tests", () => {
 
     it("returns only the authenticated user's runs, not other users' runs", async () => {
       const res1 = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       const res2 = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect(res1.statusCode).toBe(200);
@@ -634,7 +634,7 @@ describe("GET /runs/my - Integration Tests", () => {
       const noRunsToken = loginRes.body.token;
 
       const res = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", `Bearer ${noRunsToken}`);
 
       expect(res.statusCode).toBe(200);
@@ -645,7 +645,7 @@ describe("GET /runs/my - Integration Tests", () => {
 
     it("returns runs with valid data types and structure", async () => {
       const res = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(res.statusCode).toBe(200);
@@ -671,7 +671,7 @@ describe("GET /runs/my - Integration Tests", () => {
 
     it("returns runs sorted by startTime (most recent first) if implemented", async () => {
       const res = await request(app)
-        .get("/runs/my")
+        .get("/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(res.statusCode).toBe(200);
