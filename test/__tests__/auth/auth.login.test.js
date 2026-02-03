@@ -8,6 +8,7 @@ const {
   expectValidJwtToken,
   expect400WithMessage,
   expect401Error,
+  expect415Error,
 } = require("../../helpers/assertions");
 
 describe("POST /auth/login", () => {
@@ -18,8 +19,7 @@ describe("POST /auth/login", () => {
         .set("Content-Type", "text/plain")
         .send("not json");
 
-      expect(res.statusCode).toBe(415);
-      expect400WithMessage(res, "Content-Type must be json.");
+      expect415Error(res);
     });
   });
 });

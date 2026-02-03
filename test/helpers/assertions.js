@@ -64,6 +64,7 @@ const expectValidUserStructure = (user, expectedAccount = {}) => {
  * @param {string|RegExp} errorMessage - Expected error message or pattern
  */
 const expect400WithMessage = (response, errorMessage) => {
+expect(response.statusCode).toBe(400);
   expect(response.headers["content-type"]).toMatch(/json/);
   expect(response.body).toHaveProperty("error");
   
@@ -105,6 +106,26 @@ const expect404Error = (response) => {
 };
 
 /**
+ * Assert that a response is a 409 error
+ * @param {Object} response - Supertest response object
+ */
+const expect409Error = (response) => {
+  expect(response.statusCode).toBe(409);
+  expect(response.headers["content-type"]).toMatch(/json/);
+  expect(response.body).toHaveProperty("error");
+};
+
+/**
+ * Assert that a response is a 409 error
+ * @param {Object} response - Supertest response object
+ */
+const expect415Error = (response) => {
+  expect(response.statusCode).toBe(415);
+  expect(response.headers["content-type"]).toMatch(/json/);
+  expect(response.body).toHaveProperty("error");
+};
+
+/**
  * Common assertions for successful JSON responses
  * @param {Object} response - Supertest response object
  * @param {number} expectedStatus - Expected HTTP status code (default 200)
@@ -122,5 +143,7 @@ module.exports = {
   expect401Error,
   expect403Error,
   expect404Error,
+  expect409Error,
+  expect415Error,
   expectJsonResponse,
 };

@@ -7,6 +7,7 @@ const { getAuthToken } = require("../../helpers/auth.helpers");
 const {
   expect400WithMessage,
   expect401Error,
+  expect415Error,
 } = require("../../helpers/assertions");
 const {
   getAuthValidationTests,
@@ -48,8 +49,7 @@ describe("PATCH /users/me/account", () => {
             .set("Authorization", `Bearer ${user1Token}`)
             .send(body);
 
-          expect(res.statusCode).toBe(415);
-          expect400WithMessage(res, "Content-Type must be json.");
+          expect415Error(res);
         });
       });
     });

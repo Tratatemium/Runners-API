@@ -4,6 +4,7 @@ const { TEST_USERS, VALID_RUN_DATA } = require("../../helpers/test-data");
 const { getAuthToken } = require("../../helpers/auth.helpers");
 const {
   expect400WithMessage,
+  expect415Error,
   expectJsonResponse,
 } = require("../../helpers/assertions");
 const {
@@ -43,8 +44,7 @@ describe("POST /users/me/runs", () => {
           .set("Content-Type", contentType)
           .send(body);
 
-        expect(res.statusCode).toBe(415);
-        expect400WithMessage(res, "Content-Type must be json.");
+        expect415Error(res);
       });
     });
   });

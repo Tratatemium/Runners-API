@@ -3,6 +3,8 @@ const app = require("../../../src/app.js");
 const { VALID_USER_DATA } = require("../../helpers/test-data");
 const {
   expect400WithMessage,
+  expect409Error,
+  expect415Error,
   expectJsonResponse,
 } = require("../../helpers/assertions");
 
@@ -14,8 +16,7 @@ describe("POST /auth/signup", () => {
         .set("Content-Type", "text/plain")
         .send("not json");
 
-      expect(res.statusCode).toBe(415);
-      expect400WithMessage(res, "Content-Type must be json.");
+      expect415Error(res);
     });
   });
 });
@@ -240,8 +241,7 @@ describe("Uniqueness validation", () => {
       .post("/auth/signup")
       .send(duplicateUsernameUser);
 
-    expect(res.statusCode).toBe(409);
-    expect400WithMessage(res, "username unique_user_001 already exists.");
+    expect409Error(res);
   });
 
   it("returns 409 for duplicate email", async () => {
@@ -261,8 +261,7 @@ describe("Uniqueness validation", () => {
       .post("/auth/signup")
       .send(duplicateEmailUser);
 
-    expect(res.statusCode).toBe(409);
-    expect400WithMessage(res, "email duplicate@example.com already exists.");
+    expect409Error(res);
   });
 
   it("handles concurrent duplicate requests safely", async () => {
