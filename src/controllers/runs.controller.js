@@ -16,6 +16,6 @@ const getMyRuns = async (req, res) => {
   const userId = req.user.userId;
   const myRuns = await runsService.getRunsByUser(userId);
   res.status(200).json(myRuns);
-}
+};
 
 module.exports = { getRunById, postNewRun, getMyRuns };
