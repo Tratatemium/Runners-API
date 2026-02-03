@@ -165,7 +165,7 @@ describe("PATCH /users/me/account", () => {
           newPassword: "NewPassword456!",
         });
 
-      expectJsonResponse(res, 200);
+      expect(res.statusCode).toBe(200);
     });
 
     it("invalidates previous token after password update", async () => {
@@ -253,7 +253,7 @@ describe("PATCH /users/me/account", () => {
           newEmail: "updated_runner02@test.com",
         });
 
-      expectJsonResponse(res, 200);
+      expect(res.statusCode).toBe(200);
     });
 
     it("invalidates previous token after email update", async () => {
@@ -342,7 +342,7 @@ describe("PATCH /users/me/account", () => {
           newUsername: "updated_runner_01",
         });
 
-      expectJsonResponse(res, 200);
+      expect(res.statusCode).toBe(200);
     });
 
     it("invalidates previous token after username update", async () => {
@@ -413,7 +413,7 @@ describe("PATCH /users/me/account", () => {
             newUsername: username,
           });
 
-        expectJsonResponse(res, 200);
+        expect(res.statusCode).toBe(200);
       });
     });
   });
