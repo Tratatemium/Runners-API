@@ -20,7 +20,7 @@ const getRunById = async (req, res) => {
 
 const deleteRunById = async (req, res) => {
   await runsService.deleteRunById(req.params.id);
-  res.status(200).json(runData);
+  res.sendStatus(204);
 };
 
 module.exports = { postNewRun, getMyRuns, getRunById, deleteRunById };

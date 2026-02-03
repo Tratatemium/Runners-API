@@ -19,4 +19,13 @@ const getRunsByUser = async (userId) => {
   return runs;
 };
 
-module.exports = { createRun, getRunById, getRunsByUser };
+const deleteRunById = async (runId) => {
+  const result = await runsRepo.deleteRunById(runId);
+  if (result.deletedCount === 0) {
+    const err = new Error(`No run with ID ${runId} found!`);
+    err.status = 404;
+    throw err;
+  }
+};
+
+module.exports = { createRun, getRunById, getRunsByUser, deleteRunById };
