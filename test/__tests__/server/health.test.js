@@ -1,6 +1,6 @@
 const request = require("supertest");
 const app = require("../../../src/app.js");
-const { expectJsonResponse } = require("../../helpers/request.helpers");
+const { expectJsonResponse } = require("../../helpers/assertions.js");
 
 describe("Server Health Endpoints", () => {
   describe("GET /", () => {

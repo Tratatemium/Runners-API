@@ -5,8 +5,8 @@ const {
   expectValidRunStructure,
   expect404Error,
   expect400WithMessage,
+  expectJsonResponse
 } = require("../../helpers/assertions");
-const { expectJsonResponse } = require("../../helpers/request.helpers");
 
 describe("GET /runs/:id", () => {
   it("returns 200 and run JSON for an existing ID", async () => {

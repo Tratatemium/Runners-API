@@ -14,16 +14,6 @@ const expectErrorResponse = (response, expectedStatus) => {
 };
 
 /**
- * Common assertions for successful JSON responses
- * @param {Object} response - Supertest response object
- * @param {number} expectedStatus - Expected HTTP status code (default 200)
- */
-const expectJsonResponse = (response, expectedStatus = 200) => {
-  expect(response.statusCode).toBe(expectedStatus);
-  expect(response.headers["content-type"]).toMatch(/json/);
-};
-
-/**
  * Test cases for authentication validation (401 errors)
  * Returns an array of test case objects
  */
@@ -72,7 +62,6 @@ const getMissingFieldTests = (validData, requiredFields) => {
 
 module.exports = {
   expectErrorResponse,
-  expectJsonResponse,
   getAuthValidationTests,
   getContentTypeTests,
   getMissingFieldTests,

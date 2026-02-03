@@ -3,7 +3,6 @@ const app = require("../../../src/app.js");
 const { TEST_USERS } = require("../../helpers/test-data");
 const {
   expectErrorResponse,
-  expectJsonResponse,
 } = require("../../helpers/request.helpers");
 const {
   expectValidJwtToken,
