@@ -1,16 +1,18 @@
 const runsRepo = require("../repositories/runs.repository.js");
 
+const throwRunNotFoundError = (runId) => {
+  const err = new Error(`No run with ID ${runId} found!`);
+  err.status = 404;
+  throw err;
+};
+
 const createRun = async (newRun) => {
   return await runsRepo.addNewRun(newRun);
 };
 
 const getRunById = async (runId) => {
   const runData = await runsRepo.findRunById(runId);
-  if (!runData) {
-    const err = new Error(`No run with ID ${runId} found!`);
-    err.status = 404;
-    throw err;
-  }
+  if (!runData) throwRunNotFoundError(runId);
   return runData;
 };
 
@@ -21,11 +23,7 @@ const getRunsByUser = async (userId) => {
 
 const deleteRunById = async (runId) => {
   const result = await runsRepo.deleteRunById(runId);
-  if (result.deletedCount === 0) {
-    const err = new Error(`No run with ID ${runId} found!`);
-    err.status = 404;
-    throw err;
-  }
+  if (result.deletedCount === 0) throwRunNotFoundError(runId);
 };
 
 module.exports = { createRun, getRunById, getRunsByUser, deleteRunById };
