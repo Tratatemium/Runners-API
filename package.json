@@ -29,7 +29,8 @@
       "<rootDir>/test/setup/jest.setup.js"
     ],
     "testMatch": [
-      "<rootDir>/test/__tests__/**/*.tests.js"
+      "<rootDir>/test/__tests__/**/*.tests.js",
+      "<rootDir>/test/__tests__/**/*.test.js"
     ]
   },
   "devDependencies": {
