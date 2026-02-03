@@ -8,6 +8,7 @@ const { createToken } = require("../utils/jwt.utils.js");
 const signup = async (email, username, password) => {
   const { passwordHash, passwordMetadata } = await createPasswordHash(password);
   const newUser = {
+    role: "user",
     credentials: { passwordHash, passwordMetadata },
     auth: {
       accessTokenVersion: 0,
