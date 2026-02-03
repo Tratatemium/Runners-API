@@ -12,5 +12,33 @@
     "startTime": "2026-01-20T08:15:00.000Z",
     "durationSec": 320,
     "distanceMeters": 1200
+  },
+  {
+    "runId": "a1b2c3d4-e5f6-4789-a012-b3c4d5e6f789",
+    "userId": "f96084c5-ad81-4a19-99ef-49cfdfeb6fb5",
+    "startTime": "2026-01-21T14:30:00.000Z",
+    "durationSec": 1800,
+    "distanceMeters": 5000
+  },
+  {
+    "runId": "b2c3d4e5-f6a7-4890-b123-c4d5e6f7a890",
+    "userId": "f96084c5-ad81-4a19-99ef-49cfdfeb6fb5",
+    "startTime": "2026-01-22T07:00:00.000Z",
+    "durationSec": 2400,
+    "distanceMeters": 7500
+  },
+  {
+    "runId": "c3d4e5f6-a7b8-4901-c234-d5e6f7a8b901",
+    "userId": "f96084c5-ad81-4a19-99ef-49cfdfeb6fb5",
+    "startTime": "2026-01-23T16:45:00.000Z",
+    "durationSec": 900,
+    "distanceMeters": 2800
+  },
+  {
+    "runId": "d4e5f6a7-b8c9-4012-d345-e6f7a8b9c012",
+    "userId": "86642e8c-d288-450b-aa92-b83dc18abcaf",
+    "startTime": "2026-01-24T09:30:00.000Z",
+    "durationSec": 1500,
+    "distanceMeters": 4200
   }
 ]

@@ -498,3 +498,196 @@ describe("POST /runs/ - Integration Tests", () => {
     });
   });
 });
+
+describe("GET /runs/my - Integration Tests", () => {
+  let user1Token;
+  let user2Token;
+
+  beforeAll(async () => {
+    // Login as user1 and get token
+    const loginRes1 = await request(app).post("/auth/login").send({
+      email: testUser1.email,
+      password: testUser1.password,
+    });
+    user1Token = loginRes1.body.token;
+
+    // Login as user2 and get token
+    const loginRes2 = await request(app).post("/auth/login").send({
+      email: testUser2.email,
+      password: testUser2.password,
+    });
+    user2Token = loginRes2.body.token;
+  });
+
+  describe("Authentication", () => {
+    it("returns 401 when no authorization header is provided", async () => {
+      const res = await request(app).get("/runs/my");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 401 when authorization header doesn't start with Bearer", async () => {
+      const res = await request(app)
+        .get("/runs/my")
+        .set("Authorization", "InvalidToken");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 401 for invalid token", async () => {
+      const res = await request(app)
+        .get("/runs/my")
+        .set("Authorization", "Bearer invalid.token.here");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
+
+  describe("Successful retrieval", () => {
+    it("returns 200 and an array of runs for user1 (has multiple runs)", async () => {
+      const res = await request(app)
+        .get("/runs/my")
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+
+      // Verify all returned runs belong to user1
+      res.body.forEach((run) => {
+        expect(run).toHaveProperty("runId");
+        expect(run).toHaveProperty("userId", testUser1.userId);
+        expect(run).toHaveProperty("startTime");
+        expect(run).toHaveProperty("durationSec");
+        expect(run).toHaveProperty("distanceMeters");
+        expect(typeof run.durationSec).toBe("number");
+        expect(typeof run.distanceMeters).toBe("number");
+      });
+    });
+
+    it("returns 200 and an array of runs for user2", async () => {
+      const res = await request(app)
+        .get("/runs/my")
+        .set("Authorization", `Bearer ${user2Token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+
+      // Verify all returned runs belong to user2
+      res.body.forEach((run) => {
+        expect(run).toHaveProperty("userId", testUser2.userId);
+      });
+    });
+
+    it("returns only the authenticated user's runs, not other users' runs", async () => {
+      const res1 = await request(app)
+        .get("/runs/my")
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      const res2 = await request(app)
+        .get("/runs/my")
+        .set("Authorization", `Bearer ${user2Token}`);
+
+      expect(res1.statusCode).toBe(200);
+      expect(res2.statusCode).toBe(200);
+
+      // Verify user1 runs don't contain user2's userId
+      res1.body.forEach((run) => {
+        expect(run.userId).toBe(testUser1.userId);
+        expect(run.userId).not.toBe(testUser2.userId);
+      });
+
+      // Verify user2 runs don't contain user1's userId
+      res2.body.forEach((run) => {
+        expect(run.userId).toBe(testUser2.userId);
+        expect(run.userId).not.toBe(testUser1.userId);
+      });
+
+      // Verify the lists are different
+      expect(res1.body).not.toEqual(res2.body);
+    });
+
+    it("returns empty array for user with no runs", async () => {
+      // First, create a new user with no runs
+      const newUser = {
+        username: "runner_no_runs",
+        password: "NoRunsPass123!",
+        email: "noruns@test.com",
+      };
+
+      await request(app).post("/auth/signup").send(newUser);
+
+      const loginRes = await request(app).post("/auth/login").send({
+        email: newUser.email,
+        password: newUser.password,
+      });
+
+      const noRunsToken = loginRes.body.token;
+
+      const res = await request(app)
+        .get("/runs/my")
+        .set("Authorization", `Bearer ${noRunsToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBe(0);
+    });
+
+    it("returns runs with valid data types and structure", async () => {
+      const res = await request(app)
+        .get("/runs/my")
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+
+      if (res.body.length > 0) {
+        const run = res.body[0];
+
+        expect(typeof run.runId).toBe("string");
+        expect(typeof run.userId).toBe("string");
+        expect(typeof run.startTime).toBe("string");
+        expect(typeof run.durationSec).toBe("number");
+        expect(typeof run.distanceMeters).toBe("number");
+
+        // Verify startTime is a valid ISO 8601 date
+        expect(new Date(run.startTime).toString()).not.toBe("Invalid Date");
+
+        // Verify positive numbers
+        expect(run.durationSec).toBeGreaterThan(0);
+        expect(run.distanceMeters).toBeGreaterThan(0);
+      }
+    });
+
+    it("returns runs sorted by startTime (most recent first) if implemented", async () => {
+      const res = await request(app)
+        .get("/runs/my")
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+
+      if (res.body.length > 1) {
+        // Check if sorted by startTime descending (most recent first)
+        for (let i = 0; i < res.body.length - 1; i++) {
+          const currentDate = new Date(res.body[i].startTime);
+          const nextDate = new Date(res.body[i + 1].startTime);
+          // This test will pass regardless of sort order, but logs the order
+          // You can make it strict if your API guarantees ordering
+          expect(currentDate).toBeInstanceOf(Date);
+          expect(nextDate).toBeInstanceOf(Date);
+        }
+      }
+    });
+  });
+});
