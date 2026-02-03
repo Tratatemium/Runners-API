@@ -3,8 +3,17 @@ const router = express.Router();
 
 const validation = require("../middleware/validation/runs.validation.js");
 const authMiddleware = require("../middleware/auth.middleware.js");
+const guardMiddleware = require("../middleware/guard.middleware.js")
 const runsController = require("../controllers/runs.controller.js");
 
 router.get("/:id", validation.validateUUID("id"), runsController.getRunById);
+
+router.delete(
+  "/:id",
+  validation.validateUUID("id"),
+  authMiddleware.checkAuth,
+  guardMiddleware.checkOwnership,
+  runsController.deleteRunById,
+);
 
 module.exports = router;
