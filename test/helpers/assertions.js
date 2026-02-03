@@ -13,7 +13,7 @@ const expectValidJwtToken = (response) => {
   expect(typeof response.body.token).toBe("string");
   expect(response.body.token.length).toBeGreaterThan(0);
   expect(response.body.token).toMatch(
-    /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/
+    /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/,
   );
 };
 
@@ -27,13 +27,13 @@ const expectValidRunStructure = (run) => {
   expect(run).toHaveProperty("startTime");
   expect(run).toHaveProperty("durationSec");
   expect(run).toHaveProperty("distanceMeters");
-  
+
   expect(typeof run.runId).toBe("string");
   expect(typeof run.userId).toBe("string");
   expect(typeof run.startTime).toBe("string");
   expect(typeof run.durationSec).toBe("number");
   expect(typeof run.distanceMeters).toBe("number");
-  
+
   expect(new Date(run.startTime).toString()).not.toBe("Invalid Date");
   expect(run.durationSec).toBeGreaterThan(0);
   expect(run.distanceMeters).toBeGreaterThan(0);
@@ -49,7 +49,7 @@ const expectValidUserStructure = (user, expectedAccount = {}) => {
   expect(user).toHaveProperty("profile");
   expect(user).not.toHaveProperty("_id");
   expect(user).not.toHaveProperty("credentials");
-  
+
   if (expectedAccount.username) {
     expect(user.account).toHaveProperty("username", expectedAccount.username);
   }
@@ -64,10 +64,10 @@ const expectValidUserStructure = (user, expectedAccount = {}) => {
  * @param {string|RegExp} errorMessage - Expected error message or pattern
  */
 const expect400WithMessage = (response, errorMessage) => {
-expect(response.statusCode).toBe(400);
+  expect(response.statusCode).toBe(400);
   expect(response.headers["content-type"]).toMatch(/json/);
   expect(response.body).toHaveProperty("error");
-  
+
   if (typeof errorMessage === "string") {
     expect(response.body.error).toBe(errorMessage);
   } else {
