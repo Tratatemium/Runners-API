@@ -19,7 +19,7 @@ const getRunById = async (req, res) => {
 };
 
 const deleteRunById = async (req, res) => {
-  // const runData = await runsService.getRunById(req.params.id);
+  await runsService.deleteRunById(req.params.id);
   res.status(200).json(runData);
 };
 
