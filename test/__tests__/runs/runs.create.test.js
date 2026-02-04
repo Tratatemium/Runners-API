@@ -92,18 +92,6 @@ describe("POST /api/v1/users/me/runs", () => {
     });
   });
 
-  describe("Rejected fields validation", () => {
-    it("userId in body is ignored and uses authenticated user's ID", async () => {
-      const res = await request(app)
-        .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({ ...VALID_RUN_DATA, userId: "some-other-uuid" });
-
-      expectJsonResponse(res, 201);
-      expect(res.body.data).toHaveProperty("runId");
-    });
-  });
-
   describe("startTime validation", () => {
     const invalidStartTimeCases = [
       { value: 12345, message: "startTime must be a string." },

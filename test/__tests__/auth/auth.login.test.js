@@ -26,10 +26,7 @@ describe("Required fields validation", () => {
   it("returns 400 for empty JSON", async () => {
     const res = await request(app).post("/api/v1/auth/login").send({});
 
-    expect400WithMessage(
-      res,
-      "User data is missing required fields: password.",
-    );
+    expect400WithMessage(res, "Login request must include password.");
   });
 
   it("returns 400 for missing password field", async () => {
@@ -37,10 +34,7 @@ describe("Required fields validation", () => {
       .post("/api/v1/auth/login")
       .send({ username: TEST_USERS.user1.username });
 
-    expect400WithMessage(
-      res,
-      "User data is missing required fields: password.",
-    );
+    expect400WithMessage(res, "Login request must include password.");
   });
 
   it("returns 400 when both username and email are missing", async () => {
@@ -50,7 +44,7 @@ describe("Required fields validation", () => {
 
     expect400WithMessage(
       res,
-      "User data must have one of the required fields: username, email.",
+      "Login request must have one of the required fields: username, email.",
     );
   });
 

@@ -37,7 +37,7 @@ const assertRequestFields = ({
   ) {
     throw new Error("allowedFields must be a non-empty array.");
   }
-  if (typeof object !== "object" || object == null) {
+  if (typeof object !== "object" || object == null || Array.isArray(object)) {
     throwValidationError(`${objectName} must be provided as an object.`);
   }
 
