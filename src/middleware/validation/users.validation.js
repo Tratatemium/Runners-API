@@ -1,6 +1,5 @@
 const validators = require("./validators.js");
 
-// NOTE: currently unused
 const validateUUID = (param = "id") => {
   return (req, res, next) => {
     validators.validateUUID(req.params[param]);
@@ -11,23 +10,19 @@ const validateUUID = (param = "id") => {
 const validateProfileUpdate = (req, res, next) => {
   validators.validateJsonContentType(req);
   const profile = req.body.profile;
-  if (!profile || typeof profile !== "object" || Array.isArray(profile)) {
-    validators.throwValidationError("profile (object) must be provided.");
-  }
 
-  const allowedFields = [
-    "firstName",
-    "lastName",
-    "dateOfBirth",
-    "heightCm",
-    "weightKg",
-  ];
-
-  for (const key of Object.keys(profile)) {
-    if (!allowedFields.includes(key)) {
-      validators.throwValidationError(`Unknown field: ${key}`);
-    }
-  }
+  validators.assertRequestFields({
+    object: profile,
+    objectName: "profile",
+    requiredFields: [
+      "firstName",
+      "lastName",
+      "dateOfBirth",
+      "heightCm",
+      "weightKg",
+    ],
+    mode: "require_some",
+  });
 
   const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
 
@@ -52,12 +47,20 @@ const validateAccountUpdate = (req, res, next) => {
   validators.validatePassword(currentPassword);
 
   const updateFields = [
-    { key: "password", value: newPassword, validate: validators.validatePassword },
+    {
+      key: "password",
+      value: newPassword,
+      validate: validators.validatePassword,
+    },
     { key: "email", value: newEmail, validate: validators.validateEmail },
-    { key: "username", value: newUsername, validate: validators.validateUsername },
+    {
+      key: "username",
+      value: newUsername,
+      validate: validators.validateUsername,
+    },
   ];
-  
-  const provided = updateFields.filter(field => field.value != null);
+
+  const provided = updateFields.filter((field) => field.value != null);
 
   if (provided.length !== 1) {
     validators.throwValidationError(
