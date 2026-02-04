@@ -12,6 +12,7 @@ const { getAuthValidationTests } = require("../../helpers/request.helpers");
 describe("DELETE /runs/:id", () => {
   let user1Token;
   let user2Token;
+  let adminToken;
 
   beforeAll(async () => {
     user1Token = await getAuthToken({
@@ -21,6 +22,10 @@ describe("DELETE /runs/:id", () => {
     user2Token = await getAuthToken({
       email: TEST_USERS.user2.email,
       password: TEST_USERS.user2.password,
+    });
+    adminToken = await getAuthToken({
+      email: TEST_USERS.admin.email,
+      password: TEST_USERS.admin.password,
     });
   });
 
@@ -55,6 +60,82 @@ describe("DELETE /runs/:id", () => {
 
       expect403Error(res);
       expect(res.body.error).toMatch(/not allowed/i);
+    });
+  });
+
+  describe("Admin permissions", () => {
+    it("allows admin to delete another user's run", async () => {
+      // Create a run as user1
+      const createRes = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T09:00:00.000Z",
+          durationSec: 500,
+          distanceMeters: 1500,
+        });
+
+      const newRunId = createRes.body.id;
+
+      // Verify the run exists
+      const getBeforeDelete = await request(app).get(`/runs/${newRunId}`);
+      expect(getBeforeDelete.statusCode).toBe(200);
+
+      // Delete it as admin
+      const deleteRes = await request(app)
+        .delete(`/runs/${newRunId}`)
+        .set("Authorization", `Bearer ${adminToken}`);
+
+      expect(deleteRes.statusCode).toBe(204);
+      expect(deleteRes.body).toEqual({});
+    });
+
+    it("admin deletion actually removes the run from database", async () => {
+      // Create a run as user2
+      const createRes = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user2Token}`)
+        .send({
+          startTime: "2026-02-03T09:30:00.000Z",
+          durationSec: 600,
+          distanceMeters: 2000,
+        });
+
+      const newRunId = createRes.body.id;
+
+      // Admin deletes the run
+      await request(app)
+        .delete(`/runs/${newRunId}`)
+        .set("Authorization", `Bearer ${adminToken}`);
+
+      // Verify it no longer exists
+      const getAfterDelete = await request(app).get(`/runs/${newRunId}`);
+      expect404Error(getAfterDelete);
+    });
+
+    it("allows admin to delete their own runs", async () => {
+      // Create a run as admin
+      const createRes = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          startTime: "2026-02-03T10:30:00.000Z",
+          durationSec: 700,
+          distanceMeters: 2500,
+        });
+
+      const adminRunId = createRes.body.id;
+
+      // Admin deletes their own run
+      const deleteRes = await request(app)
+        .delete(`/runs/${adminRunId}`)
+        .set("Authorization", `Bearer ${adminToken}`);
+
+      expect(deleteRes.statusCode).toBe(204);
+
+      // Verify it's deleted
+      const getAfterDelete = await request(app).get(`/runs/${adminRunId}`);
+      expect404Error(getAfterDelete);
     });
   });
 

@@ -9,29 +9,30 @@ const throwGuardError = (
   throw err;
 };
 
-// NOTE: add role check for admin rights
-const checkPermissions = (param = "id", idType) => {
+const ownershipResolvers = {
+  userId: async (req, param) => req.params[param],
+  runId: async (req, param) => {
+    const runId = req.params[param];
+    const run = await runsService.getRunById(runId);
+    return run.userId;
+  },
+};
+
+const checkOwnership = async (req, param, type) => {
+  const providedId = req.user.userId;
+  const resolver = ownershipResolvers[type];
+  if (!resolver) throw new Error(`Unknown id type: ${type}`);
+
+  let resourceId = await resolver(req, param);
+  return providedId === resourceId;
+};
+
+const checkPermissions = ({ param = "id", type }) => {
   return async (req, res, next) => {
-    const providedId = req.user.userId;
-
-    let resourceId;
-    switch (idType) {
-      case "userId":
-        resourceId = req.params[param];
-        break;
-
-      case "runId":
-        const run = await runsService.getRunById(req.params[param]);
-        resourceId = run.userId;
-        break;
-
-      default:
-        throw new Error('idType must be "userId" or "runId".');
-    }
-
-    const isOwner = providedId === resourceId;
+    const isAdmin = req.user.role === "admin";
+    if (isAdmin) return next();
+    const isOwner = await checkOwnership(req, param, type);
     if (!isOwner) throwGuardError();
-
     next();
   };
 };

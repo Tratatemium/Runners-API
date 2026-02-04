@@ -12,7 +12,7 @@ router.delete(
   "/:id",
   validation.validateUUID("id"),
   authMiddleware.checkAuth,
-  guardMiddleware.checkPermissions("id", "runId"),
+  guardMiddleware.checkPermissions({ param: "id", type: "runId" }),
   runsController.deleteRunById,
 );
 
