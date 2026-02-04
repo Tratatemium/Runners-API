@@ -3,24 +3,15 @@ const app = require("../../../src/app.js");
 const { expectJsonResponse } = require("../../helpers/assertions.js");
 
 describe("Server Health Endpoints", () => {
-  describe("GET /", () => {
-    it("checks server availability", async () => {
-      const res = await request(app).get("/");
+  describe("GET /health", () => {
+    it("returns health status with uptime and version", async () => {
+      const res = await request(app).get("/health");
 
       expectJsonResponse(res, 200);
-      expect(res.body).toHaveProperty("message");
-    });
-  });
-
-  describe("GET /server-runtime", () => {
-    it("checks server runtime", async () => {
-      const res = await request(app).get("/server-runtime");
-
-      expectJsonResponse(res, 200);
-      expect(res.body).toHaveProperty("message");
-      expect(res.body.message).toMatch(
-        /^Server is running for \d+(\.\d)? s\.$/,
-      );
+      expect(res.body).toHaveProperty("status", "ok");
+      expect(res.body).toHaveProperty("uptime");
+      expect(res.body).toHaveProperty("version");
+      expect(res.body.uptime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
     });
   });
 });
