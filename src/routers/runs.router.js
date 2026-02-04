@@ -1,18 +1,18 @@
 const express = require("express");
-const router = express.Router();
+const runsRouter = express.Router();
 
 const runsValidation = require("../middleware/validation/runs.validation.js");
 const authMiddleware = require("../middleware/auth.middleware.js");
 const guardMiddleware = require("../middleware/guard.middleware.js");
 const runsController = require("../controllers/runs.controller.js");
 
-router.get(
+runsRouter.get(
   "/:id",
   runsValidation.validateUUID("id"),
   runsController.getRunById,
 );
 
-router.delete(
+runsRouter.delete(
   "/:id",
   runsValidation.validateUUID("id"),
   authMiddleware.checkAuth,
@@ -20,4 +20,4 @@ router.delete(
   runsController.deleteRunById,
 );
 
-module.exports = router;
+module.exports = runsRouter;

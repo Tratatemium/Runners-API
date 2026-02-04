@@ -1,25 +1,29 @@
 const express = require("express");
-const router = express.Router();
+const authRouter = express.Router();
 
 const validation = require("../middleware/validation/auth.validation.js");
 const authMiddleware = require("../middleware/auth.middleware.js");
 const authController = require("../controllers/auth.controller.js");
 
-router.post(
+authRouter.post(
   "/signup",
   validation.validateRegisterRequest,
   authController.createUser,
 );
 
-router.post(
+authRouter.post(
   "/login",
   validation.validateLoginRequest,
   authController.loginUser,
 );
 
-router.post("/logout-all", authMiddleware.checkAuth, authController.logoutAll);
+authRouter.post(
+  "/logout-all",
+  authMiddleware.checkAuth,
+  authController.logoutAll,
+);
 
-module.exports = router;
+module.exports = authRouter;
 
 // IDEA: POST /auth/password-reset
 // {
