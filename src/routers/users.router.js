@@ -52,11 +52,22 @@ usersRouter.get(
   usersValidation.validateUUID("id"),
   authMiddleware.checkAuth,
   guardMiddleware.checkPermissions({
-    mode: "ether",
+    mode: "either",
     param: "id",
     type: "userId",
   }),
   usersController.getUserById,
+);
+
+usersRouter.get(
+  "/",
+  authMiddleware.checkAuth,
+  guardMiddleware.checkPermissions({
+    mode: "admin",
+    param: "id",
+    type: "userId",
+  }),
+  usersController.getAllUsers,
 );
 
 /* ================================================================================================= */
