@@ -74,7 +74,7 @@ describe("GET /api/v1/users/:id (Admin Route)", () => {
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
-      expectValidUserStructure(res.body, {
+      expectValidUserStructure(res.body.data, {
         username: TEST_USERS.user1.username,
         email: TEST_USERS.user1.email,
       });
@@ -86,7 +86,7 @@ describe("GET /api/v1/users/:id (Admin Route)", () => {
         .set("Authorization", `Bearer ${user1Token}`);
 
       expectJsonResponse(res, 200);
-      expectValidUserStructure(res.body, {
+      expectValidUserStructure(res.body.data, {
         username: TEST_USERS.user1.username,
         email: TEST_USERS.user1.email,
       });
@@ -109,7 +109,7 @@ describe("GET /api/v1/users/:id (Admin Route)", () => {
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
-      expectValidUserStructure(res.body, {
+      expectValidUserStructure(res.body.data, {
         username: TEST_USERS.user1.username,
         email: TEST_USERS.user1.email,
       });
@@ -121,7 +121,7 @@ describe("GET /api/v1/users/:id (Admin Route)", () => {
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
-      expectValidUserStructure(res.body, {
+      expectValidUserStructure(res.body.data, {
         username: TEST_USERS.user2.username,
         email: TEST_USERS.user2.email,
       });
@@ -133,7 +133,7 @@ describe("GET /api/v1/users/:id (Admin Route)", () => {
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
-      expectValidUserStructure(res.body, {
+      expectValidUserStructure(res.body.data, {
         username: TEST_USERS.admin.username,
         email: TEST_USERS.admin.email,
       });

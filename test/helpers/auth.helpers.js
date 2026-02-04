@@ -13,7 +13,7 @@ const getAuthToken = async (credentials) => {
     throw new Error(`Login failed with status ${loginRes.statusCode}: ${JSON.stringify(loginRes.body)}`);
   }
   
-  return loginRes.body.token;
+  return loginRes.body.data.token;
 };
 
 /**

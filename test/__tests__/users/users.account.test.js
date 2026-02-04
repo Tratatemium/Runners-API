@@ -204,7 +204,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       });
 
       expect(loginRes.statusCode).toBe(200);
-      expect(loginRes.body).toHaveProperty("token");
+      expect(loginRes.body.data).toHaveProperty("token");
     });
 
     it("rejects login with old password after update", async () => {
@@ -295,7 +295,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       });
 
       expect(loginRes.statusCode).toBe(200);
-      expect(loginRes.body).toHaveProperty("token");
+      expect(loginRes.body.data).toHaveProperty("token");
     });
 
     it("rejects login with old email after update", async () => {
@@ -396,7 +396,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       });
 
       expect(loginRes.statusCode).toBe(200);
-      expect(loginRes.body).toHaveProperty("token");
+      expect(loginRes.body.data).toHaveProperty("token");
     });
 
     it("rejects login with old username after update", async () => {

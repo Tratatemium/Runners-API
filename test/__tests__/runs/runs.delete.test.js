@@ -75,7 +75,7 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 1500,
         });
 
-      const newRunId = createRes.body.id;
+      const newRunId = createRes.body.data.runId;
 
       // Verify the run exists
       const getBeforeDelete = await request(app).get(
@@ -103,7 +103,7 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 2000,
         });
 
-      const newRunId = createRes.body.id;
+      const newRunId = createRes.body.data.runId;
 
       // Admin deletes the run
       await request(app)
@@ -126,7 +126,7 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 2500,
         });
 
-      const adminRunId = createRes.body.id;
+      const adminRunId = createRes.body.data.runId;
 
       // Admin deletes their own run
       const deleteRes = await request(app)
@@ -183,7 +183,7 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 2000,
         });
 
-      const newRunId = createRes.body.id;
+      const newRunId = createRes.body.data.runId;
 
       // Now delete it
       const deleteRes = await request(app)
@@ -205,7 +205,7 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 2500,
         });
 
-      const newRunId = createRes.body.id;
+      const newRunId = createRes.body.data.runId;
 
       // Verify it exists
       const getBeforeDelete = await request(app).get(
@@ -234,7 +234,7 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 3000,
         });
 
-      const newRunId = createRes.body.id;
+      const newRunId = createRes.body.data.runId;
 
       // Get runs before deletion
       const getRunsBefore = await request(app)
@@ -281,8 +281,8 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 4000,
         });
 
-      const runId1 = createRes1.body.id;
-      const runId2 = createRes2.body.id;
+      const runId1 = createRes1.body.data.runId;
+      const runId2 = createRes2.body.data.runId;
 
       // Delete first run
       const deleteRes1 = await request(app)
@@ -319,7 +319,7 @@ describe("DELETE /api/v1/runs/:id", () => {
           distanceMeters: 4500,
         });
 
-      const runId = createRes.body.id;
+      const runId = createRes.body.data.runId;
 
       // Delete it once
       const deleteRes1 = await request(app)

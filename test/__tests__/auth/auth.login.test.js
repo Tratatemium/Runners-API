@@ -144,8 +144,8 @@ describe("Successful login", () => {
 
     expect(res1.statusCode).toBe(200);
     expect(res2.statusCode).toBe(200);
-    expect(res1.body).toHaveProperty("token");
-    expect(res2.body).toHaveProperty("token");
+    expect(res1.body.data).toHaveProperty("token");
+    expect(res2.body.data).toHaveProperty("token");
   });
 
   it("allows login with case-insensitive email", async () => {

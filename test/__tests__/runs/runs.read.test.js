@@ -14,8 +14,8 @@ describe("GET /api/v1/runs/:id", () => {
     const res = await request(app).get(`/api/v1/runs/${runId}`);
 
     expectJsonResponse(res, 200);
-    expect(res.body).toHaveProperty("runId", runId);
-    expectValidRunStructure(res.body);
+    expect(res.body.data).toHaveProperty("runId", runId);
+    expectValidRunStructure(res.body.data);
   });
 
   it("returns 404 for a non-existing ID", async () => {

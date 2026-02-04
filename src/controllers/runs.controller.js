@@ -5,7 +5,7 @@ const postNewRun = async (req, res) => {
   const userId = req.user.userId;
   const newRun = { userId, ...req.runData };
   const newRunId = await runsService.createRun(newRun);
-  sendSuccess(res, 200, { runId: newRunId });
+  sendSuccess(res, 201, { runId: newRunId });
 };
 
 const getMyRuns = async (req, res) => {

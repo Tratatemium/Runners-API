@@ -4,7 +4,7 @@ const { sendSuccess } = require("../utils/response.utils.js");
 const createUser = async (req, res) => {
   const { email, username, password } = req.body;
   const newUserId = await authService.signup(email, username, password);
-  sendSuccess(res, 200, { userId: newUserId });
+  sendSuccess(res, 201, { userId: newUserId });
 };
 
 const loginUser = async (req, res) => {
