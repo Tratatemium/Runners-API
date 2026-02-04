@@ -48,6 +48,13 @@ usersRouter.get("/me/runs", authMiddleware.checkAuth, runsController.getMyRuns);
 /* ================================================================================================= */
 
 usersRouter.get(
+  "/",
+  authMiddleware.checkAuth,
+  guardMiddleware.checkPermissions({ mode: "admin" }),
+  usersController.getAllUsers,
+);
+
+usersRouter.get(
   "/:id",
   usersValidation.validateUUID("id"),
   authMiddleware.checkAuth,
@@ -57,17 +64,6 @@ usersRouter.get(
     type: "userId",
   }),
   usersController.getUserById,
-);
-
-usersRouter.get(
-  "/",
-  authMiddleware.checkAuth,
-  guardMiddleware.checkPermissions({
-    mode: "admin",
-    param: "id",
-    type: "userId",
-  }),
-  usersController.getAllUsers,
 );
 
 /* ================================================================================================= */
