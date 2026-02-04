@@ -62,11 +62,11 @@ describe("GET /api/v1/users/me", () => {
   });
 });
 
-describe("POST /api/v1/auth/logout-all", () => {
+describe("POST /api/v1/auth/logoutAll", () => {
   describe("Authentication validation", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
-        const req = request(app).post("/api/v1/auth/logout-all");
+        const req = request(app).post("/api/v1/auth/logoutAll");
         const res = await setupAuth(req);
 
         expect401Error(res);
@@ -82,13 +82,13 @@ describe("POST /api/v1/auth/logout-all", () => {
       });
 
       const res = await request(app)
-        .post("/api/v1/auth/logout-all")
+        .post("/api/v1/auth/logoutAll")
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
     });
 
-    it("invalidates all previous tokens after logout-all", async () => {
+    it("invalidates all previous tokens after logoutAll", async () => {
       const token = await getAuthToken({
         email: TEST_USERS.user1.email,
         password: TEST_USERS.user1.password,
@@ -102,7 +102,7 @@ describe("POST /api/v1/auth/logout-all", () => {
 
       // Logout all sessions
       await request(app)
-        .post("/api/v1/auth/logout-all")
+        .post("/api/v1/auth/logoutAll")
         .set("Authorization", `Bearer ${token}`);
 
       // Try to use old token
@@ -113,7 +113,7 @@ describe("POST /api/v1/auth/logout-all", () => {
       expect401Error(afterLogout);
     });
 
-    it("invalidates multiple tokens after logout-all", async () => {
+    it("invalidates multiple tokens after logoutAll", async () => {
       // Login twice to get two tokens
       const token1 = await getAuthToken({
         email: TEST_USERS.user1.email,
@@ -137,7 +137,7 @@ describe("POST /api/v1/auth/logout-all", () => {
 
       // Logout all sessions using first token
       await request(app)
-        .post("/api/v1/auth/logout-all")
+        .post("/api/v1/auth/logoutAll")
         .set("Authorization", `Bearer ${token1}`);
 
       // Both tokens should now be invalid
@@ -152,7 +152,7 @@ describe("POST /api/v1/auth/logout-all", () => {
       expect401Error(afterLogout2);
     });
 
-    it("allows login with new token after logout-all", async () => {
+    it("allows login with new token after logoutAll", async () => {
       // Login and logout all
       const oldToken = await getAuthToken({
         email: TEST_USERS.user1.email,
@@ -160,7 +160,7 @@ describe("POST /api/v1/auth/logout-all", () => {
       });
 
       await request(app)
-        .post("/api/v1/auth/logout-all")
+        .post("/api/v1/auth/logoutAll")
         .set("Authorization", `Bearer ${oldToken}`);
 
       // Login again to get new token

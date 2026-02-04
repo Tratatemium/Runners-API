@@ -18,7 +18,7 @@ authRouter.post(
 );
 
 authRouter.post(
-  "/logout-all",
+  "/logoutAll",
   authMiddleware.checkAuth,
   authController.logoutAll,
 );
