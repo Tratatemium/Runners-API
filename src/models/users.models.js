@@ -149,6 +149,10 @@ UserSchema.set("toJSON", {
     delete ret.auth;
     delete ret.__v;
 
+    if (!ret.profile) {
+      ret.profile = {};
+    }
+
     return ret;
   }
 });

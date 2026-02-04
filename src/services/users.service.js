@@ -20,7 +20,7 @@ const updateProfile = async (userId, profilePatch) => {
 };
 
 const updateAccount = async (userId, fieldToUpdate, reqBody) => {
-  const handlers = {
+  const updateHandlers = {
     password: (userId, reqBody) =>
       authService.updatePassword(userId, reqBody.newPassword),
     email: (userId, reqBody) =>
@@ -29,7 +29,7 @@ const updateAccount = async (userId, fieldToUpdate, reqBody) => {
       usersRepo.updateAccount(userId, "username", reqBody.newUsername),
   };
 
-  const handler = handlers[fieldToUpdate];
+  const handler = updateHandlers[fieldToUpdate];
   if (!handler) {
     throw new Error("Invalid fieldToUpdate");
   }
