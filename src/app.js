@@ -29,20 +29,15 @@ const runsRoutes = require("./routes/runs.routes.js");
 /*  ROUTES                                                                                           */
 /* ================================================================================================= */
 
-// Health check routes
-app.get("/", (req, res) => {
-  res.json({
-    message: "Hi there! This is a runners app server.",
-  });
-});
-
-app.get("/server-runtime", (req, res) => {
+app.get("/health", (req,res) => {
   const serverTimeCurrent = (Date.now() - serverTimeStart) / 1000;
   const serverTimeCurrentRounded = Math.round(serverTimeCurrent * 10) / 10;
-  res.json({
+  res.status(200).json({
+    status: "ok",
     message: `Server is running for ${serverTimeCurrentRounded} s.`,
+    version: "1.0.0"
   });
-});
+})
 
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
