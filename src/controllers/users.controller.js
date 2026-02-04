@@ -1,11 +1,16 @@
 const usersService = require("../services/users.service.js");
 const authService = require("../services/auth.service.js");
 
+const getUserById = async (req, res) => {
+  const userId = req.params.id;
+  const userData = await usersService.getUser(userId);
+  res.status(200).json(userData);
+};
+
 const getMe = async (req, res) => {
   const userId = req.user.userId;
   const userData = await usersService.getUser(userId);
-  const { _id, credentials, auth, ...safeData } = userData._doc;
-  res.status(200).json(safeData);
+  res.status(200).json(userData);
 };
 
 const updateProfile = async (req, res) => {
@@ -30,6 +35,7 @@ const updateAccount = async (req, res) => {
 };
 
 module.exports = {
+  getUserById,
   getMe,
   updateProfile,
   updateAccount,
