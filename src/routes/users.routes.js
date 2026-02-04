@@ -4,11 +4,11 @@ const router = express.Router();
 const usersValidation = require("../middleware/validation/users.validation.js");
 const runsValidation = require("../middleware/validation/runs.validation.js");
 const authMiddleware = require("../middleware/auth.middleware.js");
+const guardMiddleware = require("../middleware/guard.middleware.js");
 const usersController = require("../controllers/users.controller.js");
 const runsController = require("../controllers/runs.controller.js");
 
 // NOTE: possibly add guard middleware to check if user is active / banned / etc.
-
 /* ================================================================================================= */
 /*  User (me)                                                                                        */
 /* ================================================================================================= */
@@ -41,5 +41,17 @@ router.post(
 );
 
 router.get("/me/runs", authMiddleware.checkAuth, runsController.getMyRuns);
+
+/* ================================================================================================= */
+/*  Admin                                                                                            */
+/* ================================================================================================= */
+
+router.get(
+  "/:id",
+  usersValidation.validateUUID("id"),
+  authMiddleware.checkAuth,
+  guardMiddleware.checkPermissions({ param: "id", type: "userId" }),
+  usersController.getUserById,
+);
 
 module.exports = router;
