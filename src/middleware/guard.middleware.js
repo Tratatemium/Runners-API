@@ -21,12 +21,9 @@ const ownershipResolvers = {
 const checkOwnership = async (req, param, type) => {
   const providedId = req.user.userId;
   const resolver = ownershipResolvers[type];
+  if (!resolver) throw new Error(`Unknown id type: ${type}`);
 
-  if (!resolver) {
-    throw new Error(`Unknown id type: ${type}`);
-  }
   let resourceId = await resolver(req, param);
-
   return providedId === resourceId;
 };
 
