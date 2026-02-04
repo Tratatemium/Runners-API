@@ -110,7 +110,7 @@ describe("Username validation", () => {
     });
 
     expectJsonResponse(res, 201);
-    expect(res.body).toHaveProperty("id");
+    expect(res.body.data).toHaveProperty("userId");
   });
 });
 
@@ -162,7 +162,7 @@ describe("Email validation", () => {
     });
 
     expectJsonResponse(res, 201);
-    expect(res.body).toHaveProperty("id");
+    expect(res.body.data).toHaveProperty("userId");
   });
 });
 
@@ -219,7 +219,7 @@ describe("Password validation", () => {
     });
 
     expectJsonResponse(res, 201);
-    expect(res.body).toHaveProperty("id");
+    expect(res.body.data).toHaveProperty("userId");
   });
 });
 
@@ -296,7 +296,7 @@ describe("Successful registration", () => {
     });
 
     expectJsonResponse(res, 201);
-    expect(res.body).toHaveProperty("id");
+    expect(res.body.data).toHaveProperty("userId");
   });
 
   it("returns 201 for valid user with all allowed characters", async () => {
@@ -307,6 +307,6 @@ describe("Successful registration", () => {
     });
 
     expectJsonResponse(res, 201);
-    expect(res.body).toHaveProperty("id");
+    expect(res.body.data).toHaveProperty("userId");
   });
 });

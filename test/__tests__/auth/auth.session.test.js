@@ -42,7 +42,7 @@ describe("GET /api/v1/users/me", () => {
         .set("Authorization", `Bearer ${user1Token}`);
 
       expectJsonResponse(res, 200);
-      expectValidUserStructure(res.body, {
+      expectValidUserStructure(res.body.data, {
         username: TEST_USERS.user1.username,
         email: TEST_USERS.user1.email,
       });
@@ -54,7 +54,7 @@ describe("GET /api/v1/users/me", () => {
         .set("Authorization", `Bearer ${user2Token}`);
 
       expectJsonResponse(res, 200);
-      expectValidUserStructure(res.body, {
+      expectValidUserStructure(res.body.data, {
         username: TEST_USERS.user2.username,
         email: TEST_USERS.user2.email,
       });
@@ -175,7 +175,7 @@ describe("POST /api/v1/auth/logout-all", () => {
         .set("Authorization", `Bearer ${newToken}`);
 
       expectJsonResponse(res, 200);
-      expect(res.body).toHaveProperty("account");
+      expect(res.body.data).toHaveProperty("account");
     });
   });
 });

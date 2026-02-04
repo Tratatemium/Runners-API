@@ -100,7 +100,7 @@ describe("POST /api/v1/users/me/runs", () => {
         .send({ ...VALID_RUN_DATA, userId: "some-other-uuid" });
 
       expectJsonResponse(res, 201);
-      expect(res.body).toHaveProperty("id");
+      expect(res.body.data).toHaveProperty("runId");
     });
   });
 
@@ -137,7 +137,7 @@ describe("POST /api/v1/users/me/runs", () => {
           .send({ ...VALID_RUN_DATA, startTime: value });
 
         expectJsonResponse(res, 201);
-        expect(res.body).toHaveProperty("id");
+        expect(res.body.data).toHaveProperty("runId");
       });
     });
   });
@@ -178,7 +178,7 @@ describe("POST /api/v1/users/me/runs", () => {
           .send({ ...VALID_RUN_DATA, durationSec: value });
 
         expectJsonResponse(res, 201);
-        expect(res.body).toHaveProperty("id");
+        expect(res.body.data).toHaveProperty("runId");
       });
     });
   });
@@ -219,7 +219,7 @@ describe("POST /api/v1/users/me/runs", () => {
           .send({ ...VALID_RUN_DATA, distanceMeters: value });
 
         expectJsonResponse(res, 201);
-        expect(res.body).toHaveProperty("id");
+        expect(res.body.data).toHaveProperty("runId");
       });
     });
   });
@@ -232,7 +232,7 @@ describe("POST /api/v1/users/me/runs", () => {
         .send(VALID_RUN_DATA);
 
       expectJsonResponse(res, 201);
-      expect(res.body).toHaveProperty("id");
+      expect(res.body.data).toHaveProperty("runId");
     });
 
     it("handles data with whitespace and string numbers", async () => {
@@ -246,7 +246,7 @@ describe("POST /api/v1/users/me/runs", () => {
         });
 
       expectJsonResponse(res, 201);
-      expect(res.body).toHaveProperty("id");
+      expect(res.body.data).toHaveProperty("runId");
     });
   });
 });

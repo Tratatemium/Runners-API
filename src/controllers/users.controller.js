@@ -1,32 +1,29 @@
 const usersService = require("../services/users.service.js");
 const authService = require("../services/auth.service.js");
+const { sendSuccess } = require("../utils/response.utils.js");
 
 const getUserById = async (req, res) => {
   const userId = req.params.id;
   const userData = await usersService.getUser(userId);
-  res.status(200).json(userData);
+  sendSuccess(res, 200, userData);
 };
 
 const getAllUsers = async (req, res) => {
   const usersData = await usersService.getAllUsers();
-  res.status(200).json({
-    status: "success",
-    results: usersData.length,
-    data: usersData,
-  });
+  sendSuccess(res, 200, usersData, { results: usersData.length });
 };
 
 const getMe = async (req, res) => {
   const userId = req.user.userId;
   const userData = await usersService.getUser(userId);
-  res.status(200).json(userData);
+  sendSuccess(res, 200, userData);
 };
 
 const updateProfile = async (req, res) => {
   const userId = req.user.userId;
   const profile = req.body.profile;
   const savedProfile = await usersService.updateProfile(userId, profile);
-  res.status(200).json(savedProfile);
+  sendSuccess(res, 200, savedProfile);
 };
 
 const updateAccount = async (req, res) => {

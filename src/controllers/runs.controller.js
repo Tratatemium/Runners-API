@@ -1,25 +1,22 @@
 const runsService = require("../services/runs.service.js");
+const { sendSuccess } = require("../utils/response.utils.js");
 
 const postNewRun = async (req, res) => {
   const userId = req.user.userId;
   const newRun = { userId, ...req.runData };
   const newRunId = await runsService.createRun(newRun);
-  res.status(201).json({ id: newRunId });
+  sendSuccess(res, 201, { runId: newRunId });
 };
 
 const getMyRuns = async (req, res) => {
   const userId = req.user.userId;
   const myRuns = await runsService.getRunsByUser(userId);
-  res.status(200).json({
-    status: "success",
-    results: myRuns.length,
-    data: myRuns,
-  });
+  sendSuccess(res, 200, myRuns, { results: myRuns.length });
 };
 
 const getRunById = async (req, res) => {
   const runData = await runsService.getRunById(req.params.id);
-  res.status(200).json(runData);
+  sendSuccess(res, 200, runData);
 };
 
 const deleteRunById = async (req, res) => {

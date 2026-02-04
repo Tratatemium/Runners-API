@@ -9,10 +9,12 @@
 const expectValidJwtToken = (response) => {
   expect(response.statusCode).toBe(200);
   expect(response.headers["content-type"]).toMatch(/json/);
-  expect(response.body).toHaveProperty("token");
-  expect(typeof response.body.token).toBe("string");
-  expect(response.body.token.length).toBeGreaterThan(0);
-  expect(response.body.token).toMatch(
+  expect(response.body).toHaveProperty("status", "success");
+  expect(response.body).toHaveProperty("data");
+  expect(response.body.data).toHaveProperty("token");
+  expect(typeof response.body.data.token).toBe("string");
+  expect(response.body.data.token.length).toBeGreaterThan(0);
+  expect(response.body.data.token).toMatch(
     /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/,
   );
 };
