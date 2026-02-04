@@ -21,8 +21,8 @@ const getRunById = async (runId) => {
   return runData;
 };
 
-const updateRunById = async (runId) => {
-  const runData = await runsRepo.updateRunById(runId);
+const updateRunById = async (runId, runUpdate) => {
+  const runData = await runsRepo.updateRunById(runId, runUpdate);
   if (!runData) throwRunNotFoundError(runId);
   return runData;
 };

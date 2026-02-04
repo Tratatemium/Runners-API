@@ -22,15 +22,14 @@ const findRunById = async (runId) => {
   return selectedRun || null;
 };
 
-const updateRunById = async (runId) => {
-  const result = await Run.findOneAndUpdate(    
+const updateRunById = async (runId, update) => {
+  const result = await Run.findOneAndUpdate(
     { runId },
     { $set: update },
     { new: true },
   );
   return result || null;
 };
-
 
 const deleteRunById = async (runId) => {
   return await Run.deleteOne({
@@ -39,8 +38,9 @@ const deleteRunById = async (runId) => {
 };
 
 module.exports = {
-  findRunById,
   addNewRun,
   findRunsByUserId,
+  findRunById,
   deleteRunById,
+  updateRunById,
 };
