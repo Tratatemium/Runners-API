@@ -26,7 +26,9 @@ describe("POST /api/v1/users/me/runs", () => {
   describe("Authentication", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
-        const req = request(app).post("/api/v1/users/me/runs").send(VALID_RUN_DATA);
+        const req = request(app)
+          .post("/api/v1/users/me/runs")
+          .send(VALID_RUN_DATA);
         const res = await setupAuth(req);
 
         expect(res.statusCode).toBe(401);
@@ -283,11 +285,15 @@ describe("GET /api/v1/users/me/runs", () => {
         .set("Authorization", `Bearer ${user1Token}`);
 
       expectJsonResponse(res, 200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body).toHaveProperty("status", "success");
+      expect(res.body).toHaveProperty("results");
+      expect(res.body).toHaveProperty("data");
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data.length).toBeGreaterThan(0);
+      expect(res.body.results).toBe(res.body.data.length);
 
       // Verify all returned runs belong to user1
-      res.body.forEach((run) => {
+      res.body.data.forEach((run) => {
         expect(run).toHaveProperty("userId", TEST_USERS.user1.userId);
       });
     });
@@ -298,10 +304,14 @@ describe("GET /api/v1/users/me/runs", () => {
         .set("Authorization", `Bearer ${user2Token}`);
 
       expectJsonResponse(res, 200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body).toHaveProperty("status", "success");
+      expect(res.body).toHaveProperty("results");
+      expect(res.body).toHaveProperty("data");
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data.length).toBeGreaterThan(0);
+      expect(res.body.results).toBe(res.body.data.length);
 
-      res.body.forEach((run) => {
+      res.body.data.forEach((run) => {
         expect(run).toHaveProperty("userId", TEST_USERS.user2.userId);
       });
     });
@@ -318,17 +328,17 @@ describe("GET /api/v1/users/me/runs", () => {
       expect(res1.statusCode).toBe(200);
       expect(res2.statusCode).toBe(200);
 
-      res1.body.forEach((run) => {
+      res1.body.data.forEach((run) => {
         expect(run.userId).toBe(TEST_USERS.user1.userId);
         expect(run.userId).not.toBe(TEST_USERS.user2.userId);
       });
 
-      res2.body.forEach((run) => {
+      res2.body.data.forEach((run) => {
         expect(run.userId).toBe(TEST_USERS.user2.userId);
         expect(run.userId).not.toBe(TEST_USERS.user1.userId);
       });
 
-      expect(res1.body).not.toEqual(res2.body);
+      expect(res1.body.data).not.toEqual(res2.body.data);
     });
 
     it("returns empty array for user with no runs", async () => {
@@ -350,8 +360,11 @@ describe("GET /api/v1/users/me/runs", () => {
         .set("Authorization", `Bearer ${noRunsToken}`);
 
       expectJsonResponse(res, 200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBe(0);
+      expect(res.body).toHaveProperty("status", "success");
+      expect(res.body).toHaveProperty("results", 0);
+      expect(res.body).toHaveProperty("data");
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data.length).toBe(0);
     });
   });
 });

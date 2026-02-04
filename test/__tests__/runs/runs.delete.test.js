@@ -78,7 +78,9 @@ describe("DELETE /api/v1/runs/:id", () => {
       const newRunId = createRes.body.id;
 
       // Verify the run exists
-      const getBeforeDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
+      const getBeforeDelete = await request(app).get(
+        `/api/v1/runs/${newRunId}`,
+      );
       expect(getBeforeDelete.statusCode).toBe(200);
 
       // Delete it as admin
@@ -134,7 +136,9 @@ describe("DELETE /api/v1/runs/:id", () => {
       expect(deleteRes.statusCode).toBe(204);
 
       // Verify it's deleted
-      const getAfterDelete = await request(app).get(`/api/v1/runs/${adminRunId}`);
+      const getAfterDelete = await request(app).get(
+        `/api/v1/runs/${adminRunId}`,
+      );
       expect404Error(getAfterDelete);
     });
   });
@@ -204,7 +208,9 @@ describe("DELETE /api/v1/runs/:id", () => {
       const newRunId = createRes.body.id;
 
       // Verify it exists
-      const getBeforeDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
+      const getBeforeDelete = await request(app).get(
+        `/api/v1/runs/${newRunId}`,
+      );
       expect(getBeforeDelete.statusCode).toBe(200);
 
       // Delete it
@@ -235,7 +241,7 @@ describe("DELETE /api/v1/runs/:id", () => {
         .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
-      const countBefore = getRunsBefore.body.length;
+      const countBefore = getRunsBefore.body.data.length;
 
       // Delete the run
       await request(app)
@@ -247,11 +253,11 @@ describe("DELETE /api/v1/runs/:id", () => {
         .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
-      const countAfter = getRunsAfter.body.length;
+      const countAfter = getRunsAfter.body.data.length;
 
       expect(countAfter).toBe(countBefore - 1);
       expect(
-        getRunsAfter.body.find((run) => run.runId === newRunId),
+        getRunsAfter.body.data.find((run) => run.runId === newRunId),
       ).toBeUndefined();
     });
 

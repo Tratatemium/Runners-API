@@ -10,7 +10,11 @@ const postNewRun = async (req, res) => {
 const getMyRuns = async (req, res) => {
   const userId = req.user.userId;
   const myRuns = await runsService.getRunsByUser(userId);
-  res.status(200).json(myRuns);
+  res.status(200).json({
+    status: "success",
+    results: myRuns.length,
+    data: myRuns,
+  });
 };
 
 const getRunById = async (req, res) => {
