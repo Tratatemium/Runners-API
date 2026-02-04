@@ -19,7 +19,7 @@ const validateJsonContentType = (req) => {
 };
 
 const assertRequestFields = ({
-  object,  
+  object,
   objectName = "Request body",
   requiredFields,
   mode = "require_all",
@@ -29,6 +29,12 @@ const assertRequestFields = ({
   }
   if (typeof object !== "object" || object == null) {
     throwValidationError(`${objectName} must be an object`);
+  }
+
+  for (const key of Object.keys(object)) {
+    if (!requiredFields.includes(key)) {
+      throwValidationError(`Unknown field: ${key}`);
+    }
   }
 
   const hasValue = (field) => object[field] != null;
