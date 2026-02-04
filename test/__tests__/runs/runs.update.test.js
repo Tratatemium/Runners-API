@@ -7,6 +7,8 @@ const {
   expect403Error,
   expect404Error,
   expectValidRunStructure,
+  expectJsonResponse,
+  expect415Error,
 } = require("../../helpers/assertions");
 const { getAuthValidationTests } = require("../../helpers/request.helpers");
 
@@ -94,7 +96,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           durationSec: 2000,
         });
 
-      expect(updateRes.statusCode).toBe(200);
+      expectJsonResponse(updateRes, 200);
       expect(updateRes.body.status).toBe("success");
       expect(updateRes.body.data).toHaveProperty("durationSec", 2000);
     });
@@ -121,7 +123,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           distanceMeters: 5000,
         });
 
-      expect(updateRes.statusCode).toBe(200);
+      expectJsonResponse(updateRes, 200);
       expect(updateRes.body.data).toHaveProperty("durationSec", 1800);
       expect(updateRes.body.data).toHaveProperty("distanceMeters", 5000);
     });
@@ -148,7 +150,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           startTime: newStartTime,
         });
 
-      expect(updateRes.statusCode).toBe(200);
+      expectJsonResponse(updateRes, 200);
       expect(updateRes.body.data).toHaveProperty("startTime", newStartTime);
     });
 
@@ -173,8 +175,36 @@ describe("PATCH /api/v1/runs/:id", () => {
           distanceMeters: 3000,
         });
 
-      expect(updateRes.statusCode).toBe(200);
+      expectJsonResponse(updateRes, 200);
       expectValidRunStructure(updateRes.body.data);
+    });
+
+    it("owner update persists in database", async () => {
+      // Create a run
+      const createRes = await request(app)
+        .post("/api/v1/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T14:30:00.000Z",
+          durationSec: 1000,
+          distanceMeters: 2800,
+        });
+
+      const newRunId = createRes.body.data.runId;
+
+      // Update it
+      await request(app)
+        .patch(`/api/v1/runs/${newRunId}`)
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          distanceMeters: 3100,
+        });
+
+      // Verify the update persisted
+      const getRes = await request(app).get(`/api/v1/runs/${newRunId}`);
+
+      expectJsonResponse(getRes, 200);
+      expect(getRes.body.data).toHaveProperty("distanceMeters", 3100);
     });
   });
 
@@ -200,7 +230,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           durationSec: 1800,
         });
 
-      expect(updateRes.statusCode).toBe(200);
+      expectJsonResponse(updateRes, 200);
       expect(updateRes.body.status).toBe("success");
       expect(updateRes.body.data).toHaveProperty("durationSec", 1800);
     });
@@ -228,7 +258,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           distanceMeters: 6000,
         });
 
-      expect(updateRes.statusCode).toBe(200);
+      expectJsonResponse(updateRes, 200);
       expect(updateRes.body.data).toHaveProperty(
         "startTime",
         "2026-02-03T17:00:00.000Z",
@@ -258,7 +288,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           distanceMeters: 4000,
         });
 
-      expect(updateRes.statusCode).toBe(200);
+      expectJsonResponse(updateRes, 200);
       expectValidRunStructure(updateRes.body.data);
     });
 
@@ -286,22 +316,39 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Verify the update persisted
       const getRes = await request(app).get(`/api/v1/runs/${newRunId}`);
 
-      expect(getRes.statusCode).toBe(200);
+      expectJsonResponse(getRes, 200);
       expect(getRes.body.data).toHaveProperty("durationSec", 1300);
     });
   });
 
   describe("Validation", () => {
-    it("returns 400 when updating with invalid UUID format", async () => {
-      const invalidId = "not-a-uuid";
+    it("returns 415 when Content-Type is not application/json", async () => {
+      const runId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
-        .patch(`/api/v1/runs/${invalidId}`)
+        .patch(`/api/v1/runs/${runId}`)
         .set("Authorization", `Bearer ${user1Token}`)
-        .send({
-          durationSec: 2000,
-        });
+        .set("Content-Type", "text/plain")
+        .send("durationSec=2000");
 
-      expect400WithMessage(res, /uuid/i);
+      expect415Error(res);
+    });
+
+    const invalidIdCases = [
+      { id: "not-a-uuid", desc: "invalid UUID format" },
+      { id: "000000zdg000000000000000000", desc: "malformed UUID" },
+    ];
+
+    invalidIdCases.forEach(({ id, desc }) => {
+      it(`returns 404 for ${desc}`, async () => {
+        const res = await request(app)
+          .patch(`/api/v1/runs/${id}`)
+          .set("Authorization", `Bearer ${user1Token}`)
+          .send({
+            durationSec: 2000,
+          });
+
+        expect404Error(res);
+      });
     });
 
     it("returns 404 when updating non-existent run", async () => {
@@ -316,75 +363,6 @@ describe("PATCH /api/v1/runs/:id", () => {
       expect404Error(res);
     });
 
-    it("returns 400 when updating with invalid durationSec", async () => {
-      // Create a run
-      const createRes = await request(app)
-        .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({
-          startTime: "2026-02-03T20:00:00.000Z",
-          durationSec: 1500,
-          distanceMeters: 4000,
-        });
-
-      const newRunId = createRes.body.data.runId;
-
-      const res = await request(app)
-        .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({
-          durationSec: -100,
-        });
-
-      expect400WithMessage(res, /positive/i);
-    });
-
-    it("returns 400 when updating with invalid distanceMeters", async () => {
-      // Create a run
-      const createRes = await request(app)
-        .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({
-          startTime: "2026-02-03T21:00:00.000Z",
-          durationSec: 1500,
-          distanceMeters: 4000,
-        });
-
-      const newRunId = createRes.body.data.runId;
-
-      const res = await request(app)
-        .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({
-          distanceMeters: 0,
-        });
-
-      expect400WithMessage(res, /positive/i);
-    });
-
-    it("returns 400 when updating with invalid startTime format", async () => {
-      // Create a run
-      const createRes = await request(app)
-        .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({
-          startTime: "2026-02-03T22:00:00.000Z",
-          durationSec: 1500,
-          distanceMeters: 4000,
-        });
-
-      const newRunId = createRes.body.data.runId;
-
-      const res = await request(app)
-        .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
-        .send({
-          startTime: "invalid-date",
-        });
-
-      expect400WithMessage(res, /iso/i);
-    });
-
     it("returns 400 when updating with empty body", async () => {
       const runId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
@@ -392,7 +370,7 @@ describe("PATCH /api/v1/runs/:id", () => {
         .set("Authorization", `Bearer ${user1Token}`)
         .send({});
 
-      expect400WithMessage(res, /at least one/i);
+      expect400WithMessage(res, /must have one of the required fields/i);
     });
 
     it("returns 400 when updating with unknown fields", async () => {
@@ -419,15 +397,94 @@ describe("PATCH /api/v1/runs/:id", () => {
       expect400WithMessage(res, /unknown|allowed/i);
     });
 
-    it("returns 400 when Content-Type is not application/json", async () => {
-      const runId = TEST_RUN_IDS.user1Run1;
-      const res = await request(app)
-        .patch(`/api/v1/runs/${runId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
-        .set("Content-Type", "text/plain")
-        .send("durationSec=2000");
+    const invalidDurationCases = [
+      { value: 0, desc: "zero value" },
+      { value: -100, desc: "negative value" },
+      { value: "not-a-number", desc: "non-numeric string" },
+    ];
 
-      expect400WithMessage(res, /json/i);
+    invalidDurationCases.forEach(({ value, desc }) => {
+      it(`returns 400 for invalid durationSec: ${desc}`, async () => {
+        const createRes = await request(app)
+          .post("/api/v1/users/me/runs")
+          .set("Authorization", `Bearer ${user1Token}`)
+          .send({
+            startTime: "2026-02-03T20:00:00.000Z",
+            durationSec: 1500,
+            distanceMeters: 4000,
+          });
+
+        const newRunId = createRes.body.data.runId;
+
+        const res = await request(app)
+          .patch(`/api/v1/runs/${newRunId}`)
+          .set("Authorization", `Bearer ${user1Token}`)
+          .send({
+            durationSec: value,
+          });
+
+        expect400WithMessage(res, /positive/i);
+      });
+    });
+
+    const invalidDistanceCases = [
+      { value: 0, desc: "zero value" },
+      { value: -5000, desc: "negative value" },
+      { value: "invalid", desc: "non-numeric string" },
+    ];
+
+    invalidDistanceCases.forEach(({ value, desc }) => {
+      it(`returns 400 for invalid distanceMeters: ${desc}`, async () => {
+        const createRes = await request(app)
+          .post("/api/v1/users/me/runs")
+          .set("Authorization", `Bearer ${user1Token}`)
+          .send({
+            startTime: "2026-02-03T21:00:00.000Z",
+            durationSec: 1500,
+            distanceMeters: 4000,
+          });
+
+        const newRunId = createRes.body.data.runId;
+
+        const res = await request(app)
+          .patch(`/api/v1/runs/${newRunId}`)
+          .set("Authorization", `Bearer ${user1Token}`)
+          .send({
+            distanceMeters: value,
+          });
+
+        expect400WithMessage(res, /positive/i);
+      });
+    });
+
+    const invalidStartTimeCases = [
+      { value: "invalid-date", desc: "invalid date format" },
+      { value: "2026-02-30T12:25:44.822Z", desc: "invalid calendar date" },
+      { value: "", desc: "empty string" },
+    ];
+
+    invalidStartTimeCases.forEach(({ value, desc }) => {
+      it(`returns 400 for invalid startTime: ${desc}`, async () => {
+        const createRes = await request(app)
+          .post("/api/v1/users/me/runs")
+          .set("Authorization", `Bearer ${user1Token}`)
+          .send({
+            startTime: "2026-02-03T22:00:00.000Z",
+            durationSec: 1500,
+            distanceMeters: 4000,
+          });
+
+        const newRunId = createRes.body.data.runId;
+
+        const res = await request(app)
+          .patch(`/api/v1/runs/${newRunId}`)
+          .set("Authorization", `Bearer ${user1Token}`)
+          .send({
+            startTime: value,
+          });
+
+        expect400WithMessage(res, /iso|real calendar date/i);
+      });
     });
   });
 
@@ -453,7 +510,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           durationSec: 2000,
         });
 
-      expect(res.statusCode).toBe(200);
+      expectJsonResponse(res, 200);
       expect(res.body).toHaveProperty("status", "success");
       expect(res.body).toHaveProperty("data");
       expect(res.body.data).toBeInstanceOf(Object);
@@ -480,7 +537,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           durationSec: 1700,
         });
 
-      expect(res.statusCode).toBe(200);
+      expectJsonResponse(res, 200);
       expect(res.body.data).toHaveProperty("runId");
       expect(res.body.data).toHaveProperty("userId");
       expect(res.body.data).toHaveProperty("startTime");
@@ -511,7 +568,7 @@ describe("PATCH /api/v1/runs/:id", () => {
           durationSec: 1900,
         });
 
-      expect(res.statusCode).toBe(200);
+      expectJsonResponse(res, 200);
       expect(res.body.data).toHaveProperty("durationSec", 1900);
       expect(res.body.data).toHaveProperty("startTime", originalStartTime);
       expect(res.body.data).toHaveProperty("distanceMeters", originalDistance);
