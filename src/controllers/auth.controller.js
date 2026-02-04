@@ -1,16 +1,17 @@
 const authService = require("../services/auth.service.js");
+const { sendSuccess } = require("../utils/response.utils.js");
 
 const createUser = async (req, res) => {
   const { email, username, password } = req.body;
   const newUserId = await authService.signup(email, username, password);
-  res.status(201).json({ id: newUserId });
+  sendSuccess(res, 200, { userId: newUserId });
 };
 
 const loginUser = async (req, res) => {
   const { email, username, password } = req.body;
   const identifier = email ? email : username;
   const token = await authService.login(identifier, password);
-  res.status(200).json({ token });
+  sendSuccess(res, 200, { token, expiresIn: "1h" });
 };
 
 const logoutAll = async (req, res) => {
