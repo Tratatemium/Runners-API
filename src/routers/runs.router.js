@@ -16,7 +16,11 @@ runsRouter.delete(
   "/:id",
   runsValidation.validateUUID("id"),
   authMiddleware.checkAuth,
-  guardMiddleware.checkPermissions({ param: "id", type: "runId" }),
+  guardMiddleware.checkPermissions({
+    mode: "ether",
+    param: "id",
+    type: "runId",
+  }),
   runsController.deleteRunById,
 );
 

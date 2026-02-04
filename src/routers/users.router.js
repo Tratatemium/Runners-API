@@ -51,7 +51,11 @@ usersRouter.get(
   "/:id",
   usersValidation.validateUUID("id"),
   authMiddleware.checkAuth,
-  guardMiddleware.checkPermissions({ param: "id", type: "userId" }),
+  guardMiddleware.checkPermissions({
+    mode: "ether",
+    param: "id",
+    type: "userId",
+  }),
   usersController.getUserById,
 );
 
