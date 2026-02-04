@@ -7,31 +7,55 @@ const validateUUID = (param = "id") => {
   };
 };
 
+const profileFields = [
+  {
+    key: "firstName",
+    input: null,
+    validate: (input) => validators.validateName(input, "firstName"),
+  },
+  {
+    key: "lastName",
+    input: null,
+    validate: (input) => validators.validateName(input, "lastName"),
+  },
+  {
+    key: "dateOfBirth",
+    input: null,
+    validate: (input) => validators.validateISO(input, "dateOfBirth", "date"),
+  },
+  {
+    key: "heightCm",
+    input: null,
+    validate: (input) => validators.validatePositiveNumber(input, "heightCm"),
+  },
+  {
+    key: "weightKg",
+    input: null,
+    validate: (input) => validators.validatePositiveNumber(input, "weightKg"),
+  },
+];
+
 const validateProfileUpdate = (req, res, next) => {
   validators.validateJsonContentType(req);
   const profile = req.body.profile;
 
+  const fieldKeys = profileFields.map((f) => f.key);
   validators.assertRequestFields({
     object: profile,
     objectName: "profile",
-    requiredFields: [
-      "firstName",
-      "lastName",
-      "dateOfBirth",
-      "heightCm",
-      "weightKg",
-    ],
+    requiredFields: fieldKeys,
+    allowedFields: fieldKeys,
     mode: "require_some",
   });
 
-  const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
+  const boundProfileFields = profileFields.map((field) => ({
+    ...field,
+    input: profile[field.key],
+  }));
 
-  if (firstName != null) validators.validateName(firstName, "firstName");
-  if (lastName != null) validators.validateName(lastName, "lastName");
-  if (dateOfBirth != null)
-    validators.validateISO(dateOfBirth, "dateOfBirth", "date");
-  if (heightCm != null) validators.validatePositiveNumber(heightCm, "heightCm");
-  if (weightKg != null) validators.validatePositiveNumber(weightKg, "weightKg");
+  boundProfileFields
+    .filter((field) => field.input != null)
+    .forEach((field) => field.validate(field.input));
 
   next();
 };
