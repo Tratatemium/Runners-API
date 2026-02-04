@@ -27,6 +27,9 @@ const assertRequestFields = ({
   if (!["require_all", "require_some"].includes(mode)) {
     throw new Error(`Invalid validation mode: ${mode}`);
   }
+  if (!Array.isArray(requiredFields) || requiredFields.length === 0) {
+    throw new Error("requiredFields must be a non-empty array");
+  }
   if (typeof object !== "object" || object == null) {
     throwValidationError(`${objectName} must be an object`);
   }
