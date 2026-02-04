@@ -9,7 +9,11 @@ const getUserById = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   const usersData = await usersService.getAllUsers();
-  res.status(200).json(usersData);
+  res.status(200).json({
+    status: "success",
+    results: usersData.length,
+    data: usersData,
+  });
 };
 
 const getMe = async (req, res) => {
