@@ -36,7 +36,7 @@ usersRouter.patch(
 
 usersRouter.post(
   "/me/runs",
-  runsValidation.validateRun,
+  runsValidation.validateRun({ mode: "require_all"}),
   authMiddleware.checkAuth,
   runsController.postNewRun,
 );
