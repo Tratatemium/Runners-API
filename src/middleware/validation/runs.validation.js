@@ -10,11 +10,11 @@ const validateUUID = (param = "id") => {
 const validateRun = (req, res, next) => {
   validators.validateJsonContentType(req);
 
-  validators.assertRequestFields(
-    req,
-    ["startTime", "durationSec", "distanceMeters"],
-    "Run data",
-  );
+  validators.assertRequestFields({
+    object: req.body,
+    objectName: "Run data",
+    requiredFields: ["startTime", "durationSec", "distanceMeters"],
+  });
 
   const { startTime, durationSec, distanceMeters } = req.body;
 

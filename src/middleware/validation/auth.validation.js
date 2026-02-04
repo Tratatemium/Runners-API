@@ -4,9 +4,9 @@ const validateRegisterRequest = (req, res, next) => {
   validators.validateJsonContentType(req);
 
   validators.assertRequestFields({
-    req,
-    requiredFields: ["username", "password", "email"],
+    object: req.body,
     objectName: "User data",
+    requiredFields: ["username", "password", "email"],
     mode: "require_all",
   });
 
@@ -26,9 +26,9 @@ const validateLoginRequest = (req, res, next) => {
     validators.throwValidationError("Login request must include password.");
   }
   validators.assertRequestFields({
-    req,
-    requiredFields: ["username", "email"],
+    object: req.body,
     objectName: "Login request",
+    requiredFields: ["username", "email"],
     mode: "require_some",
   });
 
