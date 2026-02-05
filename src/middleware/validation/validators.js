@@ -18,20 +18,38 @@ const validateJsonContentType = (req) => {
   }
 };
 
-const assertRequestFields = (
-  req,
-  requiredFields,
+const assertRequestFields = ({
+  object,
   objectName = "Request body",
+  requiredFields,
+  allowedFields,
   mode = "require_all",
-) => {
+}) => {
   if (!["require_all", "require_some"].includes(mode)) {
-    throw new Error(`Invalid validation mode: ${mode}`);
+    throw new Error(`Invalid validation mode: ${mode}.`);
   }
-  if (typeof req.body !== "object" || req.body == null) {
-    throwValidationError(`${objectName} must be an object`);
+  if (!Array.isArray(requiredFields) || requiredFields.length === 0) {
+    throw new Error("requiredFields must be a non-empty array.");
+  }
+  if (
+    allowedFields != null &&
+    (!Array.isArray(allowedFields) || allowedFields.length === 0)
+  ) {
+    throw new Error("allowedFields must be a non-empty array.");
+  }
+  if (typeof object !== "object" || object == null || Array.isArray(object)) {
+    throwValidationError(`${objectName} must be provided as an object.`);
   }
 
-  const hasValue = (field) => req.body[field] != null;
+  if (allowedFields != null) {
+    for (const key of Object.keys(object)) {
+      if (!allowedFields.includes(key)) {
+        throwValidationError(`Unknown field: ${key}`);
+      }
+    }
+  }
+
+  const hasValue = (field) => object[field] != null;
 
   if (mode === "require_all") {
     const missingFields = requiredFields.filter((field) => !hasValue(field));
@@ -50,6 +68,7 @@ const assertRequestFields = (
         `${objectName} must have one of the required fields: ${requiredFields.join(", ")}.`,
       );
     }
+    return;
   }
 };
 

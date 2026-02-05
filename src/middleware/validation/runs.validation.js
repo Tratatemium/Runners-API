@@ -7,35 +7,64 @@ const validateUUID = (param = "id") => {
   };
 };
 
-const validateRun = (req, res, next) => {
-  validators.validateJsonContentType(req);
+const runFields = [
+  {
+    key: "startTime",
+    input: null,
+    validate: (input) => {
+      validators.assertString(input, "startTime");
+      const trimmed = input.trim();
+      validators.validateISO(trimmed, "startTime", "datetime");
+      return trimmed;
+    },
+  },
+  {
+    key: "durationSec",
+    input: null,
+    validate: (input) => {
+      const normalized = Number(String(input).trim());
+      validators.validatePositiveNumber(normalized, "durationSec");
+      return normalized;
+    },
+  },
+  {
+    key: "distanceMeters",
+    input: null,
+    validate: (input) => {
+      const normalized = Number(String(input).trim());
+      validators.validatePositiveNumber(normalized, "distanceMeters");
+      return normalized;
+    },
+  },
+];
 
-  validators.assertRequestFields(
-    req,
-    ["startTime", "durationSec", "distanceMeters"],
-    "Run data",
-  );
+const validateRun = ({ mode = "require_all" }) => {
+  return (req, res, next) => {
+    validators.validateJsonContentType(req);
 
-  const { startTime, durationSec, distanceMeters } = req.body;
+    const fieldKeys = runFields.map((f) => f.key);
+    validators.assertRequestFields({
+      object: req.body,
+      objectName: "Run data",
+      requiredFields: fieldKeys,
+      allowedFields: fieldKeys,
+      mode: mode,
+    });
 
-  validators.assertString(startTime, "startTime");
-  const startTimeTrimmed = startTime.trim();
-  validators.validateISO(startTimeTrimmed, "startTime", "datetime");
+    const boundRunFields = runFields.map((field) => ({
+      ...field,
+      input: req.body[field.key],
+    }));
 
-  const durationNormalized = Number(String(durationSec).trim());
-  validators.validatePositiveNumber(durationNormalized, "durationSec");
+    const runData = Object.fromEntries(
+      boundRunFields
+        .filter((field) => field.input != null)
+        .map((field) => [field.key, field.validate(field.input)]),
+    );
 
-  const distanceNormalized = Number(String(distanceMeters).trim());
-  validators.validatePositiveNumber(distanceNormalized, "distanceMeters");
-
-  const runData = {
-    startTime: startTimeTrimmed,
-    durationSec: durationNormalized,
-    distanceMeters: distanceNormalized,
+    req.runData = runData;
+    next();
   };
-
-  req.runData = runData;
-  next();
 };
 
 module.exports = { validateUUID, validateRun };

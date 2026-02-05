@@ -9,6 +9,12 @@ const addNewRun = async (newRun) => {
   return savedRun.runId;
 };
 
+const findRunsByUserId = async (userId) => {
+  return await Run.find({ userId: userId })
+    .sort({ startTime: -1, runId: 1 }) // most recent first
+    .lean();
+};
+
 const findRunById = async (runId) => {
   const selectedRun = await Run.findOne({
     runId: runId,
@@ -16,10 +22,13 @@ const findRunById = async (runId) => {
   return selectedRun || null;
 };
 
-const findRunsByUserId = async (userId) => {
-  return await Run.find({ userId: userId })
-    .sort({ startTime: -1, runId: 1 }) // most recent first
-    .lean();
+const updateRunById = async (runId, update) => {
+  const result = await Run.findOneAndUpdate(
+    { runId },
+    { $set: update },
+    { new: true },
+  );
+  return result || null;
 };
 
 const deleteRunById = async (runId) => {
@@ -29,8 +38,9 @@ const deleteRunById = async (runId) => {
 };
 
 module.exports = {
-  findRunById,
   addNewRun,
   findRunsByUserId,
+  findRunById,
   deleteRunById,
+  updateRunById,
 };

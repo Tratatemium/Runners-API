@@ -70,7 +70,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ profile });
 
-        expect400WithMessage(res, "profile (object) must be provided.");
+        expect400WithMessage(res, "profile must be provided as an object.");
       });
     });
 

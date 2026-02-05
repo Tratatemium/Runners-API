@@ -15,13 +15,28 @@ const getMyRuns = async (req, res) => {
 };
 
 const getRunById = async (req, res) => {
-  const runData = await runsService.getRunById(req.params.id);
+  const runId = req.params.id;
+  const runData = await runsService.getRunById(runId);
+  sendSuccess(res, 200, runData);
+};
+
+const updateRunById = async (req, res) => {
+  const runId = req.params.id;
+  const runUpdate = req.body;
+  const runData = await runsService.updateRunById(runId, runUpdate);
   sendSuccess(res, 200, runData);
 };
 
 const deleteRunById = async (req, res) => {
-  await runsService.deleteRunById(req.params.id);
+  const runId = req.params.id;
+  await runsService.deleteRunById(runId);
   res.sendStatus(204);
 };
 
-module.exports = { postNewRun, getMyRuns, getRunById, deleteRunById };
+module.exports = {
+  postNewRun,
+  getMyRuns,
+  getRunById,
+  updateRunById,
+  deleteRunById,
+};
