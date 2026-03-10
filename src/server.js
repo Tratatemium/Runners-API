@@ -1,5 +1,3 @@
-const app = require("./app");
-const { connectDB } = require("./utils/db.utils.js");
 let PORT;
 try {
   ({ PORT } = require("./config/env.config"));
@@ -7,6 +5,9 @@ try {
   console.error("Configuration error:", err.message);
   process.exit(1);
 }
+
+const app = require("./app");
+const { connectDB } = require("./utils/db.utils.js");
 
 const startServer = async () => {
   try {

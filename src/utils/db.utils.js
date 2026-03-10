@@ -1,18 +1,44 @@
 const mongoose = require("mongoose");
-const { MONGO_URI } = require("../config/env.config.js");
 
-const connectDB = async (uri = MONGO_URI) => {
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+const connectDB = async (uri = process.env.MONGO_URI) => {
   if (!uri) {
     throw new Error("MongoDB URI not provided");
   }
-  await mongoose.connect(uri, {
-    dbName: "runners-app",
-  });
+
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(uri, {
+      dbName: "runners-app",
+    });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (err) {
+    // Reset cached promise/connection so future calls can retry
+    cached.promise = null;
+    cached.conn = null;
+    throw err;
+  }
+
   console.log("Connected to database (Mongoose).");
+
+  return cached.conn;
 };
 
 const closeDB = async () => {
   await mongoose.connection.close();
+  cached.conn = null;
+  cached.promise = null;
 };
 
 const clearDB = async () => {
