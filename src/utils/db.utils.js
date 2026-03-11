@@ -9,12 +9,14 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(uri, {
-      dbName: "runners-app",
-    }).catch(err => {
-      cached.promise = null;
-      throw err;
-    });
+    cached.promise = mongoose
+      .connect(uri, {
+        dbName: "runners-app",
+      })
+      .catch((err) => {
+        cached.promise = null;
+        throw err;
+      });
   }
 
   try {

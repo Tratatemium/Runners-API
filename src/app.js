@@ -35,7 +35,7 @@ app.get("/favicon.ico", (req, res) => {
 /*  ROUTER IMPORTS                                                                                   */
 /* ================================================================================================= */
 
-const healthRouter = require("./routers/health.router.js")
+const healthRouter = require("./routers/health.router.js");
 const authRouter = require("./routers/auth.router.js");
 const usersRouter = require("./routers/users.router.js");
 const runsRouter = require("./routers/runs.router.js");
