@@ -1,27 +1,14 @@
-const serverless = require("serverless-http");
-const app = require("../src/app.js");
+const { createApp } = require("../src/app.js"); // export a factory
 const { connectDB } = require("../src/utils/db.utils.js");
-
-let cached = global._mongo;
-if (!cached) cached = global._mongo = { conn: null, promise: null };
-
-const connectDatabase = async () => {
-  if (!cached.conn) {
-    if (!cached.promise) cached.promise = connectDB();
-    cached.conn = await cached.promise;
-  }
-  return cached.conn;
-};
-
-// Wrap serverless handler
-const handler = serverless(app);
 
 module.exports = async (req, res) => {
   try {
     console.log("Before DB connect");
-    await connectDatabase();
-    console.log("After DB connect, readyState:", require("mongoose").connection.readyState);
+    await connectDB();
+    console.log("After DB connect");
 
+    const app = createApp();       // create Express app **after DB connected**
+    const handler = require("serverless-http")(app);
     await handler(req, res);
   } catch (err) {
     console.error("DB connection failed:", err);
