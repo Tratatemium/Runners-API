@@ -1,40 +1,30 @@
 const mongoose = require("mongoose");
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
+let cached = global._mongo;
+if (!cached) cached = global._mongo = { conn: null, promise: null };
 
 const connectDB = async (uri = process.env.MONGO_URI) => {
-  if (!uri) {
-    throw new Error("MongoDB URI not provided");
-  }
+  if (!uri) throw new Error("MongoDB URI not provided");
 
-  if (cached.conn) {
-    return cached.conn;
-  }
+  if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(uri, {
       dbName: "runners-app",
       useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
+      useUnifiedTopology: true
     });
   }
 
   try {
     cached.conn = await cached.promise;
   } catch (err) {
-    // Reset cached promise/connection so future calls can retry
     cached.promise = null;
     cached.conn = null;
     throw err;
   }
 
   console.log("Connected to database (Mongoose).");
-
   return cached.conn;
 };
 
