@@ -1,17 +1,20 @@
-const { createApp } = require("../src/app.js"); // export a factory
+const serverless = require("serverless-http");
+const app = require("../src/app.js");
 const { connectDB } = require("../src/utils/db.utils.js");
+
+const handler = serverless(app);
+let connected = false;
 
 module.exports = async (req, res) => {
   try {
-    console.log("Before DB connect");
-    await connectDB();
-    console.log("After DB connect");
+    if (!connected) {
+      await connectDB();
+      connected = true;
+    }
 
-    const app = createApp();       // create Express app **after DB connected**
-    const handler = require("serverless-http")(app);
-    await handler(req, res);
+    return handler(req, res);
   } catch (err) {
     console.error("DB connection failed:", err);
-    res.status(500).json({ error: "Database connection failed" });
+    return res.status(500).json({ error: "Database connection failed" });
   }
 };
