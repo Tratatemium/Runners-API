@@ -1,4 +1,4 @@
-const { setServerStartTime } = require("../src/utils/server.utils.js");
+const { setServerStartTime } = require("./utils/server.utils.js");
 
 setServerStartTime();
 
