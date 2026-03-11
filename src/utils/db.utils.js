@@ -11,10 +11,7 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(uri, {
-      dbName: "runners-app",
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 20000,
+      dbName: "runners-app"
     });
   }
 
