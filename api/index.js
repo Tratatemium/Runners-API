@@ -7,9 +7,17 @@ let connected = false;
 
 module.exports = async (req, res) => {
   try {
-    const forwardedPath = req.query?.path;
-    if (typeof forwardedPath === "string" && forwardedPath.length > 0) {
-      req.url = `/${forwardedPath}`;
+    const requestUrl = new URL(req.url, "http://localhost");
+    const forwardedPath = requestUrl.searchParams.get("path");
+
+    if (forwardedPath) {
+      requestUrl.pathname = `/${forwardedPath}`;
+      requestUrl.searchParams.delete("path");
+
+      const normalizedSearch = requestUrl.searchParams.toString();
+      req.url = normalizedSearch
+        ? `${requestUrl.pathname}?${normalizedSearch}`
+        : requestUrl.pathname;
     }
 
     if (!connected) {
