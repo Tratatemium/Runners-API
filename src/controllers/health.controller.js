@@ -6,7 +6,7 @@ const healthController = (req, res) => {
     status: "running",
     uptime: getUptime(),
     version: "1.0.0",
-    DBconnection: checkDBConnection(),
+    DBConnection: checkDBConnection(),
   });
 };
 
