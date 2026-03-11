@@ -51,11 +51,13 @@ app.get("/favicon.ico", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "ok",
-    uptime: getUptime(),
-    version: "1.0.0",
-  });
+  const mongoose = require("mongoose");
+  res.json({ readyState: mongoose.connection.readyState });
+  // res.status(200).json({
+  //   status: "ok",
+  //   uptime: getUptime(),
+  //   version: "1.0.0",
+  // });
 });
 
 /* ================================================================================================= */
