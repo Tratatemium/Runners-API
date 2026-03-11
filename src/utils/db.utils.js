@@ -4,6 +4,7 @@ let cached = global._mongo;
 if (!cached) cached = global._mongo = { conn: null, promise: null };
 
 const connectDB = async (uri = process.env.MONGO_URI) => {
+  console.log("Started connection to the DB")
   if (!uri) throw new Error("MongoDB URI not provided");
 
   if (cached.conn) return cached.conn;
@@ -12,7 +13,8 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
     cached.promise = mongoose.connect(uri, {
       dbName: "runners-app",
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 20000,
     });
   }
 

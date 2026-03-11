@@ -4,6 +4,7 @@
 
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
 
 /* ================================================================================================= */
 /*  SERVER UPTIME                                                                                    */
@@ -51,13 +52,12 @@ app.get("/favicon.ico", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-  const mongoose = require("mongoose");
-  res.json({ readyState: mongoose.connection.readyState });
-  // res.status(200).json({
-  //   status: "ok",
-  //   uptime: getUptime(),
-  //   version: "1.0.0",
-  // });
+  res.status(200).json({
+    status: "ok",
+    uptime: getUptime(),
+    version: "1.0.0",
+    DBreadyState: mongoose.connection.readyState
+  });
 });
 
 /* ================================================================================================= */
