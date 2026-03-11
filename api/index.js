@@ -6,13 +6,12 @@ setServerStartTime();
 
 let connected = false;
 
-const connectionHandler = async () => {
+const initializeDB = async () => {
   try {
     if (!connected) {
       await connectDB();
       connected = true;
     }
-    return app;
   } catch (err) {
     console.error("DB connection failed:", err);
     connected = false;
@@ -20,4 +19,8 @@ const connectionHandler = async () => {
   }
 };
 
-module.exports = connectionHandler;
+// Vercel serverless handler
+module.exports = async (req, res) => {
+  await initializeDB();
+  app(req, res);
+};
