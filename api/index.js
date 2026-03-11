@@ -7,6 +7,11 @@ let connected = false;
 
 module.exports = async (req, res) => {
   try {
+    const forwardedPath = req.query?.path;
+    if (typeof forwardedPath === "string" && forwardedPath.length > 0) {
+      req.url = `/${forwardedPath}`;
+    }
+
     if (!connected) {
       await connectDB();
       connected = true;

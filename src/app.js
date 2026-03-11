@@ -54,7 +54,7 @@ app.get("/favicon.ico", (req, res) => {
   res.status(204).end();
 });
 
-app.get("/api/health", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     uptime: getUptime(),
@@ -81,7 +81,7 @@ v1Router.use("/auth", authRouter);
 v1Router.use("/users", usersRouter);
 v1Router.use("/runs", runsRouter);
 
-app.use("/api/v1", v1Router);
+app.use("/v1", v1Router);
 
 /* ================================================================================================= */
 /*  ERROR HANDLERS                                                                                   */
