@@ -6,11 +6,13 @@ const handler = serverless(app);
 
 module.exports = async (req, res) => {
   try {
-    // ensure DB is connected
+    // Ensure DB is connected before handling request
     await connectDB();
-    return handler(req, res);
+
+    // **Await the Express handler** to prevent early termination
+    await handler(req, res);
   } catch (err) {
     console.error("DB connection failed:", err);
-    return res.status(500).json({ error: "Database connection failed" });
+    res.status(500).json({ error: "Database connection failed" });
   }
 };
