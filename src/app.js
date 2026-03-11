@@ -44,9 +44,6 @@ app.get("/", (req, res) => {
   res.status(200).json({
     service: "runners-api",
     status: "running",
-    uptime: getUptime(),
-    version: "1.0.0",
-    DBreadyState: mongoose.connection.readyState
   });
 });
 
@@ -54,7 +51,7 @@ app.get("/favicon.ico", (req, res) => {
   res.status(204).end();
 });
 
-app.get("/health", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     uptime: getUptime(),
@@ -81,7 +78,7 @@ v1Router.use("/auth", authRouter);
 v1Router.use("/users", usersRouter);
 v1Router.use("/runs", runsRouter);
 
-app.use("/v1", v1Router);
+app.use("/api/v1", v1Router);
 
 /* ================================================================================================= */
 /*  ERROR HANDLERS                                                                                   */
