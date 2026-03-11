@@ -9,14 +9,14 @@ const { connectDB } = require("./utils/db.utils.js");
 
 let connected = false;
 
-try {
-  if (!connected) {
-    await connectDB();
-    connected = true;
-  }
-} catch (err) {
-  console.error("DB connection failed:", err);
-}
+// try {
+//   if (!connected) {
+//     await connectDB();
+//     connected = true;
+//   }
+// } catch (err) {
+//   console.error("DB connection failed:", err);
+// }
 
 /* ================================================================================================= */
 /*  SERVER UPTIME                                                                                    */
