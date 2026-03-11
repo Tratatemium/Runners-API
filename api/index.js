@@ -6,15 +6,16 @@ setServerStartTime();
 
 let connected = false;
 
-(async () => {
+const connectionHandler = async () => {
   try {
     if (!connected) {
       await connectDB();
       connected = true;
     }
+    return app;
   } catch (err) {
     console.error("DB connection failed:", err);
   }
-})();
+};
 
-module.exports = app;
+module.exports = connectionHandler;
