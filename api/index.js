@@ -19,7 +19,6 @@ const initializeDB = async () => {
   }
 };
 
-// Vercel serverless handler
 module.exports = async (req, res) => {
   await initializeDB();
   app(req, res);
