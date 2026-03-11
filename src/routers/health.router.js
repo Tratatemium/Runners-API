@@ -5,4 +5,4 @@ const { healthController } = require("../controllers/health.controller.js");
 
 healthRouter.get("/", healthController);
 
-module.exports = healthRouter;
+module.exports = { healthRouter };

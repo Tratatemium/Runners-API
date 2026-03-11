@@ -11,4 +11,4 @@ const healthController = (req, res) => {
   });
 };
 
-module.exports = healthController;
+module.exports = { healthController };
