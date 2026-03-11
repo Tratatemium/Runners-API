@@ -15,6 +15,8 @@ const connectionHandler = async () => {
     return app;
   } catch (err) {
     console.error("DB connection failed:", err);
+    connected = false;
+    throw err;
   }
 };
 
