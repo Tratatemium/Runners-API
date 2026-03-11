@@ -7,7 +7,6 @@ let connected = false;
 
 module.exports = (req, res) => {
   if (!connected) {
-    console.log("Connecting to DB ===***===")
     connectDB()
       .then(() => {
         connected = true;
@@ -20,5 +19,4 @@ module.exports = (req, res) => {
   } else {
     handler(req, res);
   }
-  console.log("Serverless setup complete. ===***===")
 };

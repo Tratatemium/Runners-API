@@ -40,7 +40,6 @@ app.use((req, res, next) => {
 /* ================================================================================================= */
 
 app.get("/health", (req, res) => {
-  console.log("Got healt check request. ===***===")
   res.status(200).json({
     status: "ok",
     uptime: getUptime(),
@@ -66,7 +65,7 @@ v1Router.use("/auth", authRouter);
 v1Router.use("/users", usersRouter);
 v1Router.use("/runs", runsRouter);
 
-app.use("/api/v1", v1Router);
+app.use("/v1", v1Router);
 
 /* ================================================================================================= */
 /*  ERROR HANDLERS                                                                                   */
