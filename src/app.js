@@ -14,8 +14,6 @@ try {
     await connectDB();
     connected = true;
   }
-
-  return handler(req, res);
 } catch (err) {
   console.error("DB connection failed:", err);
 }
