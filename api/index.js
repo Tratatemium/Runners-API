@@ -1,22 +1,25 @@
-const serverless = require("serverless-http");
 const app = require("../src/app.js");
 const { connectDB } = require("../src/utils/db.utils.js");
+const { setServerStartTime } = require("../src/utils/server.utils.js");
 
-const handler = serverless(app);
+setServerStartTime();
+
 let connected = false;
 
-module.exports = (req, res) => {
-  if (!connected) {
-    connectDB()
-      .then(() => {
-        connected = true;
-        handler(req, res);
-      })
-      .catch(err => {
-        console.error("DB connection error:", err);
-        res.status(500).json({ error: "DB connection failed" });
-      });
-  } else {
-    handler(req, res);
+const initializeDB = async () => {
+  try {
+    if (!connected) {
+      await connectDB();
+      connected = true;
+    }
+  } catch (err) {
+    console.error("DB connection failed:", err);
+    connected = false;
+    throw err;
   }
+};
+
+module.exports = async (req, res) => {
+  await initializeDB();
+  app(req, res);
 };

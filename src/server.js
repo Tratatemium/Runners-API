@@ -1,3 +1,7 @@
+const { setServerStartTime } = require("./utils/server.utils.js");
+
+setServerStartTime();
+
 let PORT;
 try {
   ({ PORT } = require("./config/env.config"));

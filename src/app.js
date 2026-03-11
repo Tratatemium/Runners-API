@@ -6,46 +6,36 @@ const express = require("express");
 const app = express();
 
 /* ================================================================================================= */
-/*  SERVER UPTIME                                                                                    */
-/* ================================================================================================= */
-
-const serverTimeStart = Date.now();
-
-const getUptime = () => {
-  const uptime = Date.now() - serverTimeStart;
-  const uptimeSeconds = Math.floor(uptime / 1000);
-
-  const hrs = Math.floor(uptimeSeconds / 3600);
-  const mins = Math.floor((uptimeSeconds % 3600) / 60);
-  const secs = uptimeSeconds % 60;
-
-  const pad = (n) => n.toString().padStart(2, "0");
-
-  return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-};
-
-/* ================================================================================================= */
-/*  HEALTH CHECK                                                                                     */
-/* ================================================================================================= */
-
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "ok",
-    uptime: getUptime(),
-    version: "1.0.0",
-  });
-});
-
-/* ================================================================================================= */
 /*  MIDDLEWARE                                                                                       */
 /* ================================================================================================= */
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log("Incoming path:", req.path);
+  next();
+});
+
+/* ================================================================================================= */
+/*  VERCEL                                                                                     */
+/* ================================================================================================= */
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    service: "runners-api",
+    status: "running",
+  });
+});
+
+app.get("/favicon.ico", (req, res) => {
+  res.status(204).end();
+});
+
 /* ================================================================================================= */
 /*  ROUTER IMPORTS                                                                                   */
 /* ================================================================================================= */
 
+const healthRouter = require("./routers/health.router.js");
 const authRouter = require("./routers/auth.router.js");
 const usersRouter = require("./routers/users.router.js");
 const runsRouter = require("./routers/runs.router.js");
@@ -60,6 +50,7 @@ v1Router.use("/auth", authRouter);
 v1Router.use("/users", usersRouter);
 v1Router.use("/runs", runsRouter);
 
+app.use("/health", healthRouter);
 app.use("/api/v1", v1Router);
 
 /* ================================================================================================= */
