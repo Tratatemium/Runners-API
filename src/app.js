@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 /*  HEALTH CHECK                                                                                     */
 /* ================================================================================================= */
 
-app.get("api/health", (req, res) => {
+app.get("/health", (req, res) => {
   console.log("Got healt check request. ===***===")
   res.status(200).json({
     status: "ok",
