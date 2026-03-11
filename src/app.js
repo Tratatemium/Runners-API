@@ -5,6 +5,20 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const { connectDB } = require("./utils/db.utils.js");
+
+let connected = false;
+
+try {
+  if (!connected) {
+    await connectDB();
+    connected = true;
+  }
+
+  return handler(req, res);
+} catch (err) {
+  console.error("DB connection failed:", err);
+}
 
 /* ================================================================================================= */
 /*  SERVER UPTIME                                                                                    */
@@ -51,12 +65,12 @@ app.get("/favicon.ico", (req, res) => {
   res.status(204).end();
 });
 
-app.get("/api/health", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     uptime: getUptime(),
     version: "1.0.0",
-    DBreadyState: mongoose.connection.readyState
+    DBreadyState: mongoose.connection.readyState,
   });
 });
 
