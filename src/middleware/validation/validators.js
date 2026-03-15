@@ -210,8 +210,8 @@ const validatePassword = (password) => {
     throwValidationError("Password must be a string.");
   }
   const length = password.length;
-  if (length < 12) {
-    throwValidationError("Password must be at least 12 characters long.");
+  if (length < 8) {
+    throwValidationError("Password must be at least 8 characters long.");
   }
   if (length > 128) {
     throwValidationError("Password must be at most 128 characters long.");
