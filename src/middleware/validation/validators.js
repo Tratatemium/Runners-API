@@ -178,8 +178,8 @@ const validateUsername = (username) => {
   if (typeof username !== "string") {
     throwValidationError("Username must be a string.");
   }
-  if (username.length < 6 || username.length > 30) {
-    throwValidationError("Username must be between 6 and 30 characters long.");
+  if (username.length < 4 || username.length > 20) {
+    throwValidationError("Username must be between 4 and 20 characters long.");
   }
   const usernameRegex = /^[a-zA-Z0-9_]+$/;
   if (!usernameRegex.test(username)) {
