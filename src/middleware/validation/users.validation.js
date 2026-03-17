@@ -66,7 +66,10 @@ const validateAccountUpdate = (req, res, next) => {
   const { currentPassword, newPassword, newEmail, newUsername } = req.body;
 
   if (currentPassword == null) {
-    validators.throwValidationError("currentPassword must be provided.");
+    validators.throwValidationError({
+      message: "currentPassword must be provided.",
+      field: "currentPassword",
+    });
   }
   validators.validatePassword(currentPassword);
 
@@ -87,9 +90,10 @@ const validateAccountUpdate = (req, res, next) => {
   const provided = updateFields.filter((field) => field.value != null);
 
   if (provided.length !== 1) {
-    validators.throwValidationError(
-      "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername.",
-    );
+    validators.throwValidationError({
+      message:
+        "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername.",
+    });
   }
 
   const fieldToUpdate = provided[0];

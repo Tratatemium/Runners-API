@@ -19,11 +19,15 @@ const dbErrorHandler = (err, req, res, next) => {
   if (isDuplicateKey) {
     const field = Object.keys(err.keyValue || {})[0];
     const value = field ? err.keyValue[field] : undefined;
+    const fieldName = field?.slice(8);
 
     return res.status(409).json({
-      error: field
-        ? `${field.slice(8)} ${value} already exists.` // TODO: take field dynamicly
-        : "Duplicate key error",
+      error: {
+        field: fieldName,
+        message: fieldName
+          ? `${fieldName} ${value} already exists.` // TODO: take field dynamicly
+          : "Duplicate key error",
+      },
     });
   }
 
@@ -56,6 +60,18 @@ const authErrorHandler = (err, req, res, next) => {
   next(err);
 };
 
+const validationErrorHandler = (err, req, res, next) => {
+  if (err.name === "ValidationError") {
+    return res.status(err.status || 400).json({
+      error: {
+        field: err.field,
+        message: err.message,
+      },
+    });
+  }
+  next(err);
+};
+
 // FINAL error handler
 const finalErrorHandler = (err, req, res, next) => {
   const isValidErrStatus = Number.isInteger(err.status) && err.status >= 400;
@@ -73,5 +89,6 @@ module.exports = {
   jsonSyntaxErrorHandler,
   dbErrorHandler,
   authErrorHandler,
+  validationErrorHandler,
   finalErrorHandler,
 };

@@ -5,7 +5,10 @@
 /* ================================================================================================= */
 
 class ValidationError extends Error {
-  constructor(message, field, status = 400) {
+  field?: string;
+  status: number;
+
+  constructor(message: string, field?: string, status: number = 400) {
     super(message);
     this.name = "ValidationError";
     this.status = status;
@@ -15,7 +18,17 @@ class ValidationError extends Error {
   }
 }
 
-const throwValidationError = ({ message, field = undefined, status = 400 }) => {
+interface ThrowValidationErrorParams {
+  message: string;
+  field?: string;
+  status?: number;
+}
+
+const throwValidationError = ({
+  message,
+  field = undefined,
+  status = 400,
+}: ThrowValidationErrorParams) => {
   throw new ValidationError(message, field, status);
 };
 
@@ -23,7 +36,7 @@ const throwValidationError = ({ message, field = undefined, status = 400 }) => {
 /*  VALIDATE FUNCTIONS                                                                               */
 /* ================================================================================================= */
 
-const validateJsonContentType = (req) => {
+const validateJsonContentType = (req: any) => {
   if (!req.is("json")) {
     throwValidationError({
       message: "Content-Type must be json.",
@@ -32,13 +45,21 @@ const validateJsonContentType = (req) => {
   }
 };
 
+interface AssertRequestFieldsParams {
+  object: any;
+  objectName?: string;
+  requiredFields: string[];
+  allowedFields: string[];
+  mode?: string;
+}
+
 const assertRequestFields = ({
   object,
   objectName = "Request body",
   requiredFields,
   allowedFields,
   mode = "require_all",
-}) => {
+}: AssertRequestFieldsParams) => {
   if (!["require_all", "require_some"].includes(mode)) {
     throw new Error(`Invalid validation mode: ${mode}.`);
   }
@@ -65,7 +86,7 @@ const assertRequestFields = ({
     }
   }
 
-  const hasValue = (field) => object[field] != null;
+  const hasValue = (field: string) => object[field] != null;
 
   if (mode === "require_all") {
     const missingFields = requiredFields.filter((field) => !hasValue(field));
@@ -88,7 +109,7 @@ const assertRequestFields = ({
   }
 };
 
-const assertString = (str, strName) => {
+const assertString = (str: string, strName: string) => {
   if (typeof str !== "string") {
     throwValidationError({
       message: `${strName} must be a string.`,
@@ -97,7 +118,7 @@ const assertString = (str, strName) => {
   }
 };
 
-const validateUUID = (ID, IDname = "ID") => {
+const validateUUID = (ID: string, IDname = "ID") => {
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const isUUID = uuidRegex.test(ID);
@@ -109,7 +130,11 @@ const validateUUID = (ID, IDname = "ID") => {
   }
 };
 
-const validateISO = (value, name, mode = "datetime") => {
+const validateISO = (
+  value: string,
+  name: string,
+  mode: "date" | "datetime" = "datetime",
+) => {
   if (typeof value !== "string") {
     throwValidationError({ message: `${name} must be a string.`, field: name });
   }
@@ -198,7 +223,7 @@ const validateISO = (value, name, mode = "datetime") => {
   );
 };
 
-const validatePositiveNumber = (number, numberName) => {
+const validatePositiveNumber = (number: number, numberName: string) => {
   if (isNaN(number) || number <= 0 || typeof number !== "number") {
     throwValidationError({
       message: `${numberName} must be a positive number.`,
@@ -207,7 +232,7 @@ const validatePositiveNumber = (number, numberName) => {
   }
 };
 
-const validateUsername = (username) => {
+const validateUsername = (username: string) => {
   if (typeof username !== "string") {
     throwValidationError({
       message: "Username must be a string.",
@@ -229,7 +254,7 @@ const validateUsername = (username) => {
   }
 };
 
-const validateEmail = (email) => {
+const validateEmail = (email: string) => {
   if (typeof email !== "string") {
     throwValidationError({
       message: "Email must be a string.",
@@ -257,7 +282,7 @@ const validateEmail = (email) => {
   }
 };
 
-const validatePassword = (password) => {
+const validatePassword = (password: string) => {
   if (typeof password !== "string") {
     throwValidationError({
       message: "Password must be a string.",
@@ -279,7 +304,7 @@ const validatePassword = (password) => {
   }
 };
 
-const validateName = (name, fieldName) => {
+const validateName = (name: string, fieldName: string) => {
   if (typeof name !== "string")
     throwValidationError({
       message: `${fieldName} must be a string.`,

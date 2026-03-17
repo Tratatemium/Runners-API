@@ -23,7 +23,10 @@ const validateLoginRequest = (req, res, next) => {
   validators.validateJsonContentType(req);
 
   if (req.body.password == null) {
-    validators.throwValidationError("Login request must include password.");
+    validators.throwValidationError({
+      message: "Login request must include password.",
+      field: "password",
+    });
   }
   validators.assertRequestFields({
     object: req.body,
@@ -36,9 +39,10 @@ const validateLoginRequest = (req, res, next) => {
   const { username, password, email } = req.body;
 
   if (email && username)
-    validators.throwValidationError(
-      "Provide either email or username, but not both.",
-    );
+    validators.throwValidationError({
+      message: "Provide either email or username, but not both.",
+      field: "identifier",
+    });
 
   if (username != null) validators.validateUsername(username);
   if (email != null) validators.validateEmail(email);

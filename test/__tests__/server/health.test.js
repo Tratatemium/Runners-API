@@ -8,7 +8,7 @@ describe("Server Health Endpoints", () => {
       const res = await request(app).get("/health");
 
       expectJsonResponse(res, 200);
-      expect(res.body).toHaveProperty("status", "ok");
+      expect(res.body).toHaveProperty("status", "running");
       expect(res.body).toHaveProperty("uptime");
       expect(res.body).toHaveProperty("version");
       expect(res.body.uptime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
