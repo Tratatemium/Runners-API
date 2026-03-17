@@ -1,4 +1,4 @@
-const validators = require("./validators.ts");
+const validators = require("./validators.js");
 
 const validateRegisterRequest = (req, res, next) => {
   validators.validateJsonContentType(req);
