@@ -136,7 +136,7 @@ describe("PATCH /api/v1/users/me/account", () => {
     const passwordValidationCases = [
       {
         password: "Short1!",
-        message: "Password must be at least 12 characters long.",
+        message: "Password must be at least 8 characters long.",
       },
       {
         password: "A".repeat(129),
@@ -232,7 +232,10 @@ describe("PATCH /api/v1/users/me/account", () => {
         email: "new email@test.com",
         message: "Email must not contain whitespace.",
       },
-      { email: "a".repeat(250) + "@test.com", message: "Email is too long." },
+      {
+        email: "a".repeat(250) + "@test.com",
+        message: "Email must not be longer than 254 characters.",
+      },
       { email: 12345, message: "Email must be a string." },
     ];
 
@@ -319,12 +322,12 @@ describe("PATCH /api/v1/users/me/account", () => {
   describe("Username updates", () => {
     const usernameValidationCases = [
       {
-        username: "short",
-        message: "Username must be between 6 and 30 characters long.",
+        username: "abc",
+        message: "Username must be between 4 and 20 characters long.",
       },
       {
-        username: "a".repeat(31),
-        message: "Username must be between 6 and 30 characters long.",
+        username: "a".repeat(21),
+        message: "Username must be between 4 and 20 characters long.",
       },
       {
         username: "user@name",

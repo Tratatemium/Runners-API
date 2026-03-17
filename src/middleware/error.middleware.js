@@ -61,8 +61,8 @@ const authErrorHandler = (err, req, res, next) => {
 };
 
 const validationErrorHandler = (err, req, res, next) => {
-  if ((err.name = "ValidationError")) {
-    return res.status(err.status).json({
+  if (err.name === "ValidationError") {
+    return res.status(err.status || 400).json({
       error: {
         field: err.field,
         message: err.message,

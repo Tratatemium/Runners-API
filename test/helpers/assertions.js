@@ -62,18 +62,42 @@ const expectValidUserStructure = (user, expectedAccount = {}) => {
 
 /**
  * Assert that a response is a 400 error with specific message
+ * Validation errors are expected to use the object payload shape:
+ * { error: { field, message } }
  * @param {Object} response - Supertest response object
- * @param {string|RegExp} errorMessage - Expected error message or pattern
+ * @param {string|RegExp|Object} expectedError - Expected message/pattern or an object with field/message
  */
-const expect400WithMessage = (response, errorMessage) => {
+const expect400WithMessage = (response, expectedError) => {
   expect(response.statusCode).toBe(400);
   expect(response.headers["content-type"]).toMatch(/json/);
   expect(response.body).toHaveProperty("error");
+  expect(response.body.error).toEqual(
+    expect.objectContaining({
+      message: expect.any(String),
+    }),
+  );
 
-  if (typeof errorMessage === "string") {
-    expect(response.body.error).toBe(errorMessage);
+  const { error } = response.body;
+
+  if (typeof expectedError === "string") {
+    expect(error.message).toBe(expectedError);
   } else {
-    expect(response.body.error).toMatch(errorMessage);
+    if (expectedError instanceof RegExp) {
+      expect(error.message).toMatch(expectedError);
+      return;
+    }
+
+    if (expectedError?.message != null) {
+      if (typeof expectedError.message === "string") {
+        expect(error.message).toBe(expectedError.message);
+      } else {
+        expect(error.message).toMatch(expectedError.message);
+      }
+    }
+
+    if (Object.prototype.hasOwnProperty.call(expectedError || {}, "field")) {
+      expect(error.field).toBe(expectedError.field);
+    }
   }
 };
 

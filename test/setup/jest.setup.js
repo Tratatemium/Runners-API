@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const testDb = require("./testDB.setup.js");
 const seeding = require("../helpers/seeding.js");
 const User = require("../../src/models/users.models.js");

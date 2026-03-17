@@ -66,12 +66,12 @@ describe("Username validation", () => {
 
   it.each([
     {
-      username: "short",
-      message: "Username must be between 6 and 30 characters long.",
+      username: "abc",
+      message: "Username must be between 4 and 20 characters long.",
     },
     {
-      username: "a".repeat(31),
-      message: "Username must be between 6 and 30 characters long.",
+      username: "a".repeat(21),
+      message: "Username must be between 4 and 20 characters long.",
     },
   ])(
     "returns 400 for invalid username length: $username",
@@ -100,8 +100,8 @@ describe("Username validation", () => {
 
   it.each([
     { username: "valid_user123", email: "valid_user123@example.com" },
-    { username: "user12", email: "user12@example.com" }, // Exactly 6 chars
-    { username: "a".repeat(30), email: "thirtychar@example.com" }, // Exactly 30 chars
+    { username: "user", email: "user4@example.com" },
+    { username: "a".repeat(20), email: "twentychar@example.com" },
   ])("accepts valid username: $username", async ({ username, email }) => {
     const res = await request(app).post("/api/v1/auth/signup").send({
       username,
@@ -129,7 +129,7 @@ describe("Email validation", () => {
       .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, email: longEmail });
 
-    expect400WithMessage(res, "Email is too long.");
+    expect400WithMessage(res, "Email must not be longer than 254 characters.");
   });
 
   it.each([
@@ -178,7 +178,7 @@ describe("Password validation", () => {
   it.each([
     {
       password: "Short1!",
-      message: "Password must be at least 12 characters long.",
+      message: "Password must be at least 8 characters long.",
     },
     {
       password: "a".repeat(129),
